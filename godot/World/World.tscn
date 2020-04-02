@@ -1,0 +1,101 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://World/DrawRect.gd" type="Script" id=1]
+
+[sub_resource type="Gradient" id=1]
+offsets = PoolRealArray( 0.5, 1 )
+colors = PoolColorArray( 0.196078, 0.160784, 0.278431, 1, 0.230469, 0.0792236, 0.221016, 1 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 1806.13, 68.854 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 46.7111, 778.522 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 350, 20 )
+
+[node name="World" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="TextureRect" parent="CanvasLayer"]
+margin_left = 1080.0
+margin_top = -1080.0
+margin_right = 3240.0
+margin_bottom = 1080.0
+rect_min_size = Vector2( 2160, 2160 )
+rect_rotation = 90.0
+texture = SubResource( 2 )
+expand = true
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2( 0, 532 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource( 3 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="WallR" type="StaticBody2D" parent="."]
+position = Vector2( 1759.4, -177.697 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallR"]
+shape = SubResource( 4 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="WallL" type="StaticBody2D" parent="."]
+position = Vector2( -1759.4, -177.697 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallL"]
+shape = SubResource( 4 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="Platform" type="StaticBody2D" parent="."]
+position = Vector2( 1025.27, 228.519 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+shape = SubResource( 5 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2( -637.72, 240.822 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource( 5 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="Platform3" type="StaticBody2D" parent="."]
+position = Vector2( -1156.51, -70.8605 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform3"]
+shape = SubResource( 5 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )
+
+[node name="Platform4" type="StaticBody2D" parent="."]
+position = Vector2( -364.997, -362.038 )
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform4"]
+shape = SubResource( 5 )
+script = ExtResource( 1 )
+color = Color( 0.278431, 0.231373, 0.470588, 1 )

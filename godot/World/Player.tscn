@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://World/Character.tscn" type="PackedScene" id=1]
+[ext_resource path="res://World/Player.gd" type="Script" id=2]
+
+[node name="Player" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="Camera2D" type="Camera2D" parent="." index="2"]
+current = true
+zoom = Vector2( 2, 2 )
+process_mode = 0
+limit_left = -1000000
+limit_top = -1000000
+limit_right = 1000000
+limit_bottom = 650
+limit_smoothed = true
+smoothing_enabled = true
+editor_draw_screen = false
+
+[node name="Tween" parent="." index="3"]
+playback_process_mode = 0
+
+[node name="Timer" type="Timer" parent="." index="5"]
+wait_time = 0.2
+autostart = true

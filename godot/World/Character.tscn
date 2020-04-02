@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://assets/world/character.svg" type="Texture" id=1]
+[ext_resource path="res://World/Character.gd" type="Script" id=2]
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=3]
+[ext_resource path="res://assets/theme/fonts/montserrat/Montserrat-Medium.ttf" type="DynamicFontData" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 41, 45 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 40
+use_filter = true
+font_data = ExtResource( 4 )
+
+[node name="Character" type="KinematicBody2D"]
+scale = Vector2( 1e-05, 1e-05 )
+collision_mask = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -45 )
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+offset = Vector2( 0, -45 )
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+margin_top = -140.0
+margin_bottom = -140.0
+use_top_left = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CenterContainer"]
+margin_left = -74.0
+margin_top = -25.0
+margin_right = 74.0
+margin_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 1
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 2 )
+text = "User ID"
+__meta__ = {
+"_edit_use_anchors_": false
+}

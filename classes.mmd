@@ -1,0 +1,15 @@
+classDiagram
+	Nakama <-- Connection
+	
+	ConnectionControl <|-- LoginControls : extends
+	ConnectionControl <|-- RegisterControls : extends
+	
+	Connection <-- ConnectionControl
+	
+	Character <|-- Player : extends
+	
+	Connection <-- ConnectedWorld
+	
+	ConnectedWorld --> "many" characters
+	ConnectedWorld --> "one" player
+	
