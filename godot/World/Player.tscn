@@ -22,5 +22,6 @@ editor_draw_screen = false
 playback_process_mode = 0
 
 [node name="Timer" type="Timer" parent="." index="5"]
-wait_time = 0.2
+process_mode = 0
+wait_time = 0.05
 autostart = true

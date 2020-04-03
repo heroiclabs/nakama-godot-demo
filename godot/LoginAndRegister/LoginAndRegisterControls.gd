@@ -3,7 +3,9 @@ extends Control
 
 export var WorldScene: PackedScene
 
-var player_position := Vector2.ZERO
+var state_positions: Dictionary
+var state_inputs: Dictionary
+var world: Node
 
 onready var login_panel := $Login
 onready var register_panel := $Register
@@ -19,7 +21,7 @@ func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	register_panel.connect("joined_world", self, "_on_Player_joined_world")
 	#warning-ignore: return_value_discarded
-	Connection.connect("position_updated", self, "_on_position_updated")
+	Connection.connect("state_updated", self, "_on_state_updated")
 
 
 func _on_Register_opened() -> void:
@@ -34,12 +36,16 @@ func _on_Register_closed() -> void:
 
 func _on_Player_joined_world() -> void:
 	if WorldScene:
-		var world := WorldScene.instance()
+		world = WorldScene.instance()
 		get_tree().root.add_child(world)
-		world.join_world(Connection.username, player_position)
+		if state_positions.size() > 0:
+			world.join_world(Connection.username, state_positions, state_inputs)
+			queue_free()
+
+
+func _on_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
+	state_positions = positions
+	state_inputs = inputs
+	if world:
+		world.join_world(Connection.username, state_positions, state_inputs)
 		queue_free()
-
-
-func _on_position_updated(id: String, position: Vector2) -> void:
-	if id == Connection.session.user_id:
-		player_position = position

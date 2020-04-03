@@ -5,15 +5,16 @@ const KEY := "defaultkey"
 
 enum OpCodes {
 	UPDATE_POSITION = 1,
-	REQUEST_POSITION,
-	UPDATE_INPUT
+	UPDATE_INPUT,
+	UPDATE_STATE,
+	UPDATE_JUMP
 }
 
 signal connected
 signal disconnected
 signal error(error)
 signal presences_changed
-signal position_updated(id, position)
+signal state_updated(positions, inputs)
 
 var session: NakamaSession
 var client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
@@ -108,14 +109,19 @@ func join_world() -> int:
 	return parsed
 
 
-func request_position_update(id_requested: String) -> void:
-	var payload := {id= id_requested}
-	socket.send_match_state_async(world_id, OpCodes.REQUEST_POSITION, JSON.print(payload))
-
-
 func send_position_update(position: Vector2) -> void:
-	var payload := {id=session.user_id, pos=[position.x, position.y]}
+	var payload := {id=session.user_id, pos={x= position.x, y= position.y}}
 	socket.send_match_state_async(world_id, OpCodes.UPDATE_POSITION, JSON.print(payload))
+
+
+func send_direction_update(input: float) -> void:
+	var payload := {id=session.user_id, inp=input}
+	socket.send_match_state_async(world_id, OpCodes.UPDATE_INPUT, JSON.print(payload))
+
+
+func send_jump() -> void:
+	var payload := {id=session.user_id}
+	socket.send_match_state_async(world_id, OpCodes.UPDATE_JUMP, JSON.print(payload))
 
 
 func _parse_exception(result: NakamaAsyncResult) -> int:
@@ -160,9 +166,9 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 	var code := match_state.op_code
 	var raw := match_state.data
 	match code:
-		1:
-			var decoded := JSON.parse(raw)
-			var result: Dictionary = decoded.result
-			var position := Vector2(result.pos[0], result.pos[1])
-			var id: String = result.id
-			emit_signal("position_updated", id, position)
+		OpCodes.UPDATE_STATE:
+			var decoded: Dictionary = JSON.parse(raw).result
+			var positions: Dictionary = decoded.pos
+			var inputs: Dictionary = decoded.inp
+			
+			emit_signal("state_updated", positions, inputs)

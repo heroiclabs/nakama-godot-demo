@@ -1,13 +1,7 @@
 class_name Character
 extends KinematicBody2D
 
-signal spawning
 signal spawned
-signal despawning
-signal despawned
-#warning-ignore: unused_signal
-signal direction_changed(direction)
-signal jumped
 
 const TRUE_SCALE := Vector2.ONE
 const SQUASHED_SCALE := TRUE_SCALE * Vector2(1, 0.5)
@@ -18,6 +12,7 @@ const GRAVITY := 4500.0
 const ACCELERATION := 4500.0
 const MAX_SPEED := 600.0
 const JUMP_SPEED := 2000.0
+const FLOOR_HEIGHT := 463.15
 
 export var color := Color.white
 
@@ -26,8 +21,12 @@ var moving := false
 var falling := false
 var direction := Vector2.ZERO
 var username: String setget _set_username
-var spawned := false
+
 var last_position := Vector2.ZERO
+var last_input := 0.0
+var next_position := Vector2.ZERO
+var next_input := 0.0
+var next_jump := false
 
 onready var tween := $Tween
 onready var sprite := $Sprite
@@ -68,7 +67,6 @@ func jump() -> void:
 		stretch()
 		velocity.y -= JUMP_SPEED
 		falling = true
-		emit_signal("jumped")
 
 
 func stretch() -> void:
@@ -83,8 +81,6 @@ func squash() -> void:
 
 
 func spawn() -> void:
-	spawned = true
-	emit_signal("spawning")
 	tween.interpolate_property(self, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
 	tween.start()
 	yield(tween, "tween_all_completed")
@@ -92,12 +88,27 @@ func spawn() -> void:
 
 
 func despawn() -> void:
-	emit_signal("despawning")
 	tween.interpolate_property(self, "scale", scale, Vector2.ZERO, 1.0, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 	tween.start()
 	yield(tween, "tween_all_completed")
-	emit_signal("despawned")
 	queue_free()
+
+
+func update_state() -> void:
+	if next_jump:
+		jump()
+	
+	if global_position.distance_squared_to(last_position) > 625:
+		var anticipated := last_position + velocity * 0.1
+		anticipated.y = min(anticipated.y, FLOOR_HEIGHT)
+		tween.interpolate_property(self, "global_position", global_position, anticipated, 0.1)
+		tween.start()
+	
+	next_jump = false
+	direction.x = last_input
+	
+	last_input = next_input
+	last_position = next_position
 
 
 func _set_username(value: String) -> void:

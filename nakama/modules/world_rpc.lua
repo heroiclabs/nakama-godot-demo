@@ -4,26 +4,19 @@
 local nk = require("nakama")
 
 local function get_first_world()
-	local world_id = nil
-	
 	local matches = nk.match_list()
-	for _, match in ipairs(matches) do
-		world_id = match.match_id
-		break
-	end
-	
-	if world_id == nil then
-		world_id = nk.match_create("world_control", {})
-	end
-	
-	return world_id
-end
+	local current_match = matches[1]
 
-local world_id = get_first_world()
+	if current_match == nil then
+		return nk.match_create("world_control", {})
+	else
+		return current_match.match_id
+	end
+end
 
 --- Returns the ID of the world match so users can join it
 local function get_world_id(context, payload)
-	return world_id
+	return get_first_world()
 end
 
 nk.register_rpc(get_world_id, "get_world_id")
