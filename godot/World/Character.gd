@@ -14,7 +14,7 @@ const MAX_SPEED := 600.0
 const JUMP_SPEED := 2000.0
 const FLOOR_HEIGHT := 463.15
 
-export var color := Color.white
+export var color := Color.white setget _set_color
 
 var velocity := Vector2.ZERO
 var moving := false
@@ -31,10 +31,6 @@ var next_jump := false
 onready var tween := $Tween
 onready var sprite := $Sprite
 onready var id_label := $CenterContainer/Label
-
-
-func _ready() -> void:
-	sprite.modulate = color
 
 
 func _physics_process(delta: float) -> void:
@@ -114,3 +110,10 @@ func update_state() -> void:
 func _set_username(value: String) -> void:
 	username = value
 	id_label.text = username
+
+
+func _set_color(value: Color) -> void:
+	color = value
+	if not is_inside_tree():
+		yield(self, "ready")
+	sprite.modulate = color

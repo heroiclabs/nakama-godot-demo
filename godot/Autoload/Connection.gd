@@ -10,6 +10,17 @@ enum OpCodes {
 	UPDATE_JUMP
 }
 
+enum ReadPermissions {
+	NO_READ,
+	OWNER_READ,
+	PUBLIC_READ
+}
+
+enum WritePermissions {
+	NO_WRITE,
+	OWNER_WRITE
+}
+
 signal connected
 signal disconnected
 signal error(error)
@@ -25,12 +36,16 @@ var presences := {}
 var world_id: String
 
 
-func register(email: String, password: String, _username: String) -> int:
+func register(email: String, password: String, _username: String, color: Color) -> int:
 	var new_session: NakamaSession = yield(client.authenticate_email_async(email, password, _username, true), "completed")
 	
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
+		var object_id := NakamaWriteStorageObject.new("player_data", "color", ReadPermissions.PUBLIC_READ, WritePermissions.OWNER_WRITE, JSON.print({color=color}), "*")
+		var result: NakamaAPI.ApiStorageObjectAcks = yield(client.write_storage_objects_async(session, [object_id]), "completed")
+		parsed = _parse_exception(result)
+		
 	return parsed
 
 
@@ -107,6 +122,37 @@ func join_world() -> int:
 			presences[presence.user_id] = presence
 	
 	return parsed
+
+
+func get_player_color(id: String) -> Color:
+	var object_id := NakamaStorageObjectId.new("player_data", "color", id)
+	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, [object_id]), "completed")
+	var parsed := _parse_exception(storage_objects)
+	if parsed == OK:
+		var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
+		var color_values: Array = decoded.color.split(",")
+		
+		return Color(color_values[0], color_values[1], color_values[2])
+	else:
+		return Color.white
+
+
+func get_player_colors(ids: Array) -> Dictionary:
+	var object_ids := []
+	for id in ids:
+		var object_id := NakamaStorageObjectId.new("player_data", "color", id)
+		object_ids.append(object_id)
+	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, object_ids), "completed")
+	var parsed := _parse_exception(storage_objects)
+	if parsed == OK:
+		var output := {}
+		for storage_object in storage_objects.objects:
+			var decoded: Dictionary = JSON.parse(storage_object.value).result
+			var color_values: Array = decoded.color.split(",")
+			output[storage_object.user_id] = Color(color_values[0], color_values[1], color_values[2])
+		
+		return output
+	return {}
 
 
 func send_position_update(position: Vector2) -> void:

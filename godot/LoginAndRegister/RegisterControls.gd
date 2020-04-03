@@ -9,6 +9,7 @@ onready var new_password := $PanelContainer/MarginContainer/VBoxContainer/Passwo
 onready var new_password_confirm := $PanelContainer/MarginContainer/VBoxContainer/RPassword/LineEdit
 
 onready var register_remember_email := $PanelContainer/MarginContainer/VBoxContainer/RememberEmail
+onready var preview_texture := $PanelContainer/MarginContainer/VBoxContainer/Color/TextureRect
 
 
 func _ready() -> void:
@@ -55,7 +56,7 @@ func _on_Register_down() -> void:
 	
 	set_status("Authenticating...")
 	_disable_input(true)
-	var result: int = yield(Connection.register(new_email.text, new_password.text, new_username.text), "completed")
+	var result: int = yield(Connection.register(new_email.text, new_password.text, new_username.text, preview_texture.modulate), "completed")
 	
 	if result == OK:
 		if register_remember_email.pressed:

@@ -16,9 +16,11 @@ func join_world(username: String, state_positions: Dictionary, state_inputs: Dic
 	_setup_player(username, Vector2(player_position.x, player_position.y))
 	
 	var presences := Connection.presences
+	var character_colors: Dictionary = yield(Connection.get_player_colors(presences.keys()), "completed")
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
-		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir)
+		var color: Color = character_colors[p] if character_colors.has(p) else Color.white
+		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir, color)
 	
 	#warning-ignore: return_value_discarded
 	Connection.connect("presences_changed", self, "_on_Presences_changed")
@@ -27,7 +29,10 @@ func join_world(username: String, state_positions: Dictionary, state_inputs: Dic
 
 
 func _setup_player(username: String, player_position: Vector2) -> void:
+	var player_color: Color = yield(Connection.get_player_color(Connection.session.user_id), "completed")
+	
 	player = PlayerScene.instance()
+	player.color = player_color
 	
 	world.add_child(player)
 	player.username = username
@@ -36,10 +41,11 @@ func _setup_player(username: String, player_position: Vector2) -> void:
 	player.spawn()
 
 
-func _setup_character(id: String, username: String, character_position: Vector2, character_input: float) -> void:
+func _setup_character(id: String, username: String, character_position: Vector2, character_input: float, color: Color) -> void:
 	var character: = CharacterScene.instance()
 	character.position = character_position
 	character.direction.x = character_input
+	character.color = color
 	
 	#warning-ignore: return_value_discarded
 	world.add_child(character)
@@ -52,7 +58,8 @@ func _on_Presences_changed() -> void:
 	var presences := Connection.presences
 	for p in presences.keys():
 		if not characters.has(p):
-			_setup_character(p, presences[p].username, Vector2.ZERO, 0)
+			var character_color: Color = yield(Connection.get_player_color(p), "completed")
+			_setup_character(p, presences[p].username, Vector2.ZERO, 0, character_color)
 	var despawns := []
 	for c in characters.keys():
 		if not presences.has(c):

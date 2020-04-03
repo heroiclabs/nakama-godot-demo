@@ -48,4 +48,6 @@ func _on_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
 	state_inputs = inputs
 	if world:
 		world.join_world(Connection.username, state_positions, state_inputs)
+		#warning-ignore: return_value_discarded
+		Connection.disconnect("state_updated", self, "_on_state_updated")
 		queue_free()
