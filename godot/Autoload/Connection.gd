@@ -7,7 +7,8 @@ enum OpCodes {
 	UPDATE_POSITION = 1,
 	UPDATE_INPUT,
 	UPDATE_STATE,
-	UPDATE_JUMP
+	UPDATE_JUMP,
+	UPDATE_COLOR
 }
 
 enum ReadPermissions {
@@ -26,12 +27,13 @@ signal disconnected
 signal error(error)
 signal presences_changed
 signal state_updated(positions, inputs)
+signal color_updated(id, color)
 
 var session: NakamaSession
 var client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 var error_message := ""
 var socket: NakamaSocket
-var username: String setget , _get_username
+var username: String
 var presences := {}
 var world_id: String
 
@@ -42,9 +44,8 @@ func register(email: String, password: String, _username: String, color: Color) 
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
-		var object_id := NakamaWriteStorageObject.new("player_data", "color", ReadPermissions.PUBLIC_READ, WritePermissions.OWNER_WRITE, JSON.print({color=color}), "*")
-		var result: NakamaAPI.ApiStorageObjectAcks = yield(client.write_storage_objects_async(session, [object_id]), "completed")
-		parsed = _parse_exception(result)
+		username = new_session.username
+		parsed = yield(send_player_color(color), "completed")
 		
 	return parsed
 
@@ -55,6 +56,7 @@ func login(email: String, password: String) -> int:
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
+		username = session.username
 	return parsed
 
 
@@ -128,7 +130,7 @@ func get_player_color(id: String) -> Color:
 	var object_id := NakamaStorageObjectId.new("player_data", "color", id)
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, [object_id]), "completed")
 	var parsed := _parse_exception(storage_objects)
-	if parsed == OK:
+	if parsed == OK and storage_objects.objects.size() > 0:
 		var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
 		var color_values: Array = decoded.color.split(",")
 		
@@ -153,6 +155,18 @@ func get_player_colors(ids: Array) -> Dictionary:
 		
 		return output
 	return {}
+
+
+func send_player_color(color: Color) -> void:
+	var object_id := NakamaWriteStorageObject.new("player_data", "color", ReadPermissions.PUBLIC_READ, WritePermissions.OWNER_WRITE, JSON.print({color=color}), "")
+	var result: NakamaAPI.ApiStorageObjectAcks = yield(client.write_storage_objects_async(session, [object_id]), "completed")
+	var parsed := _parse_exception(result)
+	return parsed
+
+
+func send_player_color_update(color: Color) -> void:
+	var payload := {id=session.user_id, color=color}
+	socket.send_match_state_async(world_id, OpCodes.UPDATE_COLOR, JSON.print(payload))
 
 
 func send_position_update(position: Vector2) -> void:
@@ -194,10 +208,6 @@ func _on_socket_error(error: String) -> void:
 	emit_signal("error", error)
 
 
-func _get_username() -> String:
-	return session.username
-
-
 func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
 	for leave in new_presences.leaves:
 		#warning-ignore: return_value_discarded
@@ -218,3 +228,10 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var inputs: Dictionary = decoded.inp
 			
 			emit_signal("state_updated", positions, inputs)
+		OpCodes.UPDATE_COLOR:
+			var decoded: Dictionary = JSON.parse(raw).result
+			var id: String = decoded.id
+			var color_values: Array = decoded.color.split(",")
+			var color := Color(color_values[0], color_values[1], color_values[2])
+			
+			emit_signal("color_updated", id, color)

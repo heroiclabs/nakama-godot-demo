@@ -8,7 +8,8 @@ local OpCodes = {
 	update_position = 1,
 	update_input = 2,
 	update_state = 3,
-	update_jump = 4
+	update_jump = 4,
+	update_color = 5
 }
 
 local commands = {}
@@ -126,8 +127,12 @@ end
 function world_control.match_loop(context, dispatcher, tick, state, messages)
 	for _, message in ipairs(messages) do
 		local op_code = message.op_code
-		local decoded = nk.json_decode(message.data)
-		commands[op_code](decoded, state)
+		if op_code < 5 then
+			local decoded = nk.json_decode(message.data)
+			commands[op_code](decoded, state)
+		elseif op_code == 5 then
+			dispatcher.broadcast_message(OpCodes.update_color, message.data)
+		end
 	end
 
 	local data = {

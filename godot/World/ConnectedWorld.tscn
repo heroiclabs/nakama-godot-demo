@@ -1,15 +1,18 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://World/World.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World/ConnectedWorld.gd" type="Script" id=2]
 [ext_resource path="res://World/Player.tscn" type="PackedScene" id=3]
 [ext_resource path="res://World/Character.tscn" type="PackedScene" id=4]
+[ext_resource path="res://UI/GameUI.tscn" type="PackedScene" id=5]
 
 [node name="ConnectedWorld" type="Node2D"]
 script = ExtResource( 2 )
 PlayerScene = ExtResource( 3 )
 CharacterScene = ExtResource( 4 )
-spawn_height = 463.15
-world_width = 1500.0
 
 [node name="World" parent="." instance=ExtResource( 1 )]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameUI" parent="CanvasLayer" instance=ExtResource( 5 )]

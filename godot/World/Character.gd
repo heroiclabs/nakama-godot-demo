@@ -53,11 +53,6 @@ func move(delta: float) -> void:
 		velocity.x = lerp(velocity.x, 0, DRAG_AMOUNT)
 
 
-func update_position_to(new_position: Vector2) -> void:
-	tween.interpolate_property(self, "global_position", global_position, new_position, 0.2)
-	tween.start()
-
-
 func jump() -> void:
 	if is_on_floor():
 		stretch()
@@ -95,9 +90,9 @@ func update_state() -> void:
 		jump()
 	
 	if global_position.distance_squared_to(last_position) > 625:
-		var anticipated := last_position + velocity * 0.1
+		var anticipated := last_position + velocity * 0.2
 		anticipated.y = min(anticipated.y, FLOOR_HEIGHT)
-		tween.interpolate_property(self, "global_position", global_position, anticipated, 0.1)
+		tween.interpolate_property(self, "global_position", global_position, anticipated, 0.2)
 		tween.start()
 	
 	next_jump = false

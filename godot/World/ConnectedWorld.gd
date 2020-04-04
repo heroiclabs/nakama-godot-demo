@@ -7,6 +7,12 @@ var player: Node
 var characters := {}
 
 onready var world := $World
+onready var game_ui := $CanvasLayer/GameUI
+
+
+func _ready() -> void:
+	#warning-ignore: return_value_discarded
+	game_ui.connect("color_changed", self, "_on_Color_changed")
 
 
 func join_world(username: String, state_positions: Dictionary, state_inputs: Dictionary) -> void:
@@ -26,6 +32,8 @@ func join_world(username: String, state_positions: Dictionary, state_inputs: Dic
 	Connection.connect("presences_changed", self, "_on_Presences_changed")
 	#warning-ignore: return_value_discarded
 	Connection.connect("state_updated", self, "_on_State_updated")
+	#warning-ignore: return_value_discarded
+	Connection.connect("color_updated", self, "_on_Color_updated")
 
 
 func _setup_player(username: String, player_position: Vector2) -> void:
@@ -84,3 +92,14 @@ func _on_State_updated(positions: Dictionary, inputs: Dictionary) -> void:
 			update = true
 		if update:
 			characters[c].update_state()
+
+
+func _on_Color_changed(color: Color) -> void:
+	player.color = color
+	Connection.send_player_color(color)
+	Connection.send_player_color_update(color)
+
+
+func _on_Color_updated(id: String, color: Color) -> void:
+	if characters.has(id):
+		characters[id].color = color
