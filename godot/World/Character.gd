@@ -72,7 +72,7 @@ func squash() -> void:
 
 
 func spawn() -> void:
-	tween.interpolate_property(self, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+	tween.interpolate_property(sprite, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
 	tween.start()
 	yield(tween, "tween_all_completed")
 	emit_signal("spawned")

@@ -14,7 +14,6 @@ use_filter = true
 font_data = ExtResource( 4 )
 
 [node name="Character" type="KinematicBody2D"]
-scale = Vector2( 1e-05, 1e-05 )
 collision_mask = 3
 script = ExtResource( 2 )
 
@@ -23,6 +22,7 @@ position = Vector2( 0, -45 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
+scale = Vector2( 1e-05, 1e-05 )
 texture = ExtResource( 1 )
 offset = Vector2( 0, -45 )
 
