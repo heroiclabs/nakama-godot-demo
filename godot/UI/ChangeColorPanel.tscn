@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+
+[node name="ChangeColorPanel" type="MarginContainer"]
+margin_right = 400.0
+margin_bottom = 144.0
+size_flags_horizontal = 3
+theme = ExtResource( 1 )
+custom_constants/margin_right = 20
+custom_constants/margin_top = 20
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 20
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChangeColor" type="Button" parent="."]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 380.0
+margin_bottom = 124.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Change Color"
+__meta__ = {
+"_edit_use_anchors_": false
+}

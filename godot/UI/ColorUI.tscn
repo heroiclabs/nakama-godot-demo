@@ -5,111 +5,108 @@
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=3]
 [ext_resource path="res://UI/ColorUI.gd" type="Script" id=4]
 
-[node name="ColorUI" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="ColorUI" type="PanelContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -225.0
+margin_top = -150.0
+margin_right = 225.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 450, 300 )
 theme = ExtResource( 3 )
 script = ExtResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -88.5
-margin_top = -65.0
-margin_right = 88.5
-margin_bottom = 65.0
-rect_min_size = Vector2( 300, 0 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 450.0
+margin_bottom = 300.0
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
-margin_right = 300.0
-margin_bottom = 130.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_left = 16.0
 margin_top = 16.0
-margin_right = 284.0
-margin_bottom = 114.0
+margin_right = 434.0
+margin_bottom = 284.0
+custom_constants/separation = 71
+alignment = 1
 
-[node name="Color" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
-margin_right = 268.0
-margin_bottom = 64.0
+[node name="Color" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 17.0
+margin_right = 418.0
+margin_bottom = 137.0
 size_flags_horizontal = 3
 custom_constants/separation = 25
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TextureRect" type="TextureRect" parent="PanelContainer/MarginContainer/VBoxContainer/Color"]
-margin_right = 64.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/Color"]
+margin_right = 120.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 120, 120 )
 texture = ExtResource( 1 )
 expand = true
 stretch_mode = 6
 script = ExtResource( 2 )
-red_path = NodePath("../VBoxContainer/Red")
-green_path = NodePath("../VBoxContainer/Green")
-blue_path = NodePath("../VBoxContainer/Blue")
+red_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Red")
+green_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Green")
+blue_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Blue")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/Color"]
-margin_left = 89.0
-margin_right = 268.0
-margin_bottom = 64.0
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Color"]
+margin_left = 145.0
+margin_right = 418.0
+margin_bottom = 120.0
 size_flags_horizontal = 3
+custom_constants/separation = 32
 
-[node name="Red" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer"]
+[node name="Red" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
 modulate = Color( 1, 0, 0, 1 )
-margin_right = 179.0
+margin_right = 273.0
 margin_bottom = 16.0
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="Green" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer"]
+[node name="Green" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
 modulate = Color( 0, 1, 0, 1 )
-margin_top = 24.0
-margin_right = 179.0
-margin_bottom = 40.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Blue" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 0, 0, 1, 1 )
 margin_top = 48.0
-margin_right = 179.0
+margin_right = 273.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
-margin_top = 72.0
-margin_right = 268.0
-margin_bottom = 98.0
+[node name="Blue" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
+modulate = Color( 0, 0, 1, 1 )
+margin_top = 96.0
+margin_right = 273.0
+margin_bottom = 112.0
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 208.0
+margin_right = 418.0
+margin_bottom = 251.0
 size_flags_horizontal = 3
 custom_constants/separation = 60
 alignment = 1
 
-[node name="Accept" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 41.0
-margin_right = 97.0
-margin_bottom = 26.0
+[node name="Accept" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_left = 70.0
+margin_right = 166.0
+margin_bottom = 43.0
 text = "Done"
 
-[node name="Cancel" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 157.0
-margin_right = 226.0
-margin_bottom = 26.0
+[node name="Cancel" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_left = 226.0
+margin_right = 347.0
+margin_bottom = 43.0
 text = "Cancel"

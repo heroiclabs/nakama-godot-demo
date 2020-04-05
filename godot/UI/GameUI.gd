@@ -6,7 +6,7 @@ signal text_sent(text)
 var color: Color
 
 onready var color_picker := $ColorUI
-onready var change_color := $PanelContainer/MarginContainer/VBoxContainer/ChangeColor
+onready var change_color := $ChangeColorPanel/ChangeColor
 onready var chat_ui := $ChatUI
 onready var notifications_ui := $NotificationsUI
 

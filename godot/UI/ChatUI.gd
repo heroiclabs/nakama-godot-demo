@@ -5,9 +5,9 @@ signal text_sent(text)
 
 var line_count := 0
 
-onready var chat_log := $PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/ChatLog
-onready var chat_entry := $PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ChatEntry
-onready var send := $PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Send
+onready var chat_log := $MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/ChatLog
+onready var chat_entry := $MarginContainer/VBoxContainer/HBoxContainer/ChatEntry
+onready var send := $MarginContainer/VBoxContainer/HBoxContainer/Send
 
 
 func _ready() -> void:

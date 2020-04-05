@@ -1,6 +1,21 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://World/DrawRect.gd" type="Script" id=1]
+
+[sub_resource type="Shader" id=6]
+code = "shader_type canvas_item;
+
+void fragment() {
+	float sine = sin(1.5707963267948966192313216916398);
+	float cosine = cos(1.5707963267948966192313216916398);
+	
+	vec2 uv = vec2(UV.x * cosine - UV.y * sine, UV.x * sine + UV.y * cosine);
+	
+	COLOR = texture(TEXTURE, uv);
+}"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
 
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0.5, 1 )
@@ -24,12 +39,10 @@ extents = Vector2( 350, 20 )
 layer = -1
 
 [node name="Background" type="TextureRect" parent="CanvasLayer"]
-margin_left = 1080.0
-margin_top = -1080.0
-margin_right = 3240.0
-margin_bottom = 1080.0
-rect_min_size = Vector2( 2160, 2160 )
-rect_rotation = 90.0
+material = SubResource( 7 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -0.00012207
 texture = SubResource( 2 )
 expand = true
 stretch_mode = 1

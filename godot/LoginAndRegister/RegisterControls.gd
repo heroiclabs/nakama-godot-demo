@@ -1,19 +1,19 @@
 extends ConnectionControl
 
-onready var register := $PanelContainer/MarginContainer/VBoxContainer/Buttons/Register
-onready var cancel := $PanelContainer/MarginContainer/VBoxContainer/Buttons/Cancel
+onready var register := $MarginContainer/VBoxContainer/Buttons/Register
+onready var cancel := $MarginContainer/VBoxContainer/Buttons/Cancel
 
-onready var new_email := $PanelContainer/MarginContainer/VBoxContainer/Email/LineEdit
-onready var new_username := $PanelContainer/MarginContainer/VBoxContainer/Username/LineEdit
-onready var new_password := $PanelContainer/MarginContainer/VBoxContainer/Password/LineEdit
-onready var new_password_confirm := $PanelContainer/MarginContainer/VBoxContainer/RPassword/LineEdit
+onready var new_email := $MarginContainer/VBoxContainer/Email/LineEdit
+onready var new_username := $MarginContainer/VBoxContainer/Username/LineEdit
+onready var new_password := $MarginContainer/VBoxContainer/Password/LineEdit
+onready var new_password_confirm := $MarginContainer/VBoxContainer/RPassword/LineEdit
 
-onready var register_remember_email := $PanelContainer/MarginContainer/VBoxContainer/RememberEmail
-onready var preview_texture := $PanelContainer/MarginContainer/VBoxContainer/Color/TextureRect
+onready var register_remember_email := $MarginContainer/VBoxContainer/RememberEmail
+onready var preview_texture := $MarginContainer/VBoxContainer/Color/TextureRect
 
 
 func _ready() -> void:
-	status = $PanelContainer/MarginContainer/VBoxContainer/CenterContainer/Status
+	status = $MarginContainer/VBoxContainer/CenterContainer/Status
 	
 	#warning-ignore: return_value_discarded
 	register.connect("button_down", self, "_on_Register_down")

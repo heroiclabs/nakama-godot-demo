@@ -3,12 +3,12 @@ extends Control
 
 signal color_changed(color)
 
-onready var texture_preview := $PanelContainer/MarginContainer/VBoxContainer/Color/TextureRect
-onready var accept := $PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Accept
-onready var cancel := $PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cancel
-onready var red := $PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer/Red
-onready var green := $PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer/Green
-onready var blue := $PanelContainer/MarginContainer/VBoxContainer/Color/VBoxContainer/Blue
+onready var texture_preview := $MarginContainer/VBoxContainer/Color/TextureRect
+onready var accept := $MarginContainer/VBoxContainer/HBoxContainer/Accept
+onready var cancel := $MarginContainer/VBoxContainer/HBoxContainer/Cancel
+onready var red := $MarginContainer/VBoxContainer/Color/VBoxContainer/Red
+onready var green := $MarginContainer/VBoxContainer/Color/VBoxContainer/Green
+onready var blue := $MarginContainer/VBoxContainer/Color/VBoxContainer/Blue
 
 
 func _ready() -> void:

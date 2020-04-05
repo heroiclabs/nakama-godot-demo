@@ -1,16 +1,16 @@
 extends ConnectionControl
 
-onready var open_register := $PanelContainer/MarginContainer/VBoxContainer/Buttons/Register
-onready var login := $PanelContainer/MarginContainer/VBoxContainer/Buttons/Login
+onready var open_register := $MarginContainer/VBoxContainer/Buttons/Register
+onready var login := $MarginContainer/VBoxContainer/Buttons/Login
 
-onready var email := $PanelContainer/MarginContainer/VBoxContainer/Email/LineEdit
-onready var password := $PanelContainer/MarginContainer/VBoxContainer/Password/LineEdit
+onready var email := $MarginContainer/VBoxContainer/Email/LineEdit
+onready var password := $MarginContainer/VBoxContainer/Password/LineEdit
 
-onready var remember_email := $PanelContainer/MarginContainer/VBoxContainer/RememberEmail
+onready var remember_email := $MarginContainer/VBoxContainer/RememberEmail
 
 
 func _ready() -> void:
-	status = $PanelContainer/MarginContainer/VBoxContainer/CenterContainer/Status
+	status = $MarginContainer/VBoxContainer/CenterContainer/Status
 	
 	#warning-ignore: return_value_discarded
 	login.connect("button_down", self, "_on_Login_down")
