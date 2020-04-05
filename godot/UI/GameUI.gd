@@ -8,6 +8,7 @@ var color: Color
 onready var color_picker := $ColorUI
 onready var change_color := $PanelContainer/MarginContainer/VBoxContainer/ChangeColor
 onready var chat_ui := $ChatUI
+onready var notifications_ui := $NotificationsUI
 
 
 func _ready() -> void:
@@ -26,6 +27,10 @@ func setup(_color: Color) -> void:
 
 func add_text(text: String, sender: String, text_color: Color) -> void:
 	chat_ui.add_text(text, sender, text_color)
+
+
+func add_notification(username: String, text_color: Color, disconnected := false) -> void:
+	notifications_ui.add_notification(username, text_color, disconnected)
 
 
 func _on_Change_Color_down() -> void:

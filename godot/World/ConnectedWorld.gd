@@ -71,13 +71,18 @@ func _on_Presences_changed() -> void:
 	for p in presences.keys():
 		if not characters.has(p):
 			var character_color: Color = yield(Connection.get_player_color(p), "completed")
+			var username: String = presences[p].username
 			_setup_character(p, presences[p].username, Vector2.ZERO, 0, character_color)
+			game_ui.add_notification(username, character_color)
 	var despawns := []
 	for c in characters.keys():
 		if not presences.has(c):
 			despawns.append(c)
 	for d in despawns:
 		characters[d].despawn()
+		var username: String = characters[d].username
+		var color: Color = characters[d].color
+		game_ui.add_notification(username, color, true)
 		#warning-ignore: return_value_discarded
 		characters.erase(d)
 
