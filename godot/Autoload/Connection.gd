@@ -28,6 +28,7 @@ signal error(error)
 signal presences_changed
 signal state_updated(positions, inputs)
 signal color_updated(id, color)
+signal chat_message_received(sender_id, sender_name, message)
 
 var session: NakamaSession
 var client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
@@ -36,6 +37,7 @@ var socket: NakamaSocket
 var username: String
 var presences := {}
 var world_id: String
+var channel_id: String
 
 
 func register(email: String, password: String, _username: String, color: Color) -> int:
@@ -76,6 +78,8 @@ func connect_to_server() -> int:
 		socket.connect("received_match_presence", self, "_on_new_match_presence")
 		#warning-ignore: return_value_discarded
 		socket.connect("received_match_state", self, "_on_Received_Match_State")
+		#warning-ignore: return_value_discarded
+		socket.connect("received_channel_message", self, "_on_Received_Channel_message")
 	
 	return parsed
 
@@ -122,6 +126,10 @@ func join_world() -> int:
 	if parsed == OK:
 		for presence in match_join_result.presences:
 			presences[presence.user_id] = presence
+		
+		var chat_join_result: NakamaRTAPI.Channel = yield(socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false), "completed")
+		parsed = _parse_exception(chat_join_result)
+		channel_id = chat_join_result.id
 	
 	return parsed
 
@@ -184,6 +192,16 @@ func send_jump() -> void:
 	socket.send_match_state_async(world_id, OpCodes.UPDATE_JUMP, JSON.print(payload))
 
 
+func send_text(text: String) -> int:
+	var data := {"message": text}
+	var message_ack : NakamaRTAPI.ChannelMessageAck = yield(socket.write_chat_message_async(channel_id, data), "completed")
+	var parsed := _parse_exception(message_ack)
+	if parsed != OK:
+		emit_signal("chat_message_received", "", "SYSTEM", "Error code %s: %s" % [parsed, error_message])
+	
+	return parsed
+
+
 func _parse_exception(result: NakamaAsyncResult) -> int:
 	if result.is_exception():
 		var exception: NakamaException = result.get_exception()
@@ -235,3 +253,11 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var color := Color(color_values[0], color_values[1], color_values[2])
 			
 			emit_signal("color_updated", id, color)
+
+
+func _on_Received_Channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
+	if message.code == 0:
+		var sender_id: String = message.sender_id
+		var content: Dictionary = JSON.parse(message.content).result
+		var username: String = message.username
+		emit_signal("chat_message_received", sender_id, username, content.message)

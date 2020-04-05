@@ -1,15 +1,40 @@
 classDiagram
+	Lua Module <-- Lua RPC
+	
+	Lua Module <-- Nakama
+	
+	Lua RPC <-- Nakama
 	Nakama <-- Connection
 	
-	ConnectionControl <|-- LoginControls : extends
-	ConnectionControl <|-- RegisterControls : extends
+	LoginAndRegisterControl *-- LoginControls
+	LoginAndRegisterControl *-- RegisterControls
 	
-	Connection <-- ConnectionControl
+	Connection <-- LoginAndRegisterControl
 	
 	Character <|-- Player : extends
 	
 	Connection <-- ConnectedWorld
 	
-	ConnectedWorld --> "many" characters
-	ConnectedWorld --> "one" player
+	Connection: register()
+	Connection: login()
+	Connection: connect_to_server()
+	Connection: send_player_color_update()
+	Connection: send_direction_update()
+	Connection: send_jump()
+	Connection: send_text()
+	Connection: signal state_updated
+	Connection: signal color_updated
+	Connection: signal chat_message_received
+	Connection: signal presences_changed
+	
+	ConnectedWorld *-- Character : many
+	ConnectedWorld *-- Player
+	
+	ConnectedWorld *-- GameUI
+	ConnectedWorld *-- World
+	
+	Connection <-- Player
+	
+	GameUI *-- ColorUI
+	GameUI *-- ChatUI
 	

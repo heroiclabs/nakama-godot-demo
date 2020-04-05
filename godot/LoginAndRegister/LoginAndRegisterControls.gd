@@ -39,15 +39,18 @@ func _on_Player_joined_world() -> void:
 		world = WorldScene.instance()
 		get_tree().root.add_child(world)
 		if state_positions.size() > 0:
-			world.join_world(Connection.username, state_positions, state_inputs)
-			queue_free()
+			_do_world_join()
 
 
 func _on_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
 	state_positions = positions
 	state_inputs = inputs
 	if world:
-		world.join_world(Connection.username, state_positions, state_inputs)
-		#warning-ignore: return_value_discarded
-		Connection.disconnect("state_updated", self, "_on_state_updated")
-		queue_free()
+		_do_world_join()
+
+
+func _do_world_join() -> void:
+	world.join_world(Connection.username, state_positions, state_inputs)
+	#warning-ignore: return_value_discarded
+	Connection.disconnect("state_updated", self, "_on_state_updated")
+	queue_free()

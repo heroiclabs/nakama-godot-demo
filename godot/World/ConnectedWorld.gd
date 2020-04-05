@@ -13,6 +13,8 @@ onready var game_ui := $CanvasLayer/GameUI
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	game_ui.connect("color_changed", self, "_on_Color_changed")
+	#warning-ignore: return_value_discarded
+	game_ui.connect("text_sent", self, "_on_Text_Sent")
 
 
 func join_world(username: String, state_positions: Dictionary, state_inputs: Dictionary) -> void:
@@ -34,6 +36,8 @@ func join_world(username: String, state_positions: Dictionary, state_inputs: Dic
 	Connection.connect("state_updated", self, "_on_State_updated")
 	#warning-ignore: return_value_discarded
 	Connection.connect("color_updated", self, "_on_Color_updated")
+	#warning-ignore: return_value_discarded
+	Connection.connect("chat_message_received", self, "_on_Chat_Message_received")
 
 
 func _setup_player(username: String, player_position: Vector2) -> void:
@@ -103,3 +107,16 @@ func _on_Color_changed(color: Color) -> void:
 func _on_Color_updated(id: String, color: Color) -> void:
 	if characters.has(id):
 		characters[id].color = color
+
+
+func _on_Chat_Message_received(sender_id: String, sender_name: String, message: String) -> void:
+	var color := Color.gray
+	if characters.has(sender_id):
+		color = characters[sender_id].color
+	elif sender_id == Connection.session.user_id:
+		color = player.color
+	game_ui.add_text(message, sender_name, color)
+
+
+func _on_Text_Sent(text: String) -> void:
+	Connection.send_text(text)
