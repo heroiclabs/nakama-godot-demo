@@ -1,8 +1,19 @@
---- Defines remote procedures accessible for clients to call to get non-world information.
--- @script world_rpc
+--- Defines remote procedures accessible for clients to call to get information prior to joining the world.
+-- @usage ```gdscript
+-- var world: NakamaAPI.ApiRpc = yield(
+--     client.rpc_async(session, "get_world_id", ""), "completed"
+-- )
+-- if world.is_exception():
+--     var exception: NakamaException = world.get_exception()
+--     print(exception.message)
+-- else:
+--     print("World id is %s" % world.payload)
+-- ```
 
 local nk = require("nakama")
 
+--- Gets the array of names currently in circulation out of non-user-owned storage.
+-- @return A table in the format {names = {}}, with names being an array of strings.
 local function get_name_collection()
     local object_ids = {
         {
@@ -28,6 +39,8 @@ local function get_name_collection()
     end
 end
 
+--- Writes an array of names to the non-user-owned storage.
+-- @param names An array of strings
 local function write_names(names)
     local new_objects = {
         {
@@ -42,7 +55,10 @@ local function write_names(names)
     nk.storage_write(new_objects)
 end
 
--- Register a name inside non-user owned storage that contains all names so far. Returns "0" if the name is already taken. Returns "1" if it's been registered successfully.
+--- Register a name inside non-user-owned storage that contains all names so
+-- far, if the name is available.
+-- @param payload A string that is the name to be registered.
+-- @return "0" if the name is already taken, "1" if it's been registered successfully.
 local function register_character_name(_, payload)
     local names = get_name_collection().names
 
@@ -61,6 +77,9 @@ local function register_character_name(_, payload)
     return "1"
 end
 
+--- Removes a name from inside non-user-owned storage, freeing it for re-use if it was taken.
+-- @param payload The name to remove
+-- @return "1"
 local function remove_character_name(_, payload)
     local names = get_name_collection().names
 
@@ -83,7 +102,8 @@ local function remove_character_name(_, payload)
     return "1"
 end
 
--- Finds the ID of the first match in the listings. If no match is found, creates one and returns that.
+--- Finds the ID of the first match in the listings. If no match is found, creates one.
+-- @return The ID of the match found or created.
 local function get_first_world()
     local matches = nk.match_list()
     local current_match = matches[1]
@@ -95,10 +115,13 @@ local function get_first_world()
     end
 end
 
---- Returns the ID of the world match so users can join it
+--- Returns the ID of the world match so users can join it.
+-- @return ID as a string
 local function get_world_id(_, _)
     return get_first_world()
 end
+
+-- RPC registered to Nakama
 
 nk.register_rpc(get_world_id, "get_world_id")
 nk.register_rpc(register_character_name, "register_character_name")

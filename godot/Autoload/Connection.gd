@@ -28,7 +28,7 @@ signal presences_changed
 signal state_updated(positions, inputs)
 signal color_updated(id, color)
 signal chat_message_received(sender_id, sender_name, message)
-signal initial_state_received(positions, inputs, colors)
+signal initial_state_received(positions, inputs, colors, names)
 signal character_spawned(id, color)
 
 var session: NakamaSession
@@ -292,8 +292,8 @@ func send_jump() -> void:
 	socket.send_match_state_async(world_id, OpCodes.UPDATE_JUMP, JSON.print(payload))
 
 
-func send_spawn(color: Color) -> void:
-	var payload := {id = session.user_id, col = JSON.print(color)}
+func send_spawn(color: Color, name: String) -> void:
+	var payload := {id = session.user_id, col = JSON.print(color), nm = name}
 	socket.send_match_state_async(world_id, OpCodes.DO_SPAWN, JSON.print(payload))
 
 
@@ -404,11 +404,12 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var positions: Dictionary = decoded.pos
 			var inputs: Dictionary = decoded.inp
 			var colors: Dictionary = decoded.col
+			var names: Dictionary = decoded.nms
 			for k in colors.keys():
 				var color_values: Array = colors[k].replace('"', "").split(",")
 				colors[k] = Color(color_values[0], color_values[1], color_values[2])
 
-			emit_signal("initial_state_received", positions, inputs, colors)
+			emit_signal("initial_state_received", positions, inputs, colors, names)
 		OpCodes.DO_SPAWN:
 			var decoded: Dictionary = JSON.parse(raw).result
 			var id: String = decoded.id

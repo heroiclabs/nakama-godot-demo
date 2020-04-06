@@ -1,9 +1,10 @@
---- Module that controls the main world. Any non-doc'ed functions are called internally by Nakama
--- @module world_control
+--- Module that controls the main world. Updated every tick rate using match_loop
 
 local world_control = {}
 
 local nk = require("nakama")
+
+--- Custom operation codes. Nakama specific codes are <= 0.
 local OpCodes = {
     update_position = 1,
     update_input = 2,
@@ -14,7 +15,10 @@ local OpCodes = {
     initial_state = 7
 }
 
+--- Command pattern table for boiler plate updates that uses data and state.
 local commands = {}
+
+--- Updates the position in the game state
 commands[OpCodes.update_position] = function(data, state)
     local id = data.id
     local position = data.pos
@@ -23,6 +27,7 @@ commands[OpCodes.update_position] = function(data, state)
     end
 end
 
+--- Updates the horizontal input direction in the game state
 commands[OpCodes.update_input] = function(data, state)
     local id = data.id
     local input = data.inp
@@ -31,6 +36,7 @@ commands[OpCodes.update_input] = function(data, state)
     end
 end
 
+--- Updates whether a character jumped in the game state
 commands[OpCodes.update_jump] = function(data, state)
     local id = data.id
     if state.inputs[id] ~= nil then
@@ -38,6 +44,7 @@ commands[OpCodes.update_jump] = function(data, state)
     end
 end
 
+--- Updates the character color in the game state once the player's picked a character
 commands[OpCodes.do_spawn] = function(data, state)
     local id = data.id
     local color = data.col
@@ -46,6 +53,7 @@ commands[OpCodes.do_spawn] = function(data, state)
     end
 end
 
+--- Updates the character color in the game state after a player's changed colors
 commands[OpCodes.update_color] = function(data, state)
     local id = data.id
     local color = data.col
@@ -63,7 +71,8 @@ function world_control.match_init(_, _)
         inputs = {},
         positions = {},
         jumps = {},
-        colors = {}
+        colors = {},
+        names = {}
     }
     local tickrate = 10
     local label = "Social world"
@@ -81,31 +90,10 @@ function world_control.match_join(_, dispatcher, _, state, presences)
     for _, presence in ipairs(presences) do
         state.presences[presence.user_id] = presence
 
-        local object_ids = {
-            {
-                collection = "player_data",
-                key = "position",
-                user_id = presence.user_id
-            }
+        state.positions[presence.user_id] = {
+            ["x"] = 0,
+            ["y"] = 0
         }
-
-        local objects = nk.storage_read(object_ids)
-        local pos = nil
-        for _, object in ipairs(objects) do
-            pos = object.value
-            if pos ~= nil then
-                break
-            end
-        end
-
-        if pos == nil then
-            pos = {
-                ["x"] = (math.random()*2-1)*world_width,
-                ["y"] = spawn_height
-            }
-        end
-
-        state.positions[presence.user_id] = pos
 
         state.inputs[presence.user_id] = {
             ["dir"] = 0,
@@ -114,14 +102,8 @@ function world_control.match_join(_, dispatcher, _, state, presences)
 
         state.colors[presence.user_id] = "1,1,1,1"
 
-        local data = {
-            ["pos"] = state.positions,
-            ["inp"] = state.inputs,
-            ["col"] = state.colors
-        }
-        local encoded = nk.json_encode(data)
+        state.names[presence.user_id] = "User"
 
-        dispatcher.broadcast_message(OpCodes.initial_state, encoded, {presence})
     end
 
     return state
@@ -132,7 +114,7 @@ function world_control.match_leave(_, _, _, state, presences)
         local new_objects = {
             {
                 collection = "player_data",
-                key = "position",
+                key = "position_" .. state.names[presence.user_id],
                 user_id = presence.user_id,
                 value = state.positions[presence.user_id]
             }
@@ -142,6 +124,9 @@ function world_control.match_leave(_, _, _, state, presences)
         state.presences[presence.user_id] = nil
         state.positions[presence.user_id] = nil
         state.inputs[presence.user_id] = nil
+        state.jumps[presence.user_id] = nil
+        state.colors[presence.user_id] = nil
+        state.names[presence.user_id] = nil
     end
     return state
 end
@@ -154,6 +139,44 @@ function world_control.match_loop(_, dispatcher, _, state, messages)
             commands[op_code](decoded, state)
 
             if op_code == OpCodes.do_spawn then
+                local object_ids = {
+                    {
+                        collection = "player_data",
+                        key = "position_" .. decoded.nm,
+                        user_id = message.sender.user_id
+                    }
+                }
+
+                local objects = nk.storage_read(object_ids)
+
+                local position
+                for _, object in ipairs(objects) do
+                    position = object.value
+                    if position ~= nil then
+                        state.positions[message.sender.user_id] = position
+                        break
+                    end
+                end
+
+                if position == nil then
+                    state.positions[message.sender.user_id] = {
+                        ["x"] = (math.random()*2-1)*world_width,
+                        ["y"] = spawn_height
+                    }
+                end
+
+                state.names[message.sender.user_id] = decoded.nm
+
+                local data = {
+                    ["pos"] = state.positions,
+                    ["inp"] = state.inputs,
+                    ["col"] = state.colors,
+                    ["nms"] = state.names
+                }
+
+                local encoded = nk.json_encode(data)
+                dispatcher.broadcast_message(OpCodes.initial_state, encoded, {message.sender})
+
                 dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
             elseif op_code == OpCodes.update_color then
                 dispatcher.broadcast_message(OpCodes.update_color, message.data)
@@ -181,7 +204,7 @@ function world_control.match_terminate(_, _, _, state, _)
     for k, position in pairs(state.positions) do
         table.insert(new_objects, {
             collection = "player_data",
-            key = "position",
+            key = "position_" .. state.names[k],
             user_id = k,
             value = position
         })

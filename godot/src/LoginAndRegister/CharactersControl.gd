@@ -3,9 +3,6 @@ extends Control
 export var CharacterListing: PackedScene
 export var WorldScene: PackedScene
 
-var state_positions: Dictionary
-var state_inputs: Dictionary
-var state_colors: Dictionary
 var world: Node
 
 var last_index := 0
@@ -18,11 +15,6 @@ onready var character_name := $MarginContainer/VBoxContainer/CharacterListing/Ch
 onready var login_button := $MarginContainer/VBoxContainer/CharacterListing/Character/Button
 onready var new_character := $MarginContainer/VBoxContainer/NewCharacter
 onready var confirmation := $CenterContainer/Confirmation
-
-
-func _ready() -> void:
-	#warning-ignore: return_value_discarded
-	Connection.connect("initial_state_received", self, "_on_state_received")
 
 
 func setup() -> void:
@@ -116,26 +108,9 @@ func _do_create_world() -> void:
 	if WorldScene:
 		world = WorldScene.instance()
 		get_tree().root.add_child(world)
-		world.do_hide()
-		if state_positions.size() > 0:
-			_do_world_join()
-
-
-func _on_state_received(positions: Dictionary, inputs: Dictionary, colors: Dictionary) -> void:
-	state_positions = positions
-	state_inputs = inputs
-	state_colors = colors
-	#warning-ignore: return_value_discarded
-	Connection.disconnect("initial_state_received", self, "_on_state_received")
-	if world:
-		_do_world_join()
-
-
-func _do_world_join() -> void:
-	world.do_show()
-	world.join_world(last_name, last_color, state_positions, state_inputs, state_colors)
-	Connection.store_last_player_character(last_name, last_color)
-	owner.queue_free()
+		Connection.store_last_player_character(last_name, last_color)
+		world.setup(last_name, last_color)
+		owner.queue_free()
 
 
 func _update_character() -> void:

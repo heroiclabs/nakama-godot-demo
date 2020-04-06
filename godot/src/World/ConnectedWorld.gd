@@ -5,6 +5,8 @@ export var CharacterScene: PackedScene
 
 var player: Node
 var characters := {}
+var last_name: String
+var last_color: Color
 
 onready var world := $World
 onready var game_ui := $CanvasLayer/GameUI
@@ -15,6 +17,14 @@ func _ready() -> void:
 	game_ui.connect("color_changed", self, "_on_Color_changed")
 	#warning-ignore: return_value_discarded
 	game_ui.connect("text_sent", self, "_on_Text_Sent")
+	#warning-ignore: return_value_discarded
+	Connection.connect("initial_state_received", self, "_on_state_received")
+
+
+func setup(username: String, color: Color) -> void:
+	last_name = username
+	last_color = color
+	Connection.send_spawn(color, username)
 
 
 func join_world(
@@ -22,7 +32,8 @@ func join_world(
 	player_color: Color,
 	state_positions: Dictionary,
 	state_inputs: Dictionary,
-	state_colors: Dictionary
+	state_colors: Dictionary,
+	state_names: Dictionary
 ) -> void:
 	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
 
@@ -32,9 +43,8 @@ func join_world(
 	var presences := Connection.presences
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
-		var color: Color = state_colors[p]
 		_setup_character(
-			p, presences[p].username, character_position, state_inputs[p].dir, color, true
+			p, state_names[p], character_position, state_inputs[p].dir, state_colors[p], true
 		)
 
 	#warning-ignore: return_value_discarded
@@ -71,7 +81,6 @@ func _setup_player(username: String, player_color: Color, player_position: Vecto
 
 	player.global_position = player_position
 	player.spawn()
-	Connection.send_spawn(player_color)
 
 
 func _setup_character(
@@ -162,3 +171,9 @@ func _on_Character_spawned(id: String, color: Color) -> void:
 		characters[id].spawn()
 		characters[id].do_show()
 		game_ui.add_notification(characters[id].username, color)
+
+
+func _on_state_received(positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary) -> void:
+	#warning-ignore: return_value_discarded
+	Connection.disconnect("initial_state_received", self, "_on_state_received")
+	join_world(last_name, last_color, positions, inputs, colors, names)
