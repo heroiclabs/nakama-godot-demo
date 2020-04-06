@@ -34,20 +34,17 @@ var session: NakamaSession
 var client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 var error_message := ""
 var socket: NakamaSocket
-var username: String
 var presences := {}
 var world_id: String
 var channel_id: String
 
 
-func register(email: String, password: String, _username: String, color: Color) -> int:
-	var new_session: NakamaSession = yield(client.authenticate_email_async(email, password, _username, true), "completed")
+func register(email: String, password: String) -> int:
+	var new_session: NakamaSession = yield(client.authenticate_email_async(email, password, null, true), "completed")
 	
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
-		username = new_session.username
-		parsed = yield(send_player_color(color), "completed")
 		
 	return parsed
 
@@ -58,7 +55,6 @@ func login(email: String, password: String) -> int:
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
-		username = session.username
 	return parsed
 
 
@@ -134,39 +130,76 @@ func join_world() -> int:
 	return parsed
 
 
-func get_player_color(id: String) -> Color:
-	var object_id := NakamaStorageObjectId.new("player_data", "color", id)
+func get_player_characters() -> Array:
+	var characters := []
+	var object_id := NakamaStorageObjectId.new("player_data", "characters", session.user_id)
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, [object_id]), "completed")
 	var parsed := _parse_exception(storage_objects)
 	if parsed == OK and storage_objects.objects.size() > 0:
+		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
+		for character in decoded:
+			var color_values: Array = character.color.split(",")
+			var name: String = character.name
+				
+			characters.append({name= name, color= Color(color_values[0], color_values[1], color_values[2])})
+		
+	return characters
+
+
+func create_player_character(color: Color, name: String) -> int:
+	var availability: NakamaAPI.ApiRpc = yield(client.rpc_async(session, "register_character_name", name), "completed")
+	var parsed := _parse_exception(availability)
+	if not parsed == OK:
+		return parsed
+	var is_available := availability.payload == "0"
+	
+	if is_available:
+		var characters: Array = yield(get_player_characters(), "completed")
+		characters.append({name= name, color=JSON.print(color)})
+		var result: int = yield(_write_player_characters(characters), "completed")
+		return result
+	else:
+		return ERR_UNAVAILABLE
+
+
+func delete_player_character(idx: int) -> int:
+	var characters: Array = yield(get_player_characters(), "completed")
+	var character: Dictionary = characters[idx]
+	yield(client.rpc_async(session, "remove_character_name", character.name), "completed")
+	characters.remove(idx)
+	var result: int = yield(_write_player_characters(characters), "completed")
+	return result
+
+
+func get_last_player_character() -> Dictionary:
+	var object_id := NakamaStorageObjectId.new("player_data", "last_character", session.user_id)
+	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, [object_id]), "completed")
+	var parsed := _parse_exception(storage_objects)
+	
+	var character := {}
+	
+	if parsed == OK and storage_objects.objects.size() > 0:
 		var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
 		var color_values: Array = decoded.color.split(",")
+		var name: String = decoded.name
 		
-		return Color(color_values[0], color_values[1], color_values[2])
-	else:
-		return Color.white
-
-
-func get_player_colors(ids: Array) -> Dictionary:
-	var object_ids := []
-	for id in ids:
-		var object_id := NakamaStorageObjectId.new("player_data", "color", id)
-		object_ids.append(object_id)
-	var storage_objects: NakamaAPI.ApiStorageObjects = yield(client.read_storage_objects_async(session, object_ids), "completed")
-	var parsed := _parse_exception(storage_objects)
-	if parsed == OK:
-		var output := {}
-		for storage_object in storage_objects.objects:
-			var decoded: Dictionary = JSON.parse(storage_object.value).result
-			var color_values: Array = decoded.color.split(",")
-			output[storage_object.user_id] = Color(color_values[0], color_values[1], color_values[2])
+		character["name"] = name
+		character["color"] = Color(color_values[0], color_values[1], color_values[2])
 		
-		return output
-	return {}
+		var characters: Array = yield(get_player_characters(), "completed")
+		var found := false
+		for c in characters:
+			if c.name == character["name"]:
+				found = true
+		if not found:
+			character = {}
+		
+	return character
 
 
-func send_player_color(color: Color) -> void:
-	var object_id := NakamaWriteStorageObject.new("player_data", "color", ReadPermissions.PUBLIC_READ, WritePermissions.OWNER_WRITE, JSON.print({color=color}), "")
+func store_last_player_character(name: String, color: Color) -> int:
+	var character := {name= name, color=JSON.print(color)}
+	var object_id := NakamaWriteStorageObject.new("player_data", "last_character", ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print(character), "")
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(client.write_storage_objects_async(session, [object_id]), "completed")
 	var parsed := _parse_exception(result)
 	return parsed
@@ -209,6 +242,13 @@ func _parse_exception(result: NakamaAsyncResult) -> int:
 		return exception.status_code
 	else:
 		return OK
+
+
+func _write_player_characters(characters: Array) -> int:
+	var object_id := NakamaWriteStorageObject.new("player_data", "characters", ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print({characters=characters}), "")
+	var result: NakamaAPI.ApiStorageObjectAcks = yield(client.write_storage_objects_async(session, [object_id]), "completed")
+	var parsed := _parse_exception(result)
+	return parsed
 
 
 func _on_socket_connected() -> void:

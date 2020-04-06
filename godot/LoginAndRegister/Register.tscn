@@ -1,9 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://LoginAndRegister/RegisterControls.gd" type="Script" id=2]
-[ext_resource path="res://assets/world/character.svg" type="Texture" id=3]
-[ext_resource path="res://LoginAndRegister/ColorPreview.gd" type="Script" id=4]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 16777221
@@ -22,11 +20,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -400.0
-margin_top = -334.375
-margin_right = 400.0
-margin_bottom = 334.375
-rect_min_size = Vector2( 800, 668.75 )
+margin_left = -407.5
+margin_top = -224.0
+margin_right = 407.5
+margin_bottom = 224.0
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 __meta__ = {
@@ -34,30 +31,30 @@ __meta__ = {
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 800.0
-margin_bottom = 668.75
+margin_right = 815.0
+margin_bottom = 448.0
 size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_constants/margin_right = 10
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 10
+custom_constants/margin_right = 20
+custom_constants/margin_top = 20
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 790.0
-margin_bottom = 658.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 795.0
+margin_bottom = 428.0
 size_flags_horizontal = 3
+custom_constants/separation = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Email" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_right = 780.0
+margin_right = 775.0
 margin_bottom = 53.0
 size_flags_horizontal = 3
 custom_constants/separation = 25
@@ -74,37 +71,14 @@ text = "Email"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Email"]
 margin_left = 209.0
-margin_right = 780.0
-margin_bottom = 53.0
-size_flags_horizontal = 3
-
-[node name="Username" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 61.0
-margin_right = 780.0
-margin_bottom = 114.0
-size_flags_horizontal = 3
-custom_constants/separation = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Username"]
-margin_top = 5.0
-margin_right = 184.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 184, 0 )
-text = "Username"
-
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Username"]
-margin_left = 209.0
-margin_right = 780.0
+margin_right = 775.0
 margin_bottom = 53.0
 size_flags_horizontal = 3
 
 [node name="Password" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 122.0
-margin_right = 780.0
-margin_bottom = 175.0
+margin_top = 73.0
+margin_right = 775.0
+margin_bottom = 126.0
 size_flags_horizontal = 3
 custom_constants/separation = 25
 __meta__ = {
@@ -120,15 +94,15 @@ text = "Password"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Password"]
 margin_left = 209.0
-margin_right = 780.0
+margin_right = 775.0
 margin_bottom = 53.0
 size_flags_horizontal = 3
 secret = true
 
 [node name="RPassword" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 183.0
-margin_right = 780.0
-margin_bottom = 236.0
+margin_top = 146.0
+margin_right = 775.0
+margin_bottom = 199.0
 size_flags_horizontal = 3
 custom_constants/separation = 25
 __meta__ = {
@@ -144,123 +118,38 @@ text = "    Repeat"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/RPassword"]
 margin_left = 209.0
-margin_right = 780.0
+margin_right = 775.0
 margin_bottom = 53.0
 size_flags_horizontal = 3
 secret = true
 
-[node name="Color" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 244.0
-margin_right = 780.0
-margin_bottom = 312.0
-size_flags_horizontal = 3
-custom_constants/separation = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Color"]
-margin_top = 12.0
-margin_right = 184.0
-margin_bottom = 55.0
-rect_min_size = Vector2( 184, 0 )
-text = "Color"
-
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/Color"]
-margin_left = 209.0
-margin_right = 276.0
-margin_bottom = 68.0
-rect_min_size = Vector2( 67, 67 )
-texture = ExtResource( 3 )
-expand = true
-stretch_mode = 6
-script = ExtResource( 4 )
-red_path = NodePath("../../../../../Register/MarginContainer/VBoxContainer/Color/VBoxContainer/Red")
-green_path = NodePath("../../../../../Register/MarginContainer/VBoxContainer/Color/VBoxContainer/Green")
-blue_path = NodePath("../../../../../Register/MarginContainer/VBoxContainer/Color/VBoxContainer/Blue")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Color"]
-margin_left = 301.0
-margin_right = 780.0
-margin_bottom = 68.0
-size_flags_horizontal = 3
-custom_constants/separation = 10
-
-[node name="Red" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 1, 0, 0, 1 )
-margin_right = 479.0
-margin_bottom = 16.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Green" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 0, 1, 0, 1 )
-margin_top = 26.0
-margin_right = 479.0
-margin_bottom = 42.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Blue" type="HSlider" parent="MarginContainer/VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 0, 0, 1, 1 )
-margin_top = 52.0
-margin_right = 479.0
-margin_bottom = 68.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Seperator1" type="Control" parent="MarginContainer/VBoxContainer"]
-margin_top = 320.0
-margin_right = 780.0
-margin_bottom = 340.0
-rect_min_size = Vector2( 0, 20 )
-
 [node name="RememberEmail" type="CheckBox" parent="MarginContainer/VBoxContainer"]
-margin_top = 348.0
-margin_right = 780.0
-margin_bottom = 391.0
+margin_top = 219.0
+margin_right = 775.0
+margin_bottom = 262.0
 text = "Remember Email"
 
-[node name="Seperator2" type="Control" parent="MarginContainer/VBoxContainer"]
-margin_top = 399.0
-margin_right = 780.0
-margin_bottom = 419.0
-rect_min_size = Vector2( 0, 20 )
-
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 427.0
-margin_right = 780.0
-margin_bottom = 487.0
+margin_top = 282.0
+margin_right = 775.0
+margin_bottom = 342.0
 
 [node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_left = 2.0
-margin_right = 777.0
+margin_right = 775.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 775, 60 )
 
 [node name="Status" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_left = 390.0
-margin_right = 390.0
+margin_left = 387.0
+margin_right = 387.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 0, 60 )
 
-[node name="Seperator3" type="Control" parent="MarginContainer/VBoxContainer"]
-margin_top = 495.0
-margin_right = 780.0
-margin_bottom = 515.0
-rect_min_size = Vector2( 0, 20 )
-
 [node name="Buttons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_left = 196.0
-margin_top = 523.0
-margin_right = 584.0
-margin_bottom = 566.0
+margin_left = 193.0
+margin_top = 362.0
+margin_right = 581.0
+margin_bottom = 405.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 custom_constants/separation = 120

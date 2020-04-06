@@ -4,12 +4,10 @@ onready var register := $MarginContainer/VBoxContainer/Buttons/Register
 onready var cancel := $MarginContainer/VBoxContainer/Buttons/Cancel
 
 onready var new_email := $MarginContainer/VBoxContainer/Email/LineEdit
-onready var new_username := $MarginContainer/VBoxContainer/Username/LineEdit
 onready var new_password := $MarginContainer/VBoxContainer/Password/LineEdit
 onready var new_password_confirm := $MarginContainer/VBoxContainer/RPassword/LineEdit
 
 onready var register_remember_email := $MarginContainer/VBoxContainer/RememberEmail
-onready var preview_texture := $MarginContainer/VBoxContainer/Color/TextureRect
 
 
 func _ready() -> void:
@@ -29,7 +27,6 @@ func _disable_input(value: bool) -> void:
 	cancel.disabled = value
 	register.disabled = value
 	new_email.editable = not value
-	new_username.editable = not value
 	new_password.editable = not value
 	new_password_confirm.editable = not value
 
@@ -37,9 +34,6 @@ func _disable_input(value: bool) -> void:
 func is_valid() -> bool:
 	if new_email.text.empty():
 		set_status("Email cannot be empty")
-		return false
-	elif new_username.text.empty():
-		set_status("Username cannot be empty")
 		return false
 	elif new_password.text.empty() or new_password_confirm.text.empty():
 		set_status("Password cannot be empty")
@@ -56,7 +50,7 @@ func _on_Register_down() -> void:
 	
 	set_status("Authenticating...")
 	_disable_input(true)
-	var result: int = yield(Connection.register(new_email.text, new_password.text, new_username.text, preview_texture.modulate), "completed")
+	var result: int = yield(Connection.register(new_email.text, new_password.text), "completed")
 	
 	if result == OK:
 		if register_remember_email.pressed:

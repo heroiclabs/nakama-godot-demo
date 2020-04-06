@@ -1,11 +1,6 @@
 extends Control
 
-
-export var WorldScene: PackedScene
-
-var state_positions: Dictionary
-var state_inputs: Dictionary
-var world: Node
+export var CharacterSelect: PackedScene
 
 onready var login_panel := $Login
 onready var register_panel := $Register
@@ -20,37 +15,19 @@ func _ready() -> void:
 	register_panel.connect("control_closed", self, "_on_Register_closed")
 	#warning-ignore: return_value_discarded
 	register_panel.connect("joined_world", self, "_on_Player_joined_world")
-	#warning-ignore: return_value_discarded
-	Connection.connect("state_updated", self, "_on_state_updated")
 
 
 func _on_Register_opened() -> void:
-	login_panel.visible = false
-	register_panel.visible = true
+	login_panel.hide()
+	register_panel.show()
 
 
 func _on_Register_closed() -> void:
-	login_panel.visible = true
-	register_panel.visible = false
+	login_panel.show()
+	register_panel.hide()
 
 
 func _on_Player_joined_world() -> void:
-	if WorldScene:
-		world = WorldScene.instance()
-		get_tree().root.add_child(world)
-		if state_positions.size() > 0:
-			_do_world_join()
-
-
-func _on_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
-	state_positions = positions
-	state_inputs = inputs
-	if world:
-		_do_world_join()
-
-
-func _do_world_join() -> void:
-	world.join_world(Connection.username, state_positions, state_inputs)
-	#warning-ignore: return_value_discarded
-	Connection.disconnect("state_updated", self, "_on_state_updated")
-	queue_free()
+	if CharacterSelect:
+		get_parent().add_child(CharacterSelect.instance())
+		queue_free()

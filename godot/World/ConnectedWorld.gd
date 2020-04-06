@@ -17,11 +17,11 @@ func _ready() -> void:
 	game_ui.connect("text_sent", self, "_on_Text_Sent")
 
 
-func join_world(username: String, state_positions: Dictionary, state_inputs: Dictionary) -> void:
+func join_world(username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary) -> void:
 	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
 	
 	var player_position: Dictionary = state_positions[Connection.session.user_id]
-	_setup_player(username, Vector2(player_position.x, player_position.y))
+	_setup_player(username, player_color, Vector2(player_position.x, player_position.y))
 	
 	var presences := Connection.presences
 	var character_colors: Dictionary = yield(Connection.get_player_colors(presences.keys()), "completed")
@@ -40,9 +40,7 @@ func join_world(username: String, state_positions: Dictionary, state_inputs: Dic
 	Connection.connect("chat_message_received", self, "_on_Chat_Message_received")
 
 
-func _setup_player(username: String, player_position: Vector2) -> void:
-	var player_color: Color = yield(Connection.get_player_color(Connection.session.user_id), "completed")
-	
+func _setup_player(username: String, player_color: Color, player_position: Vector2) -> void:
 	player = PlayerScene.instance()
 	player.color = player_color
 	
@@ -105,7 +103,7 @@ func _on_State_updated(positions: Dictionary, inputs: Dictionary) -> void:
 
 func _on_Color_changed(color: Color) -> void:
 	player.color = color
-	Connection.send_player_color(color)
+	Connection.send_player_color(color, player.username)
 	Connection.send_player_color_update(color)
 
 
