@@ -7,7 +7,15 @@ const COLLECTION := "player_data"
 const CHARACTERS_KEY := "characters"
 const LAST_CHARACTER_KEY := "last_character"
 
-enum OpCodes { UPDATE_POSITION = 1, UPDATE_INPUT, UPDATE_STATE, UPDATE_JUMP, DO_SPAWN, UPDATE_COLOR, INITIAL_STATE }
+enum OpCodes {
+	UPDATE_POSITION = 1,
+	UPDATE_INPUT,
+	UPDATE_STATE,
+	UPDATE_JUMP,
+	DO_SPAWN,
+	UPDATE_COLOR,
+	INITIAL_STATE
+}
 
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 
@@ -34,13 +42,15 @@ var channel_id: String
 
 func register(email: String, password: String) -> int:
 	var new_session: NakamaSession = yield(
-		client.authenticate_email_async(email, password, null, true), "completed"
+		client.authenticate_email_async(email, password, email, true), "completed"
 	)
 
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
 		_write_auth_token(email, session.token, password)
+	else:
+		error_message = error_message.replace("Username", "Email")
 
 	return parsed
 
@@ -168,10 +178,7 @@ func get_player_characters() -> Array:
 			var color_values: Array = character.color.replace('"', '').split(",")
 			var name: String = character.name
 			characters.append(
-				{
-					name = name,
-					color = Color(color_values[0], color_values[1], color_values[2])
-				}
+				{name = name, color = Color(color_values[0], color_values[1], color_values[2])}
 			)
 
 	return characters
@@ -256,13 +263,7 @@ func store_last_player_character(name: String, color: Color) -> int:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		client.write_storage_objects_async(
 			session,
-			DataWriteIdBuilder.make().with_request(
-				COLLECTION,
-				LAST_CHARACTER_KEY,
-				ReadPermissions.OWNER_READ,
-				WritePermissions.OWNER_WRITE,
-				JSON.print(character)
-			).build()
+			DataWriteIdBuilder.make().with_request(COLLECTION, LAST_CHARACTER_KEY, ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print(character)).build()
 		),
 		"completed"
 	)
@@ -322,13 +323,7 @@ func _write_player_characters(characters: Array) -> int:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		client.write_storage_objects_async(
 			session,
-			DataWriteIdBuilder.make().with_request(
-				COLLECTION,
-				CHARACTERS_KEY,
-				ReadPermissions.OWNER_READ,
-				WritePermissions.OWNER_WRITE,
-				JSON.print({characters = characters})
-			).build()
+			DataWriteIdBuilder.make().with_request(COLLECTION, CHARACTERS_KEY, ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print({characters = characters})).build()
 		),
 		"completed"
 	)
@@ -411,7 +406,7 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			for k in colors.keys():
 				var color_values: Array = colors[k].replace('"', "").split(",")
 				colors[k] = Color(color_values[0], color_values[1], color_values[2])
-			
+
 			emit_signal("initial_state_received", positions, inputs, colors)
 		OpCodes.DO_SPAWN:
 			var decoded: Dictionary = JSON.parse(raw).result

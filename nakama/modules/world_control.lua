@@ -9,9 +9,9 @@ local OpCodes = {
     update_input = 2,
     update_state = 3,
     update_jump = 4,
-	do_spawn = 5,
+    do_spawn = 5,
     update_color = 6,
-	initial_state = 7
+    initial_state = 7
 }
 
 local commands = {}
@@ -39,19 +39,19 @@ commands[OpCodes.update_jump] = function(data, state)
 end
 
 commands[OpCodes.do_spawn] = function(data, state)
-	local id = data.id
-	local color = data.col
-	if state.colors[id] ~= nil then
-		state.colors[id] = color
-	end
+    local id = data.id
+    local color = data.col
+    if state.colors[id] ~= nil then
+        state.colors[id] = color
+    end
 end
 
 commands[OpCodes.update_color] = function(data, state)
-	local id = data.id
-	local color = data.col
-	if state.colors[id] ~= nil then
-		state.colors[id] = color
-	end
+    local id = data.id
+    local color = data.col
+    if state.colors[id] ~= nil then
+        state.colors[id] = color
+    end
 end
 
 local spawn_height = 463.15
@@ -63,7 +63,7 @@ function world_control.match_init(context, setupstate)
         inputs = {},
         positions = {},
         jumps = {},
-		colors = {}
+        colors = {}
     }
     local tickrate = 10
     local label = "Social world"
@@ -111,17 +111,17 @@ function world_control.match_join(context, dispatcher, tick, state, presences)
             ["dir"] = 0,
             ["jmp"] = 0
         }
-		
-		state.colors[presence.user_id] = "1,1,1,1"
-		
-		local data = {
+
+        state.colors[presence.user_id] = "1,1,1,1"
+
+        local data = {
             ["pos"] = state.positions,
             ["inp"] = state.inputs,
-			["col"] = state.colors
+            ["col"] = state.colors
         }
         local encoded = nk.json_encode(data)
-		
-		dispatcher.broadcast_message(OpCodes.initial_state, encoded, {presence})
+
+        dispatcher.broadcast_message(OpCodes.initial_state, encoded, {presence})
     end
 
     return state
@@ -153,10 +153,10 @@ function world_control.match_loop(context, dispatcher, tick, state, messages)
             local decoded = nk.json_decode(message.data)
             commands[op_code](decoded, state)
 
-			if op_code == OpCodes.do_spawn then
-				dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
-			elseif op_code == OpCodes.update_color then
-				dispatcher.broadcast_message(OpCodes.update_color, message.data)
+            if op_code == OpCodes.do_spawn then
+                dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
+            elseif op_code == OpCodes.update_color then
+                dispatcher.broadcast_message(OpCodes.update_color, message.data)
             end
         end
     end

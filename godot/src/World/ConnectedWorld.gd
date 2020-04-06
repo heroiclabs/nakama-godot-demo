@@ -18,7 +18,11 @@ func _ready() -> void:
 
 
 func join_world(
-	username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary, state_colors: Dictionary
+	username: String,
+	player_color: Color,
+	state_positions: Dictionary,
+	state_inputs: Dictionary,
+	state_colors: Dictionary
 ) -> void:
 	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
 
@@ -29,7 +33,9 @@ func join_world(
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
 		var color: Color = state_colors[p]
-		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir, color, true)
+		_setup_character(
+			p, presences[p].username, character_position, state_inputs[p].dir, color, true
+		)
 
 	#warning-ignore: return_value_discarded
 	Connection.connect("presences_changed", self, "_on_Presences_changed")
@@ -69,7 +75,12 @@ func _setup_player(username: String, player_color: Color, player_position: Vecto
 
 
 func _setup_character(
-	id: String, username: String, character_position: Vector2, character_input: float, color: Color, spawn: bool
+	id: String,
+	username: String,
+	character_position: Vector2,
+	character_input: float,
+	color: Color,
+	spawn: bool
 ) -> void:
 	var character := CharacterScene.instance()
 	character.position = character_position
