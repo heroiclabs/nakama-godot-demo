@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/world/character.svg" type="Texture" id=1]
-[ext_resource path="res://World/Character.gd" type="Script" id=2]
-[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=3]
-[ext_resource path="res://assets/theme/fonts/montserrat/Montserrat-Medium.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+[ext_resource path="res://assets/theme/fonts/montserrat/Montserrat-Medium.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/world/character.svg" type="Texture" id=3]
+[ext_resource path="res://src/World/Character.gd" type="Script" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 41, 45 )
@@ -11,11 +11,11 @@ extents = Vector2( 41, 45 )
 [sub_resource type="DynamicFont" id=2]
 size = 40
 use_filter = true
-font_data = ExtResource( 4 )
+font_data = ExtResource( 2 )
 
 [node name="Character" type="KinematicBody2D"]
 collision_mask = 3
-script = ExtResource( 2 )
+script = ExtResource( 4 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -45 )
@@ -23,7 +23,7 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 1e-05, 1e-05 )
-texture = ExtResource( 1 )
+texture = ExtResource( 3 )
 offset = Vector2( 0, -45 )
 
 [node name="Tween" type="Tween" parent="."]
@@ -44,7 +44,7 @@ margin_bottom = 25.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 1
-theme = ExtResource( 3 )
+theme = ExtResource( 1 )
 custom_fonts/font = SubResource( 2 )
 text = "User ID"
 __meta__ = {

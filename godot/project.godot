@@ -12,12 +12,12 @@ _global_script_classes=[ {
 "base": "KinematicBody2D",
 "class": "Character",
 "language": "GDScript",
-"path": "res://World/Character.gd"
+"path": "res://src/World/Character.gd"
 }, {
 "base": "Control",
 "class": "ConnectionControl",
 "language": "GDScript",
-"path": "res://LoginAndRegister/ConnectionControl.gd"
+"path": "res://src/LoginAndRegister/ConnectionControl.gd"
 }, {
 "base": "Reference",
 "class": "NakamaAPI",
@@ -111,7 +111,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Intro to Nakama"
-run/main_scene="res://LoginAndRegister/LoginAndRegister.tscn"
+run/main_scene="res://src/LoginAndRegister/LoginAndRegister.tscn"
 config/icon="res://icon.png"
 
 [autoload]

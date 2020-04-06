@@ -2,13 +2,13 @@
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://assets/world/character.svg" type="Texture" id=2]
-[ext_resource path="res://LoginAndRegister/ColorPreview.gd" type="Script" id=3]
-[ext_resource path="res://LoginAndRegister/CharacterListing.tscn" type="PackedScene" id=4]
-[ext_resource path="res://UI/Confirmation.tscn" type="PackedScene" id=5]
-[ext_resource path="res://LoginAndRegister/CharactersControl.gd" type="Script" id=6]
-[ext_resource path="res://LoginAndRegister/NewCharacter.gd" type="Script" id=7]
-[ext_resource path="res://LoginAndRegister/CharacterList.gd" type="Script" id=8]
-[ext_resource path="res://World/ConnectedWorld.tscn" type="PackedScene" id=9]
+[ext_resource path="res://src/LoginAndRegister/ColorPreview.gd" type="Script" id=3]
+[ext_resource path="res://src/LoginAndRegister/CharacterListing.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/UI/Confirmation.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/LoginAndRegister/CharactersControl.gd" type="Script" id=6]
+[ext_resource path="res://src/LoginAndRegister/NewCharacter.gd" type="Script" id=7]
+[ext_resource path="res://src/LoginAndRegister/CharacterList.gd" type="Script" id=8]
+[ext_resource path="res://src/World/ConnectedWorld.tscn" type="PackedScene" id=9]
 
 [node name="CharactersControl" type="PanelContainer"]
 anchor_left = 0.5

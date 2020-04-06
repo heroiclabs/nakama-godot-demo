@@ -38,7 +38,7 @@ local function register_character_name(context, payload)
     if names ~= nil then
         for _, current_name in ipairs(names) do
             if current_name == name then
-                return "-1"
+                return "0"
             end
         end
 
@@ -58,7 +58,7 @@ local function register_character_name(context, payload)
 
     nk.storage_write(new_objects)
 
-    return "0"
+    return "1"
 end
 
 local function remove_character_name(context, payload)
@@ -92,7 +92,7 @@ local function remove_character_name(context, payload)
         end
 
         if idx == nil then
-            return "-1"
+            return "0"
         end
 
         table.remove(names, idx)
@@ -109,7 +109,7 @@ local function remove_character_name(context, payload)
 
     nk.storage_write(new_objects)
 
-    return "0"
+    return "1"
 end
 
 --- Returns the ID of the world match so users can join it

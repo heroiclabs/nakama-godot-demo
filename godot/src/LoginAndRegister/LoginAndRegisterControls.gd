@@ -4,6 +4,7 @@ export var CharacterSelect: PackedScene
 
 onready var login_panel := $Login
 onready var register_panel := $Register
+onready var characters_panel := $CharactersControl
 
 
 func _ready() -> void:
@@ -28,6 +29,7 @@ func _on_Register_closed() -> void:
 
 
 func _on_Player_joined_world() -> void:
-	if CharacterSelect:
-		get_parent().add_child(CharacterSelect.instance())
-		queue_free()
+	characters_panel.show()
+	login_panel.hide()
+	register_panel.hide()
+	characters_panel.setup()

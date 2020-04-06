@@ -2,8 +2,9 @@ extends Node
 
 const CONFIG := "user://config.ini"
 const KEY := "defaultkey"
+const AUTH := "user://auth"
 
-enum OpCodes { UPDATE_POSITION = 1, UPDATE_INPUT, UPDATE_STATE, UPDATE_JUMP, UPDATE_COLOR }
+enum OpCodes { UPDATE_POSITION = 1, UPDATE_INPUT, UPDATE_STATE, UPDATE_JUMP, DO_SPAWN, UPDATE_COLOR, INITIAL_STATE }
 
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 
@@ -16,6 +17,8 @@ signal presences_changed
 signal state_updated(positions, inputs)
 signal color_updated(id, color)
 signal chat_message_received(sender_id, sender_name, message)
+signal initial_state_received(positions, inputs, colors)
+signal character_spawned(id, color)
 
 var session: NakamaSession
 var client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
@@ -34,11 +37,24 @@ func register(email: String, password: String) -> int:
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
+		_write_auth_token(email, session.token, password)
 
 	return parsed
 
 
 func login(email: String, password: String) -> int:
+	var file := File.new()
+	var error := file.open_encrypted_with_pass(AUTH, File.READ, password)
+	if error == OK:
+		var auth_email := file.get_line()
+		var auth_token := file.get_line()
+		file.close()
+		if auth_email == email:
+			session = client.restore_session(auth_token)
+			if session.valid and not session.expired:
+				yield(get_tree(), "idle_frame")
+				return OK
+
 	var new_session: NakamaSession = yield(
 		client.authenticate_email_async(email, password, null, false), "completed"
 	)
@@ -46,6 +62,8 @@ func login(email: String, password: String) -> int:
 	var parsed := _parse_exception(new_session)
 	if parsed == OK:
 		session = new_session
+		_write_auth_token(email, session.token, password)
+
 	return parsed
 
 
@@ -127,20 +145,30 @@ func join_world() -> int:
 
 
 func get_player_characters() -> Array:
-	var characters := []
-	var object_id := NakamaStorageObjectId.new("player_data", "characters", session.user_id)
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
-		client.read_storage_objects_async(session, [object_id]), "completed"
+		client.read_storage_objects_async(
+			session,
+			DataReadIdBuilder.make().with_request("player_data", "characters", session.user_id).build()
+		),
+		"completed"
 	)
+
 	var parsed := _parse_exception(storage_objects)
-	if parsed == OK and storage_objects.objects.size() > 0:
+
+	if not parsed == OK:
+		return []
+
+	var characters := []
+	if storage_objects.objects.size() > 0:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
 		for character in decoded:
 			var color_values: Array = character.color.split(",")
 			var name: String = character.name
-
 			characters.append(
-				{name = name, color = Color(color_values[0], color_values[1], color_values[2])}
+				{
+					name = name,
+					color = Color(color_values[0], color_values[1], color_values[2])
+				}
 			)
 
 	return characters
@@ -153,7 +181,7 @@ func create_player_character(color: Color, name: String) -> int:
 	var parsed := _parse_exception(availability)
 	if not parsed == OK:
 		return parsed
-	var is_available := availability.payload == "0"
+	var is_available := availability.payload == "1"
 
 	if is_available:
 		var characters: Array = yield(get_player_characters(), "completed")
@@ -174,45 +202,50 @@ func delete_player_character(idx: int) -> int:
 
 
 func get_last_player_character() -> Dictionary:
-	var object_id := NakamaStorageObjectId.new("player_data", "last_character", session.user_id)
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
-		client.read_storage_objects_async(session, [object_id]), "completed"
+		client.read_storage_objects_async(
+			session,
+			DataReadIdBuilder.make().with_request("player_data", "last_character", session.user_id).build()
+		),
+		"completed"
 	)
+
 	var parsed := _parse_exception(storage_objects)
+
+	if not parsed == OK or storage_objects.objects.size() == 0:
+		return {}
 
 	var character := {}
 
-	if parsed == OK and storage_objects.objects.size() > 0:
-		var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
-		var color_values: Array = decoded.color.split(",")
-		var name: String = decoded.name
+	var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
+	var color_values: Array = decoded.color.split(",")
+	var name: String = decoded.name
 
-		character["name"] = name
-		character["color"] = Color(color_values[0], color_values[1], color_values[2])
+	character["name"] = name
+	character["color"] = Color(color_values[0], color_values[1], color_values[2])
 
-		var characters: Array = yield(get_player_characters(), "completed")
-		var found := false
-		for c in characters:
-			if c.name == character["name"]:
-				found = true
-		if not found:
-			character = {}
+	var characters: Array = yield(get_player_characters(), "completed")
+	for c in characters:
+		if c.name == character["name"]:
+			return character
 
-	return character
+	return {}
 
 
 func store_last_player_character(name: String, color: Color) -> int:
 	var character := {name = name, color = JSON.print(color)}
-	var object_id := NakamaWriteStorageObject.new(
-		"player_data",
-		"last_character",
-		ReadPermissions.OWNER_READ,
-		WritePermissions.OWNER_WRITE,
-		JSON.print(character),
-		""
-	)
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
-		client.write_storage_objects_async(session, [object_id]), "completed"
+		client.write_storage_objects_async(
+			session,
+			DataWriteIdBuilder.make().with_request(
+				"player_data",
+				"last_character",
+				ReadPermissions.OWNER_READ,
+				WritePermissions.OWNER_WRITE,
+				JSON.print(character)
+			).build()
+		),
+		"completed"
 	)
 	var parsed := _parse_exception(result)
 	return parsed
@@ -238,8 +271,13 @@ func send_jump() -> void:
 	socket.send_match_state_async(world_id, OpCodes.UPDATE_JUMP, JSON.print(payload))
 
 
+func send_spawn(color: Color) -> void:
+	var payload := {id = session.user_id, col = JSON.print(color)}
+	socket.send_match_state_async(world_id, OpCodes.DO_SPAWN, JSON.print(payload))
+
+
 func send_text(text: String) -> int:
-	var data := {"message": text}
+	var data := {"msg": text}
 	var message_ack: NakamaRTAPI.ChannelMessageAck = yield(
 		socket.write_chat_message_async(channel_id, data), "completed"
 	)
@@ -262,19 +300,30 @@ func _parse_exception(result: NakamaAsyncResult) -> int:
 
 
 func _write_player_characters(characters: Array) -> int:
-	var object_id := NakamaWriteStorageObject.new(
-		"player_data",
-		"characters",
-		ReadPermissions.OWNER_READ,
-		WritePermissions.OWNER_WRITE,
-		JSON.print({characters = characters}),
-		""
-	)
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
-		client.write_storage_objects_async(session, [object_id]), "completed"
+		client.write_storage_objects_async(
+			session,
+			DataWriteIdBuilder.make().with_request(
+				"player_data",
+				"character",
+				ReadPermissions.OWNER_READ,
+				WritePermissions.OWNER_WRITE,
+				JSON.print({characters = characters})
+			).build()
+		),
+		"completed"
 	)
 	var parsed := _parse_exception(result)
 	return parsed
+
+
+func _write_auth_token(email: String, token: String, password: String) -> void:
+	var file := File.new()
+	#warning-ignore: return_value_discarded
+	file.open_encrypted_with_pass(AUTH, File.WRITE, password)
+	file.store_line(email)
+	file.store_line(token)
+	file.close()
 
 
 func _on_socket_connected() -> void:
@@ -283,13 +332,29 @@ func _on_socket_connected() -> void:
 
 func _on_socket_closed() -> void:
 	emit_signal("disconnected")
+	_clean_up_socket()
+
+
+func _clean_up_socket() -> void:
+	#warning-ignore: return_value_discarded
 	socket.disconnect("connected", self, "_on_socket_connected")
+	#warning-ignore: return_value_discarded
 	socket.disconnect("closed", self, "_on_socket_closed")
+	#warning-ignore: return_value_discarded
 	socket.disconnect("received_error", self, "_on_socket_error")
+	#warning-ignore: return_value_discarded
+	socket.disconnect("received_match_presence", self, "_on_new_match_presence")
+	#warning-ignore: return_value_discarded
+	socket.disconnect("received_match_state", self, "_on_Received_Match_State")
+	#warning-ignore: return_value_discarded
+	socket.disconnect("received_channel_message", self, "_on_Received_Channel_message")
+
+	socket = null
 
 
 func _on_socket_error(error: String) -> void:
 	emit_signal("error", error)
+	_clean_up_socket()
 
 
 func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
@@ -319,6 +384,22 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var color := Color(color_values[0], color_values[1], color_values[2])
 
 			emit_signal("color_updated", id, color)
+		OpCodes.INITIAL_STATE:
+			var decoded: Dictionary = JSON.parse(raw).result
+			var positions: Dictionary = decoded.pos
+			var inputs: Dictionary = decoded.inp
+			var colors: Dictionary = decoded.col
+			for k in colors.keys():
+				var color_values: Array = colors[k].split(",")
+				colors[k] = Color(color_values[0], color_values[1], color_values[2])
+			
+			emit_signal("initial_state_received", positions, inputs, colors)
+		OpCodes.DO_SPAWN:
+			var decoded: Dictionary = JSON.parse(raw).result
+			var id: String = decoded.id
+			var color_values: Array = decoded.col.split(",")
+			var color := Color(color_values[0], color_values[1], color_values[2])
+			emit_signal("character_spawned", id, color)
 
 
 func _on_Received_Channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
@@ -326,4 +407,47 @@ func _on_Received_Channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
 		var sender_id: String = message.sender_id
 		var content: Dictionary = JSON.parse(message.content).result
 		var username: String = message.username
-		emit_signal("chat_message_received", sender_id, username, content.message)
+		emit_signal("chat_message_received", sender_id, username, content.msg)
+
+
+class DataReadIdBuilder:
+	extends Reference
+
+	var _ids := []
+
+	static func make() -> DataReadIdBuilder:
+		return DataReadIdBuilder.new()
+
+	func with_request(collection: String, key: String, id: String) -> DataReadIdBuilder:
+		_ids.append(NakamaStorageObjectId.new(collection, key, id))
+		return self
+
+	func build() -> Array:
+		return _ids
+
+
+class DataWriteIdBuilder:
+	extends Reference
+
+	var _ids := []
+
+	static func make() -> DataWriteIdBuilder:
+		return DataWriteIdBuilder.new()
+
+	func with_request(
+		collection: String,
+		key: String,
+		permission_read: int,
+		permission_write: int,
+		value: String,
+		version: String = ""
+	) -> DataWriteIdBuilder:
+		_ids.append(
+			NakamaWriteStorageObject.new(
+				collection, key, permission_read, permission_write, value, version
+			)
+		)
+		return self
+
+	func build() -> Array:
+		return _ids

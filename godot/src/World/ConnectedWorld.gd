@@ -18,7 +18,7 @@ func _ready() -> void:
 
 
 func join_world(
-	username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary
+	username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary, state_colors: Dictionary
 ) -> void:
 	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
 
@@ -26,13 +26,10 @@ func join_world(
 	_setup_player(username, player_color, Vector2(player_position.x, player_position.y))
 
 	var presences := Connection.presences
-	var character_colors: Dictionary = yield(
-		Connection.get_player_colors(presences.keys()), "completed"
-	)
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
-		var color: Color = character_colors[p] if character_colors.has(p) else Color.white
-		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir, color)
+		var color: Color = state_colors[p]
+		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir, color, true)
 
 	#warning-ignore: return_value_discarded
 	Connection.connect("presences_changed", self, "_on_Presences_changed")
@@ -42,6 +39,20 @@ func join_world(
 	Connection.connect("color_updated", self, "_on_Color_updated")
 	#warning-ignore: return_value_discarded
 	Connection.connect("chat_message_received", self, "_on_Chat_Message_received")
+	#warning-ignore: return_value_discarded
+	Connection.connect("character_spawned", self, "_on_Character_spawned")
+
+
+func do_hide() -> void:
+	hide()
+	world.do_hide()
+	game_ui.hide()
+
+
+func do_show() -> void:
+	show()
+	world.do_show()
+	game_ui.show()
 
 
 func _setup_player(username: String, player_color: Color, player_position: Vector2) -> void:
@@ -53,10 +64,11 @@ func _setup_player(username: String, player_color: Color, player_position: Vecto
 
 	player.global_position = player_position
 	player.spawn()
+	Connection.send_spawn(player.color)
 
 
 func _setup_character(
-	id: String, username: String, character_position: Vector2, character_input: float, color: Color
+	id: String, username: String, character_position: Vector2, character_input: float, color: Color, spawn: bool
 ) -> void:
 	var character := CharacterScene.instance()
 	character.position = character_position
@@ -67,17 +79,18 @@ func _setup_character(
 	world.add_child(character)
 	character.username = username
 	characters[id] = character
-	character.spawn()
+	if spawn:
+		character.spawn()
+	else:
+		character.hide()
 
 
 func _on_Presences_changed() -> void:
 	var presences := Connection.presences
 	for p in presences.keys():
 		if not characters.has(p):
-			var character_color: Color = yield(Connection.get_player_color(p), "completed")
 			var username: String = presences[p].username
-			_setup_character(p, presences[p].username, Vector2.ZERO, 0, character_color)
-			game_ui.add_notification(username, character_color)
+			_setup_character(p, presences[p].username, Vector2.ZERO, 0, Color.white, false)
 	var despawns := []
 	for c in characters.keys():
 		if not presences.has(c):
@@ -129,3 +142,11 @@ func _on_Chat_Message_received(sender_id: String, sender_name: String, message: 
 
 func _on_Text_Sent(text: String) -> void:
 	Connection.send_text(text)
+
+
+func _on_Character_spawned(id: String, color: Color) -> void:
+	if characters.has(id):
+		characters[id].color = color
+		characters[id].spawn()
+		characters[id].show()
+		game_ui.add_notification(characters[id].username, color)

@@ -9,7 +9,9 @@ local OpCodes = {
     update_input = 2,
     update_state = 3,
     update_jump = 4,
-    update_color = 5
+	do_spawn = 5,
+    update_color = 6,
+	initial_state = 7
 }
 
 local commands = {}
@@ -36,6 +38,14 @@ commands[OpCodes.update_jump] = function(data, state)
     end
 end
 
+commands[OpCodes.do_spawn] = function(data, state)
+	local id = data.id
+	local color = data.col
+	if state.colors[id] ~= nil then
+		state.colors[id] = color
+	end
+end
+
 local spawn_height = 463.15
 local world_width = 1500
 
@@ -44,7 +54,8 @@ function world_control.match_init(context, setupstate)
         presences = {},
         inputs = {},
         positions = {},
-        jumps = {}
+        jumps = {},
+		colors = {}
     }
     local tickrate = 10
     local label = "Social world"
@@ -92,14 +103,17 @@ function world_control.match_join(context, dispatcher, tick, state, presences)
             ["dir"] = 0,
             ["jmp"] = 0
         }
-
-        local data = {
+		
+		state.colors[presence.user_id] = "1, 1, 1"
+		
+		local data = {
             ["pos"] = state.positions,
-            ["inp"] = state.inputs
+            ["inp"] = state.inputs,
+			["col"] = state.colors
         }
         local encoded = nk.json_encode(data)
-
-        dispatcher.broadcast_message(OpCodes.update_state, encoded, {presence})
+		
+		dispatcher.broadcast_message(OpCodes.initial_state, encoded, {presence})
     end
 
     return state
@@ -130,6 +144,10 @@ function world_control.match_loop(context, dispatcher, tick, state, messages)
         if op_code < OpCodes.update_color then
             local decoded = nk.json_decode(message.data)
             commands[op_code](decoded, state)
+			
+			if op_code == OpCodes.do_spawn then
+				dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
+			end
         elseif op_code == OpCodes.update_color then
             dispatcher.broadcast_message(OpCodes.update_color, message.data)
         end

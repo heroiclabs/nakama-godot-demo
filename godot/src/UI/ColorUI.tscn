@@ -1,9 +1,33 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/world/character.svg" type="Texture" id=1]
-[ext_resource path="res://LoginAndRegister/ColorPreview.gd" type="Script" id=2]
-[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=3]
-[ext_resource path="res://UI/ColorUI.gd" type="Script" id=4]
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+[ext_resource path="res://assets/world/character.svg" type="Texture" id=2]
+[ext_resource path="res://src/UI/ColorUI.gd" type="Script" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+export var red_path := NodePath()
+export var green_path := NodePath()
+export var blue_path := NodePath()
+
+onready var red_slider: HSlider = get_node(red_path)
+onready var green_slider: HSlider = get_node(green_path)
+onready var blue_slider: HSlider = get_node(blue_path)
+
+
+func _ready() -> void:
+	#warning-ignore: return_value_discarded
+	red_slider.connect(\"value_changed\", self, \"_on_colors_changed\")
+	#warning-ignore: return_value_discarded
+	green_slider.connect(\"value_changed\", self, \"_on_colors_changed\")
+	#warning-ignore: return_value_discarded
+	blue_slider.connect(\"value_changed\", self, \"_on_colors_changed\")
+
+
+func _on_colors_changed(_value: float) -> void:
+	modulate = Color(red_slider.value, green_slider.value, blue_slider.value)
+"
 
 [node name="ColorUI" type="PanelContainer"]
 anchor_left = 0.5
@@ -15,8 +39,8 @@ margin_top = -150.0
 margin_right = 225.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 450, 300 )
-theme = ExtResource( 3 )
-script = ExtResource( 4 )
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -47,10 +71,10 @@ __meta__ = {
 margin_right = 120.0
 margin_bottom = 120.0
 rect_min_size = Vector2( 120, 120 )
-texture = ExtResource( 1 )
+texture = ExtResource( 2 )
 expand = true
 stretch_mode = 6
-script = ExtResource( 2 )
+script = SubResource( 1 )
 red_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Red")
 green_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Green")
 blue_path = NodePath("../../../../../ColorUI/MarginContainer/VBoxContainer/Color/VBoxContainer/Blue")
