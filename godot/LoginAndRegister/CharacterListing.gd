@@ -1,6 +1,5 @@
 extends HBoxContainer
 
-
 signal deleted_down(character_index)
 
 var index: int

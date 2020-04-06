@@ -1,6 +1,5 @@
 extends HBoxContainer
 
-
 signal new_character_created(name, color)
 
 onready var create := $VBoxContainer/Create

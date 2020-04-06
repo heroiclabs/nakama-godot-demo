@@ -17,19 +17,23 @@ func _ready() -> void:
 	game_ui.connect("text_sent", self, "_on_Text_Sent")
 
 
-func join_world(username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary) -> void:
+func join_world(
+	username: String, player_color: Color, state_positions: Dictionary, state_inputs: Dictionary
+) -> void:
 	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
-	
+
 	var player_position: Dictionary = state_positions[Connection.session.user_id]
 	_setup_player(username, player_color, Vector2(player_position.x, player_position.y))
-	
+
 	var presences := Connection.presences
-	var character_colors: Dictionary = yield(Connection.get_player_colors(presences.keys()), "completed")
+	var character_colors: Dictionary = yield(
+		Connection.get_player_colors(presences.keys()), "completed"
+	)
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
 		var color: Color = character_colors[p] if character_colors.has(p) else Color.white
 		_setup_character(p, presences[p].username, character_position, state_inputs[p].dir, color)
-	
+
 	#warning-ignore: return_value_discarded
 	Connection.connect("presences_changed", self, "_on_Presences_changed")
 	#warning-ignore: return_value_discarded
@@ -43,20 +47,22 @@ func join_world(username: String, player_color: Color, state_positions: Dictiona
 func _setup_player(username: String, player_color: Color, player_position: Vector2) -> void:
 	player = PlayerScene.instance()
 	player.color = player_color
-	
+
 	world.add_child(player)
 	player.username = username
-	
+
 	player.global_position = player_position
 	player.spawn()
 
 
-func _setup_character(id: String, username: String, character_position: Vector2, character_input: float, color: Color) -> void:
-	var character: = CharacterScene.instance()
+func _setup_character(
+	id: String, username: String, character_position: Vector2, character_input: float, color: Color
+) -> void:
+	var character := CharacterScene.instance()
 	character.position = character_position
 	character.direction.x = character_input
 	character.color = color
-	
+
 	#warning-ignore: return_value_discarded
 	world.add_child(character)
 	character.username = username

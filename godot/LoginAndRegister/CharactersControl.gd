@@ -18,6 +18,7 @@ onready var login_button := $MarginContainer/VBoxContainer/CharacterListing/Char
 onready var new_character := $MarginContainer/VBoxContainer/NewCharacter
 onready var confirmation := $CenterContainer/Confirmation
 
+
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	confirmation.connect("cancelled", self, "_on_Delete_cancelled")
@@ -29,7 +30,7 @@ func _ready() -> void:
 	Connection.connect("state_updated", self, "_on_state_updated")
 	#warning-ignore: return_value_discarded
 	login_button.connect("button_down", self, "_do_create_world")
-	
+
 	var characters: Array = yield(Connection.get_player_characters(), "completed")
 	for i in range(characters.size()):
 		var character: Dictionary = characters[i]
@@ -40,16 +41,16 @@ func _ready() -> void:
 		listing.setup(i, name, color)
 		#warning-ignore: return_value_discarded
 		listing.connect("deleted_down", self, "_deleted_down")
-	
+
 	if characters.size() > 5:
 		new_character.disable()
-	
+
 	var last_character: Dictionary = yield(Connection.get_last_player_character(), "completed")
 	if last_character.size() > 0:
 		character_tex.visible = true
 		character_name.visible = true
 		login_button.visible = true
-		
+
 		character_tex.modulate = last_character.color
 		character_name.text = last_character.name
 

@@ -5,8 +5,8 @@ extends Control
 signal control_closed
 signal joined_world
 
-
 var status: Label
+
 
 func set_status(text: String) -> void:
 	if status:

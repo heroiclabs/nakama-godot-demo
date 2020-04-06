@@ -19,7 +19,7 @@ func add_text(text: String, sender: String, color: Color) -> void:
 	if line_count == 20:
 		chat_log.bbcode_text = chat_log.bbcode_text.substr(chat_log.bbcode_text.find("\n"))
 		line_count -= 1
-	
+
 	var output := "\n[color=#%s]%s[/color]: %s" % [color.to_html(false), sender, text]
 	chat_log.bbcode_text += output
 	line_count += 1

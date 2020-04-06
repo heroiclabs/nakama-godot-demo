@@ -12,7 +12,7 @@ onready var register_remember_email := $MarginContainer/VBoxContainer/RememberEm
 
 func _ready() -> void:
 	status = $MarginContainer/VBoxContainer/CenterContainer/Status
-	
+
 	#warning-ignore: return_value_discarded
 	register.connect("button_down", self, "_on_Register_down")
 	#warning-ignore: return_value_discarded
@@ -41,17 +41,18 @@ func is_valid() -> bool:
 	elif new_password.text.similarity(new_password_confirm.text) != 1:
 		set_status("Passwords do not match")
 		return false
-	
+
 	return true
+
 
 func _on_Register_down() -> void:
 	if not is_valid():
 		return
-	
+
 	set_status("Authenticating...")
 	_disable_input(true)
 	var result: int = yield(Connection.register(new_email.text, new_password.text), "completed")
-	
+
 	if result == OK:
 		if register_remember_email.pressed:
 			Connection.save_email(new_email.text)

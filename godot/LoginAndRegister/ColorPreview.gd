@@ -1,6 +1,5 @@
 extends TextureRect
 
-
 export var red_path := NodePath()
 export var green_path := NodePath()
 export var blue_path := NodePath()

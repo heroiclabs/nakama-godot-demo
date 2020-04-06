@@ -61,25 +61,42 @@ func jump() -> void:
 
 
 func stretch() -> void:
-	tween.interpolate_property(sprite, "scale", scale, STRETCHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT)
+	tween.interpolate_property(
+		sprite, "scale", scale, STRETCHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT
+	)
 	tween.start()
 
 
 func squash() -> void:
-	tween.interpolate_property(sprite, "scale", scale, SQUASHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT)
-	tween.interpolate_property(sprite, "scale", SQUASHED_SCALE, TRUE_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT, SQUASH_TIME)
+	tween.interpolate_property(
+		sprite, "scale", scale, SQUASHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT
+	)
+	tween.interpolate_property(
+		sprite,
+		"scale",
+		SQUASHED_SCALE,
+		TRUE_SCALE,
+		SQUASH_TIME,
+		Tween.TRANS_LINEAR,
+		Tween.EASE_OUT,
+		SQUASH_TIME
+	)
 	tween.start()
 
 
 func spawn() -> void:
-	tween.interpolate_property(sprite, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+	tween.interpolate_property(
+		sprite, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT
+	)
 	tween.start()
 	yield(tween, "tween_all_completed")
 	emit_signal("spawned")
 
 
 func despawn() -> void:
-	tween.interpolate_property(self, "scale", scale, Vector2.ZERO, 1.0, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+	tween.interpolate_property(
+		self, "scale", scale, Vector2.ZERO, 1.0, Tween.TRANS_ELASTIC, Tween.EASE_IN
+	)
 	tween.start()
 	yield(tween, "tween_all_completed")
 	queue_free()
@@ -88,16 +105,16 @@ func despawn() -> void:
 func update_state() -> void:
 	if next_jump:
 		jump()
-	
+
 	if global_position.distance_squared_to(last_position) > 625:
 		var anticipated := last_position + velocity * 0.2
 		anticipated.y = min(anticipated.y, FLOOR_HEIGHT)
 		tween.interpolate_property(self, "global_position", global_position, anticipated, 0.2)
 		tween.start()
-	
+
 	next_jump = false
 	direction.x = last_input
-	
+
 	last_input = next_input
 	last_position = next_position
 

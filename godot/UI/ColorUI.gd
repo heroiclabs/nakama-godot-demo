@@ -1,6 +1,5 @@
 extends Control
 
-
 signal color_changed(color)
 
 onready var texture_preview := $MarginContainer/VBoxContainer/Color/TextureRect
