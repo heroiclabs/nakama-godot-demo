@@ -87,6 +87,9 @@ func _on_Delete_cancelled() -> void:
 
 
 func _on_Delete_confirmed() -> void:
+	if listings.get_child_count() <= last_index:
+		return
+	
 	var listing_name = listings.get_child(last_index).get_name()
 	listings.get_child(last_index).queue_free()
 	Connection.delete_player_character(last_index)
@@ -94,6 +97,9 @@ func _on_Delete_confirmed() -> void:
 	confirmation.visible = false
 	if listings.get_child_count() == 0 or listing_name == last_name:
 		_hide_character()
+		last_index = 0
+	for i in range(listings.get_child_count()):
+		listings.get_child(i).index = i
 
 
 func _on_New_Character_Created(name: String, color: Color) -> void:

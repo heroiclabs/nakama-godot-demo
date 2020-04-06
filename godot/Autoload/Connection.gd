@@ -63,8 +63,9 @@ func login(email: String, password: String) -> int:
 		var auth_token := file.get_line()
 		file.close()
 		if auth_email == email:
-			session = client.restore_session(auth_token)
-			if session.valid and not session.expired:
+			var new_session: NakamaSession = client.restore_session(auth_token)
+			if new_session.valid and not new_session.expired:
+				session = new_session
 				yield(get_tree(), "idle_frame")
 				return OK
 

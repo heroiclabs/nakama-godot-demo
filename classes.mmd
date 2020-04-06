@@ -1,40 +1,40 @@
 classDiagram
-	Lua Module <-- Lua RPC
+	Nakama <-- World Remote Procedures
 	
-	Lua Module <-- Nakama
+	Nakama <-- World Module
 	
-	Lua RPC <-- Nakama
 	Nakama <-- Connection
 	
-	LoginAndRegisterControl *-- LoginControls
-	LoginAndRegisterControl *-- RegisterControls
+	Connection : register()
+	Connection : login()
+	Connection : connect_to_server()
+	Connection : save_email()
+	Connection : get_last_email()
+	Connection : clear_last_email()
+	Connection : join_world()
+	Connection : get_player_characters()
+	Connection : create_player_character()
+	Connection : update_player_character()
+	Connection : delete_player_character()
+	Connection : get_last_player_character()
+	Connection : store_last_player_character()
+	Connection : send_player_color_update()
+	Connection : send_position_update()
+	Connection : send_direction_update()
+	Connection : send_jump()
+	Connection : send_spawn()
+	Connection : send_text()
 	
-	Connection <-- LoginAndRegisterControl
+	Connection <-- LoginAndRegister
 	
-	Character <|-- Player : extends
+	LoginAndRegister *-- LoginControl
+	LoginAndRegister *-- RegisterControl
+	LoginAndRegister *-- CharactersControl
 	
-	Connection <-- ConnectedWorld
+	Connection <-- World
+	World *-- Character : many
+	World *-- Player
 	
-	Connection: register()
-	Connection: login()
-	Connection: connect_to_server()
-	Connection: send_player_color_update()
-	Connection: send_direction_update()
-	Connection: send_jump()
-	Connection: send_text()
-	Connection: signal state_updated
-	Connection: signal color_updated
-	Connection: signal chat_message_received
-	Connection: signal presences_changed
+	Character <|-- Player
 	
-	ConnectedWorld *-- Character : many
-	ConnectedWorld *-- Player
-	
-	ConnectedWorld *-- GameUI
-	ConnectedWorld *-- World
-	
-	Connection <-- Player
-	
-	GameUI *-- ColorUI
-	GameUI *-- ChatUI
-	
+	World *-- GameUI

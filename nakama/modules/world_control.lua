@@ -1,4 +1,4 @@
---- Module that controls the main world. Any non-doc'ed functions to be called internally by Nakama
+--- Module that controls the main world. Any non-doc'ed functions are called internally by Nakama
 -- @module world_control
 
 local world_control = {}
@@ -57,7 +57,7 @@ end
 local spawn_height = 463.15
 local world_width = 1500
 
-function world_control.match_init(context, setupstate)
+function world_control.match_init(_, _)
     local gamestate = {
         presences = {},
         inputs = {},
@@ -70,14 +70,14 @@ function world_control.match_init(context, setupstate)
     return gamestate, tickrate, label
 end
 
-function world_control.match_join_attempt(context, dispatcher, tick, state, presence, metadata)
+function world_control.match_join_attempt(_, _, _, state, presence, _)
     if state.presences[presence.user_id] ~= nil then
         return state, false, "User already logged in."
     end
     return state, true
 end
 
-function world_control.match_join(context, dispatcher, tick, state, presences)
+function world_control.match_join(_, dispatcher, _, state, presences)
     for _, presence in ipairs(presences) do
         state.presences[presence.user_id] = presence
 
@@ -127,7 +127,7 @@ function world_control.match_join(context, dispatcher, tick, state, presences)
     return state
 end
 
-function world_control.match_leave(context, dispatcher, tick, state, presences)
+function world_control.match_leave(_, _, _, state, presences)
     for _, presence in ipairs(presences) do
         local new_objects = {
             {
@@ -146,7 +146,7 @@ function world_control.match_leave(context, dispatcher, tick, state, presences)
     return state
 end
 
-function world_control.match_loop(context, dispatcher, tick, state, messages)
+function world_control.match_loop(_, dispatcher, _, state, messages)
     for _, message in ipairs(messages) do
         local op_code = message.op_code
         if op_code < OpCodes.initial_state then
@@ -176,7 +176,7 @@ function world_control.match_loop(context, dispatcher, tick, state, messages)
     return state
 end
 
-function world_control.match_terminate(context, dispatcher, tick, state, grace_seconds)
+function world_control.match_terminate(_, _, _, state, _)
     local new_objects = {}
     for k, position in pairs(state.positions) do
         table.insert(new_objects, {
