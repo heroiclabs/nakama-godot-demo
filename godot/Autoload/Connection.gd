@@ -3,6 +3,9 @@ extends Node
 const CONFIG := "user://config.ini"
 const KEY := "defaultkey"
 const AUTH := "user://auth"
+const COLLECTION := "player_data"
+const CHARACTERS_KEY := "characters"
+const LAST_CHARACTER_KEY := "last_character"
 
 enum OpCodes { UPDATE_POSITION = 1, UPDATE_INPUT, UPDATE_STATE, UPDATE_JUMP, DO_SPAWN, UPDATE_COLOR, INITIAL_STATE }
 
@@ -148,7 +151,7 @@ func get_player_characters() -> Array:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		client.read_storage_objects_async(
 			session,
-			DataReadIdBuilder.make().with_request("player_data", "characters", session.user_id).build()
+			DataReadIdBuilder.make().with_request(COLLECTION, CHARACTERS_KEY, session.user_id).build()
 		),
 		"completed"
 	)
@@ -162,7 +165,7 @@ func get_player_characters() -> Array:
 	if storage_objects.objects.size() > 0:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
 		for character in decoded:
-			var color_values: Array = character.color.split(",")
+			var color_values: Array = character.color.replace('"', '').split(",")
 			var name: String = character.name
 			characters.append(
 				{
@@ -192,6 +195,22 @@ func create_player_character(color: Color, name: String) -> int:
 		return ERR_UNAVAILABLE
 
 
+func update_player_character(color: Color, name: String) -> int:
+	var characters: Array = yield(get_player_characters(), "completed")
+	var do_update := false
+	for i in range(characters.size()):
+		if characters[i].name == name:
+			characters[i].color = JSON.print(color)
+			do_update = true
+			break
+	if do_update:
+		var result: int = yield(_write_player_characters(characters), "completed")
+		print(result)
+		return result
+	else:
+		return OK
+
+
 func delete_player_character(idx: int) -> int:
 	var characters: Array = yield(get_player_characters(), "completed")
 	var character: Dictionary = characters[idx]
@@ -205,7 +224,7 @@ func get_last_player_character() -> Dictionary:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		client.read_storage_objects_async(
 			session,
-			DataReadIdBuilder.make().with_request("player_data", "last_character", session.user_id).build()
+			DataReadIdBuilder.make().with_request(COLLECTION, LAST_CHARACTER_KEY, session.user_id).build()
 		),
 		"completed"
 	)
@@ -218,7 +237,7 @@ func get_last_player_character() -> Dictionary:
 	var character := {}
 
 	var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
-	var color_values: Array = decoded.color.split(",")
+	var color_values: Array = decoded.color.replace('"', "").split(",")
 	var name: String = decoded.name
 
 	character["name"] = name
@@ -238,8 +257,8 @@ func store_last_player_character(name: String, color: Color) -> int:
 		client.write_storage_objects_async(
 			session,
 			DataWriteIdBuilder.make().with_request(
-				"player_data",
-				"last_character",
+				COLLECTION,
+				LAST_CHARACTER_KEY,
 				ReadPermissions.OWNER_READ,
 				WritePermissions.OWNER_WRITE,
 				JSON.print(character)
@@ -304,8 +323,8 @@ func _write_player_characters(characters: Array) -> int:
 		client.write_storage_objects_async(
 			session,
 			DataWriteIdBuilder.make().with_request(
-				"player_data",
-				"character",
+				COLLECTION,
+				CHARACTERS_KEY,
 				ReadPermissions.OWNER_READ,
 				WritePermissions.OWNER_WRITE,
 				JSON.print({characters = characters})
@@ -380,7 +399,7 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 		OpCodes.UPDATE_COLOR:
 			var decoded: Dictionary = JSON.parse(raw).result
 			var id: String = decoded.id
-			var color_values: Array = decoded.color.split(",")
+			var color_values: Array = decoded.color.replace('"', "").split(",")
 			var color := Color(color_values[0], color_values[1], color_values[2])
 
 			emit_signal("color_updated", id, color)
@@ -390,14 +409,14 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var inputs: Dictionary = decoded.inp
 			var colors: Dictionary = decoded.col
 			for k in colors.keys():
-				var color_values: Array = colors[k].split(",")
+				var color_values: Array = colors[k].replace('"', "").split(",")
 				colors[k] = Color(color_values[0], color_values[1], color_values[2])
 			
 			emit_signal("initial_state_received", positions, inputs, colors)
 		OpCodes.DO_SPAWN:
 			var decoded: Dictionary = JSON.parse(raw).result
 			var id: String = decoded.id
-			var color_values: Array = decoded.col.split(",")
+			var color_values: Array = decoded.col.replace('"', "").split(",")
 			var color := Color(color_values[0], color_values[1], color_values[2])
 			emit_signal("character_spawned", id, color)
 

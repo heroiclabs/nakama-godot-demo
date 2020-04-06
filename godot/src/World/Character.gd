@@ -31,6 +31,8 @@ var next_jump := false
 onready var tween := $Tween
 onready var sprite := $Sprite
 onready var id_label := $CenterContainer/Label
+onready var last_collision_layer := collision_layer
+onready var last_collision_mask := collision_mask
 
 
 func _physics_process(delta: float) -> void:
@@ -117,6 +119,18 @@ func update_state() -> void:
 
 	last_input = next_input
 	last_position = next_position
+
+
+func do_hide() -> void:
+	collision_layer = 0
+	collision_mask = 0
+	hide()
+
+
+func do_show() -> void:
+	collision_layer = last_collision_layer
+	collision_mask = last_collision_mask
+	show()
 
 
 func _set_username(value: String) -> void:

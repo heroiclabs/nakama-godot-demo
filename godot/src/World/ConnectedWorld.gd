@@ -58,13 +58,14 @@ func do_show() -> void:
 func _setup_player(username: String, player_color: Color, player_position: Vector2) -> void:
 	player = PlayerScene.instance()
 	player.color = player_color
+	game_ui.setup(player_color)
 
 	world.add_child(player)
 	player.username = username
 
 	player.global_position = player_position
 	player.spawn()
-	Connection.send_spawn(player.color)
+	Connection.send_spawn(player_color)
 
 
 func _setup_character(
@@ -82,14 +83,13 @@ func _setup_character(
 	if spawn:
 		character.spawn()
 	else:
-		character.hide()
+		character.do_hide()
 
 
 func _on_Presences_changed() -> void:
 	var presences := Connection.presences
 	for p in presences.keys():
 		if not characters.has(p):
-			var username: String = presences[p].username
 			_setup_character(p, presences[p].username, Vector2.ZERO, 0, Color.white, false)
 	var despawns := []
 	for c in characters.keys():
@@ -122,8 +122,9 @@ func _on_State_updated(positions: Dictionary, inputs: Dictionary) -> void:
 
 func _on_Color_changed(color: Color) -> void:
 	player.color = color
-	Connection.send_player_color(color, player.username)
+	game_ui.setup(color)
 	Connection.send_player_color_update(color)
+	Connection.update_player_character(color, player.username)
 
 
 func _on_Color_updated(id: String, color: Color) -> void:
@@ -148,5 +149,5 @@ func _on_Character_spawned(id: String, color: Color) -> void:
 	if characters.has(id):
 		characters[id].color = color
 		characters[id].spawn()
-		characters[id].show()
+		characters[id].do_show()
 		game_ui.add_notification(characters[id].username, color)

@@ -29,7 +29,7 @@ local function register_character_name(context, payload)
     local names
 
     for _, object in ipairs(objects) do
-        names = objects.value
+        names = object.value
         if names ~= nil then
             break
         end
@@ -76,7 +76,7 @@ local function remove_character_name(context, payload)
     local names
 
     for _, object in ipairs(objects) do
-        names = objects.value
+        names = object.value
         if names ~= nil then
             break
         end
