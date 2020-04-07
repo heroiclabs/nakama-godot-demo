@@ -1,3 +1,4 @@
+# Class to control visibility on world elements
 extends Node2D
 
 onready var background := $CanvasLayer/Background

@@ -1,3 +1,4 @@
+# Control panel to confirm whether or not to delete a character
 extends PanelContainer
 
 #warning-ignore: unused_signal

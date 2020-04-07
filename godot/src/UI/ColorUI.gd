@@ -1,3 +1,4 @@
+# Control panel that enables the changing of character's color on the fly with sliders.
 extends Control
 
 signal color_changed(color)

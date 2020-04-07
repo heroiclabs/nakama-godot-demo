@@ -1,3 +1,4 @@
+# Control panel that manages logging into an existing account.
 extends ConnectionControl
 
 onready var open_register := $MarginContainer/VBoxContainer/Buttons/Register
@@ -30,12 +31,12 @@ func _disable_input(value: bool) -> void:
 
 
 func _on_Login_down() -> void:
-	set_status("Authenticating...")
+	_set_status("Authenticating...")
 	_disable_input(true)
 
 	var result: int = yield(Connection.login_async(email.text, password.text), "completed")
 	if result != OK:
-		set_status("Error code %s: %s" % [result, Connection.error_message])
+		_set_status("Error code %s: %s" % [result, Connection.error_message])
 	else:
 		if remember_email.pressed:
 			Connection.save_email(email.text)

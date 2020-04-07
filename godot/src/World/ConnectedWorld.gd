@@ -1,3 +1,6 @@
+# World that aggregates the world and game ui together. Primarily reacts to
+# events from either the UI or from the server, updating the characters or
+# player accordingly, and facilitating sending messages back to the server.
 extends Node2D
 
 export var PlayerScene: PackedScene
@@ -18,6 +21,8 @@ func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	game_ui.connect("text_sent", self, "_on_Text_Sent")
 	#warning-ignore: return_value_discarded
+	game_ui.connect("editing", self, "_on_Chat_editing")
+	#warning-ignore: return_value_discarded
 	Connection.connect("initial_state_received", self, "_on_state_received")
 
 
@@ -27,6 +32,9 @@ func setup(username: String, color: Color) -> void:
 	Connection.send_spawn(color, username)
 
 
+# The main entry point. Sets up the client player and the various characters that
+# are already logged into the world, and sets up the signal chain to respond to
+# the server.
 func join_world(
 	username: String,
 	player_color: Color,
@@ -109,17 +117,22 @@ func _setup_character(
 
 func _on_Presences_changed() -> void:
 	var presences := Connection.presences
+	
 	for p in presences.keys():
 		if not characters.has(p):
-			_setup_character(p, presences[p].username, Vector2.ZERO, 0, Color.white, false)
+			_setup_character(p, "User", Vector2.ZERO, 0, Color.white, false)
+	
 	var despawns := []
 	for c in characters.keys():
 		if not presences.has(c):
 			despawns.append(c)
+	
 	for d in despawns:
 		characters[d].despawn()
+		
 		var username: String = characters[d].username
 		var color: Color = characters[d].color
+		
 		game_ui.add_notification(username, color, true)
 		#warning-ignore: return_value_discarded
 		characters.erase(d)
@@ -153,12 +166,17 @@ func _on_Color_updated(id: String, color: Color) -> void:
 		characters[id].color = color
 
 
-func _on_Chat_Message_received(sender_id: String, sender_name: String, message: String) -> void:
+func _on_Chat_Message_received(sender_id: String, message: String) -> void:
 	var color := Color.gray
+	var sender_name := "User"
+	
 	if characters.has(sender_id):
 		color = characters[sender_id].color
+		sender_name = characters[sender_id].username
 	elif sender_id == Connection.get_user_id():
 		color = player.color
+		sender_name = player.username
+	
 	game_ui.add_text(message, sender_name, color)
 
 
@@ -166,15 +184,22 @@ func _on_Text_Sent(text: String) -> void:
 	Connection.send_text_async(text)
 
 
-func _on_Character_spawned(id: String, color: Color) -> void:
+func _on_Character_spawned(id: String, color: Color, name: String) -> void:
 	if characters.has(id):
 		characters[id].color = color
+		characters[id].username = name
 		characters[id].spawn()
 		characters[id].do_show()
 		game_ui.add_notification(characters[id].username, color)
 
 
-func _on_state_received(positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary) -> void:
+func _on_state_received(
+	positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary
+) -> void:
 	#warning-ignore: return_value_discarded
 	Connection.disconnect("initial_state_received", self, "_on_state_received")
 	join_world(last_name, last_color, positions, inputs, colors, names)
+
+
+func _on_Chat_editing(value: bool) -> void:
+	player.input_locked = value

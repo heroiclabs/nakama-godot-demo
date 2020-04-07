@@ -1,3 +1,4 @@
+# A script that reprents a notification that pops up, then fades away.
 extends PanelContainer
 
 onready var label := $MarginContainer/Label

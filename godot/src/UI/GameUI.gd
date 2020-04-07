@@ -1,7 +1,10 @@
+# Main game ui control that acts as a go-between with the various in-game ui
+# controls that the world can react to.
 extends Control
 
 signal color_changed(color)
 signal text_sent(text)
+signal editing(value)
 
 var color: Color
 
@@ -18,6 +21,8 @@ func _ready() -> void:
 	change_color.connect("button_down", self, "_on_Change_Color_down")
 	#warning-ignore: return_value_discarded
 	chat_ui.connect("text_sent", self, "_on_Chat_text_Sent")
+	#warning-ignore: return_value_discarded
+	chat_ui.connect("editing", self, "_on_Chat_editing")
 
 
 func setup(_color: Color) -> void:
@@ -46,3 +51,7 @@ func _on_Color_changed(_color: Color) -> void:
 
 func _on_Chat_text_Sent(text: String) -> void:
 	emit_signal("text_sent", text)
+
+
+func _on_Chat_editing(value: bool) -> void:
+	emit_signal("editing", value)

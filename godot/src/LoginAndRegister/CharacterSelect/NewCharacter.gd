@@ -1,4 +1,5 @@
-extends HBoxContainer
+# Part of the character listing panel to create a new character
+extends Control
 
 signal new_character_created(name, color)
 

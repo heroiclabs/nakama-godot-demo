@@ -1,3 +1,5 @@
+# Character class to represent any of the other clients in the world. Reacts
+# primarily through events from the server, kept moving using godot's own game loop.
 class_name Character
 extends KinematicBody2D
 

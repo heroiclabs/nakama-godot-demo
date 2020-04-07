@@ -1,4 +1,8 @@
+# Panel that controls the loading and displaying of characters in a character list.
+# Also acts as the spawner and point of entry into the multiplayer world scene.
 extends Control
+
+const MAX_CHARACTERS := 5
 
 export var CharacterListing: PackedScene
 export var WorldScene: PackedScene
@@ -17,6 +21,9 @@ onready var new_character := $MarginContainer/VBoxContainer/NewCharacter
 onready var confirmation := $CenterContainer/Confirmation
 
 
+# Initializes the control, and fetches the characters from a successfully logged
+# in player and adds them in a controllable list. Also gets the last successful
+# logged in character.
 func setup() -> void:
 	#warning-ignore: return_value_discarded
 	confirmation.connect("cancelled", self, "_on_Delete_cancelled")
@@ -30,20 +37,25 @@ func setup() -> void:
 	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
 	for i in range(characters.size()):
 		var character: Dictionary = characters[i]
+		
 		var name: String = character.name
 		var color: Color = character.color
 		var listing := CharacterListing.instance()
+		
 		listings.add_child(listing)
 		listing.setup(i, name, color)
+		
 		#warning-ignore: return_value_discarded
 		listing.connect("deleted_down", self, "_deleted_down")
 		#warning-ignore: return_value_discarded
 		listing.connect("character_selected", self, "_character_selected")
 
-	if characters.size() > 5:
+	if characters.size() > MAX_CHARACTERS:
 		new_character.disable()
 
-	var last_character: Dictionary = yield(Connection.get_last_player_character_async(), "completed")
+	var last_character: Dictionary = yield(
+		Connection.get_last_player_character_async(), "completed"
+	)
 	if last_character.size() > 0:
 		last_name = last_character.name
 		last_color = last_character.color
@@ -63,7 +75,7 @@ func _enable_all() -> void:
 	login_button.disabled = false
 	for c in listings.get_children():
 		c.enable()
-	if listings.get_child_count() < 5:
+	if listings.get_child_count() < MAX_CHARACTERS:
 		new_character.enable()
 
 
@@ -81,12 +93,16 @@ func _on_Delete_cancelled() -> void:
 func _on_Delete_confirmed() -> void:
 	if listings.get_child_count() <= last_index:
 		return
-	
+
 	var listing_name = listings.get_child(last_index).get_name()
 	listings.get_child(last_index).queue_free()
+	
 	Connection.delete_player_character_async(last_index)
+	
 	_enable_all()
+	
 	confirmation.visible = false
+	
 	if listings.get_child_count() == 0 or listing_name == last_name:
 		_hide_character()
 		last_index = 0
@@ -96,20 +112,25 @@ func _on_Delete_confirmed() -> void:
 
 func _on_New_Character_Created(name: String, color: Color) -> void:
 	var result: int = yield(Connection.create_player_character_async(color, name), "completed")
+	
 	if result == ERR_UNAVAILABLE:
 		new_character.name_field.text = "Name is unavailable"
 	elif result == OK:
 		last_name = name
 		last_color = color
+		
 		_do_create_world()
 
 
 func _do_create_world() -> void:
 	if WorldScene:
+		Connection.store_last_player_character_async(last_name, last_color)
+		
 		world = WorldScene.instance()
 		get_tree().root.add_child(world)
-		Connection.store_last_player_character_async(last_name, last_color)
+		
 		world.setup(last_name, last_color)
+		
 		owner.queue_free()
 
 
@@ -132,10 +153,14 @@ func _hide_character() -> void:
 
 func _character_selected(index: int) -> void:
 	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
+	
 	if index >= characters.size():
 		return
+	
 	var character: Dictionary = characters[index]
+	
 	last_name = character.name
 	last_color = character.color
+	
 	_update_character()
 	_show_character()

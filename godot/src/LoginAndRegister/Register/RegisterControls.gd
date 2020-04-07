@@ -1,3 +1,4 @@
+# Control panel that manages creating a new account.
 extends ConnectionControl
 
 onready var register := $MarginContainer/VBoxContainer/Buttons/Register
@@ -19,10 +20,6 @@ func _ready() -> void:
 	cancel.connect("button_down", self, "emit_signal", ["control_closed"])
 
 
-func set_status(text: String) -> void:
-	status.text = text
-
-
 func _disable_input(value: bool) -> void:
 	cancel.disabled = value
 	register.disabled = value
@@ -33,13 +30,13 @@ func _disable_input(value: bool) -> void:
 
 func is_valid() -> bool:
 	if new_email.text.empty():
-		set_status("Email cannot be empty")
+		_set_status("Email cannot be empty")
 		return false
 	elif new_password.text.empty() or new_password_confirm.text.empty():
-		set_status("Password cannot be empty")
+		_set_status("Password cannot be empty")
 		return false
 	elif new_password.text.similarity(new_password_confirm.text) != 1:
-		set_status("Passwords do not match")
+		_set_status("Passwords do not match")
 		return false
 
 	return true
@@ -49,14 +46,18 @@ func _on_Register_down() -> void:
 	if not is_valid():
 		return
 
-	set_status("Authenticating...")
+	_set_status("Authenticating...")
 	_disable_input(true)
-	var result: int = yield(Connection.register_async(new_email.text, new_password.text), "completed")
-
+	
+	var result: int = yield(
+		Connection.register_async(new_email.text, new_password.text), "completed"
+	)
 	if result == OK:
 		if register_remember_email.pressed:
 			Connection.save_email(new_email.text)
+		
 		yield(do_connect(), "completed")
 	else:
-		set_status("Error code %s: %s" % [result, Connection.error_message])
+		_set_status("Error code %s: %s" % [result, Connection.error_message])
+	
 	_disable_input(false)

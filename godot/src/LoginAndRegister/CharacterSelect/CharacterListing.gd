@@ -1,3 +1,4 @@
+# A control representing a listing for a single character
 extends HBoxContainer
 
 signal deleted_down(character_index)

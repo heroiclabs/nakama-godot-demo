@@ -1,3 +1,4 @@
+# A control representing a list of characters
 extends VBoxContainer
 
 

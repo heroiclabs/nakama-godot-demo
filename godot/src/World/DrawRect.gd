@@ -1,3 +1,4 @@
+# Utility class that draws a rectangle over a rectangle collision shape.
 tool
 extends CollisionShape2D
 

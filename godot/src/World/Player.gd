@@ -1,3 +1,6 @@
+# Extended character that is controlled by the user and does not respond to
+# server events. Intead, it sends some of its own to notify the server of certain
+# inputs.
 extends Character
 
 var input_locked := false

@@ -6,32 +6,27 @@
 # Like Nakama, async methods are marked with `_async` and must be yielded to get a return value.
 #
 # Example yielded method:
-#
-# ```gdscript
 # var result: int = yield(Connection.login_async(email, password), "completed")
 # if result == OK:
 # 	print("Authenticated")
-# ```
+#
+# Other notes
+# Storage
+# The value being stored MUST be a JSON Dictionary. Trying to store anything else 
+# comes up empty when subsequently read from storage later.
+# As a result, being aware of what comes out of JSON.print is important; Color, for instance,
+# comes out as a single string of numbers, not a Dictionary with RGBA keys.
 
 extends Node
 
 # Custom operational codes for state messages. Nakama built in codes are <= 0
 enum OpCodes {
-	# When the client reports a change in position
 	UPDATE_POSITION = 1,
-	# When the client reports a change in horizontal directional input
 	UPDATE_INPUT,
-	# When the server reports the tick's state, 10 times a second.
 	UPDATE_STATE,
-	# When the client reports that their character jumped
 	UPDATE_JUMP,
-	# When the client reports that they selected a character and are spawning in,
-	# or the server that a different client has spawned a character in
 	DO_SPAWN,
-	# When a client reports that they changed color to the server, or the server
-	# that a different client has changed color.
 	UPDATE_COLOR,
-	# When the server reports the initial game state to the client
 	INITIAL_STATE
 }
 
@@ -63,13 +58,13 @@ signal state_updated(positions, inputs)
 signal color_updated(id, color)
 
 # Emitted when the server has received a new chat message into the world channel
-signal chat_message_received(sender_id, sender_name, message)
+signal chat_message_received(sender_id, message)
 
 # Emitted when the server has received the game state dump for all connected characters
 signal initial_state_received(positions, inputs, colors, names)
 
 # Emitted when the server has been informed of a new character having been selected and is ready to spawn in
-signal character_spawned(id, color)
+signal character_spawned(id, color, name)
 
 # String that contains the error message whenever any of the functions that yield return != OK
 var error_message := ""
@@ -191,22 +186,24 @@ func join_world_async() -> int:
 	if not _socket:
 		error_message = "Server not connected."
 		return ERR_UNAVAILABLE
-	
+
 	if not _world_id:
 		var world: NakamaAPI.ApiRpc = yield(
 			_client.rpc_async(_session, "get_world_id", ""), "completed"
 		)
-		
+
 		var parsed_result := _parse_exception(world)
 		if not parsed_result == OK:
 			return parsed_result
-		
+
 		_world_id = world.payload
 
-	var match_join_result: NakamaRTAPI.Match = yield(_socket.join_match_async(_world_id), "completed")
-	
+	var match_join_result: NakamaRTAPI.Match = yield(
+		_socket.join_match_async(_world_id), "completed"
+	)
+
 	var parsed_result := _parse_exception(match_join_result)
-	
+
 	if parsed_result == OK:
 		for presence in match_join_result.presences:
 			presences[presence.user_id] = presence
@@ -216,7 +213,7 @@ func join_world_async() -> int:
 			"completed"
 		)
 		parsed_result = _parse_exception(chat_join_result)
-		
+
 		_channel_id = chat_join_result.id
 
 	return parsed_result
@@ -241,18 +238,15 @@ func get_player_characters_async() -> Array:
 		return []
 
 	var characters := []
-	
+
 	if storage_objects.objects.size() > 0:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
-		
+
 		for character in decoded:
 			var name: String = character.name
-			
+
 			characters.append(
-				{
-					name = name,
-					color = Converter.color_string_to_color(character.color)
-				}
+				{name = name, color = Converter.color_string_to_color(character.color)}
 			)
 
 	return characters
@@ -267,21 +261,21 @@ func create_player_character_async(color: Color, name: String) -> int:
 	var availability_response: NakamaAPI.ApiRpc = yield(
 		_client.rpc_async(_session, "register_character_name", name), "completed"
 	)
-	
+
 	var parsed_result := _parse_exception(availability_response)
-	
+
 	if not parsed_result == OK:
 		return parsed_result
-	
+
 	var is_available := availability_response.payload == "1"
 
 	if is_available:
 		var characters: Array = yield(get_player_characters_async(), "completed")
-		
+
 		characters.append({name = name, color = JSON.print(color)})
-		
+
 		var result: int = yield(_write_player_characters_async(characters), "completed")
-		
+
 		return result
 	else:
 		return ERR_UNAVAILABLE
@@ -291,16 +285,16 @@ func create_player_character_async(color: Color, name: String) -> int:
 # Returns OK, or a nakama error code.
 func update_player_character_async(color: Color, name: String) -> int:
 	var characters: Array = yield(get_player_characters_async(), "completed")
-	
+
 	var do_update := false
 	for i in range(characters.size()):
 		if characters[i].name == name:
 			characters[i].color = JSON.print(color)
-			
+
 			do_update = true
-			
+
 			break
-	
+
 	if do_update:
 		var result: int = yield(_write_player_characters_async(characters), "completed")
 		return result
@@ -313,12 +307,12 @@ func update_player_character_async(color: Color, name: String) -> int:
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
 	var characters: Array = yield(get_player_characters_async(), "completed")
-	
+
 	if idx >= 0 and idx < characters.size():
 		var character: Dictionary = characters[idx]
 		yield(_client.rpc_async(_session, "remove_character_name", character.name), "completed")
 		characters.remove(idx)
-		
+
 		var result: int = yield(_write_player_characters_async(characters), "completed")
 		return result
 	else:
@@ -360,7 +354,7 @@ func get_last_player_character_async() -> Dictionary:
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
 	var character := {name = name, color = JSON.print(color)}
-	
+
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		_client.write_storage_objects_async(
 			_session,
@@ -368,7 +362,7 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 		),
 		"completed"
 	)
-	
+
 	var parsed_result := _parse_exception(result)
 	return parsed_result
 
@@ -413,17 +407,20 @@ func send_spawn(color: Color, name: String) -> void:
 func send_text_async(text: String) -> int:
 	if not _socket:
 		return ERR_UNAVAILABLE
-	
+
 	var data := {"msg": text}
-	
+
 	var message_response: NakamaRTAPI.ChannelMessageAck = yield(
 		_socket.write_chat_message_async(_channel_id, data), "completed"
 	)
-	
+
 	var parsed_result := _parse_exception(message_response)
 	if parsed_result != OK:
 		emit_signal(
-			"chat_message_received", "", "SYSTEM", "Error code %s: %s" % [parsed_result, error_message]
+			"chat_message_received",
+			"",
+			"SYSTEM",
+			"Error code %s: %s" % [parsed_result, error_message]
 		)
 
 	return parsed_result
@@ -434,7 +431,7 @@ func _parse_exception(result: NakamaAsyncResult) -> int:
 	if result.is_exception():
 		var exception: NakamaException = result.get_exception()
 		error_message = exception.message
-		
+
 		return exception.status_code
 	else:
 		return OK
@@ -450,7 +447,7 @@ func _write_player_characters_async(characters: Array) -> int:
 		),
 		"completed"
 	)
-	
+
 	var parsed_result := _parse_exception(result)
 	return parsed_result
 
@@ -489,11 +486,11 @@ func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> vo
 	for leave in new_presences.leaves:
 		#warning-ignore: return_value_discarded
 		presences.erase(leave.user_id)
-	
+
 	for join in new_presences.joins:
 		if not join.user_id == _session.user_id:
 			presences[join.user_id] = join
-	
+
 	emit_signal("presences_changed")
 
 
@@ -501,44 +498,45 @@ func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> vo
 func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 	var code := match_state.op_code
 	var raw := match_state.data
-	
+
 	match code:
 		OpCodes.UPDATE_STATE:
 			var decoded: Dictionary = JSON.parse(raw).result
-			
+
 			var positions: Dictionary = decoded.pos
 			var inputs: Dictionary = decoded.inp
 
 			emit_signal("state_updated", positions, inputs)
-		
+
 		OpCodes.UPDATE_COLOR:
 			var decoded: Dictionary = JSON.parse(raw).result
-			
+
 			var id: String = decoded.id
 			var color := Converter.color_string_to_color(decoded.color)
 
 			emit_signal("color_updated", id, color)
-		
+
 		OpCodes.INITIAL_STATE:
 			var decoded: Dictionary = JSON.parse(raw).result
-			
+
 			var positions: Dictionary = decoded.pos
 			var inputs: Dictionary = decoded.inp
 			var colors: Dictionary = decoded.col
 			var names: Dictionary = decoded.nms
-			
+
 			for k in colors.keys():
 				colors[k] = Converter.color_string_to_color(colors[k])
 
 			emit_signal("initial_state_received", positions, inputs, colors, names)
-		
+
 		OpCodes.DO_SPAWN:
 			var decoded: Dictionary = JSON.parse(raw).result
-			
+
 			var id: String = decoded.id
 			var color := Converter.color_string_to_color(decoded.col)
-			
-			emit_signal("character_spawned", id, color)
+			var name: String = decoded.nm
+
+			emit_signal("character_spawned", id, color, name)
 
 
 # Raised when the server receives a new chat message.
@@ -546,9 +544,8 @@ func _on_Received_Channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
 	if message.code == 0:
 		var sender_id: String = message.sender_id
 		var content: Dictionary = JSON.parse(message.content).result
-		var username: String = message.username
-		
-		emit_signal("chat_message_received", sender_id, username, content.msg)
+
+		emit_signal("chat_message_received", sender_id, content.msg)
 
 
 # Helper class to build NakamaStorageObjectId for reading from server storage.
@@ -608,7 +605,7 @@ class DataWriteIdBuilder:
 class SessionFileWorker:
 	const CONFIG := "user://config.ini"
 	const AUTH := "user://auth"
-	
+
 	# Saves the email to the config file.
 	static func save_email(email: String) -> void:
 		var file := ConfigFile.new()
@@ -617,13 +614,13 @@ class SessionFileWorker:
 		file.set_value("connection", "last_email", email)
 		#warning-ignore: return_value_discarded
 		file.save(CONFIG)
-	
+
 	# Gets the last email from the config file, or a blank string.
 	static func get_last_email() -> String:
 		var file := ConfigFile.new()
 		#warning-ignore: return_value_discarded
 		file.load(CONFIG)
-	
+
 		if file.has_section_key("connection", "last_email"):
 			return file.get_value("connection", "last_email")
 		else:
@@ -637,8 +634,7 @@ class SessionFileWorker:
 		file.set_value("connection", "last_email", "")
 		#warning-ignore: return_value_discarded
 		file.save(CONFIG)
-	
-	
+
 	# Write an encrypted file containing the email and token.
 	static func write_auth_token(email: String, token: String, password: String) -> void:
 		var file := File.new()
@@ -647,8 +643,7 @@ class SessionFileWorker:
 		file.store_line(email)
 		file.store_line(token)
 		file.close()
-	
-	
+
 	# Recover the session token from the authentication file.
 	# When the user logs in again, they can try to recover their session using this
 	# instead of going through the authentication server, provided it is not expired.

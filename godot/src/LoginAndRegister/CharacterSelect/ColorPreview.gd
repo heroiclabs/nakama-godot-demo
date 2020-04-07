@@ -1,3 +1,4 @@
+# Control that displays a texture that can be modulated with sliders
 extends TextureRect
 
 export var red_path := NodePath()

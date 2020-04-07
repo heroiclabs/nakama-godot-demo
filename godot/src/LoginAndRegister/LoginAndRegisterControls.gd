@@ -1,3 +1,5 @@
+# Aggregate class that holds the login, register, and character select controls
+# and manages their visibility.
 extends Control
 
 export var CharacterSelect: PackedScene

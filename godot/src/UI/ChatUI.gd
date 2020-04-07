@@ -1,7 +1,9 @@
+# Panel that displays and enables sending of chat messages
 extends Control
 
-#warning-ignore: unused_signal
 signal text_sent(text)
+#warning-ignore: unused_signal
+signal editing(value)
 
 var line_count := 0
 
@@ -13,6 +15,10 @@ onready var send := $MarginContainer/VBoxContainer/HBoxContainer/Send
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	send.connect("button_down", self, "send_chat_message")
+	#warning-ignore: return_value_discarded
+	chat_entry.connect("focus_entered", self, "emit_signal", ["editing", true])
+	#warning-ignore: return_value_discarded
+	chat_entry.connect("focus_exited", self, "emit_signal", ["editing", false])
 
 
 func add_text(text: String, sender: String, color: Color) -> void:
@@ -31,3 +37,4 @@ func send_chat_message() -> void:
 		output = output.replace("[", "{").replace("]", "}")
 		emit_signal("text_sent", output)
 		chat_entry.text = ""
+		chat_entry.release_focus()

@@ -1,3 +1,4 @@
+# List of notifications that appear when users join or leave.
 extends Control
 
 export var Notification: PackedScene
