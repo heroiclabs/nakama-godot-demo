@@ -1,7 +1,7 @@
 classDiagram
-	Nakama <-- World Remote Procedures
+	Nakama <-- WorldRpc : Lua Script
 	
-	Nakama <-- World Module
+	Nakama <-- WorldControl : Lua Module
 	
 	Nakama <-- Connection
 	
@@ -31,10 +31,14 @@ classDiagram
 	LoginAndRegister *-- RegisterControl
 	LoginAndRegister *-- CharactersControl
 	
-	Connection <-- World
-	World *-- Character : many
-	World *-- Player
+	Connection <-- ConnectedWorld
+	ConnectedWorld *-- Character : many
+	ConnectedWorld *-- Player
 	
 	Character <|-- Player
 	
-	World *-- GameUI
+	ConnectedWorld *-- GameUI
+	
+	GameUI *-- ChatUI
+	GameUI *-- NotificationsUI
+	GameUI *-- ColorUI
