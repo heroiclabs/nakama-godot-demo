@@ -9,15 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "Authenticator",
+"language": "GDScript",
+"path": "res://src/Autoload/Delegates/Authenticator.gd"
+}, {
 "base": "KinematicBody2D",
 "class": "Character",
 "language": "GDScript",
-"path": "res://src/World/Character.gd"
+"path": "res://src/World/Characters/Character.gd"
 }, {
 "base": "Control",
 "class": "ConnectionControl",
 "language": "GDScript",
 "path": "res://src/LoginAndRegister/ConnectionControl.gd"
+}, {
+"base": "Reference",
+"class": "ExceptionHandler",
+"language": "GDScript",
+"path": "res://src/Autoload/Delegates/ExceptionHandler.gd"
 }, {
 "base": "Reference",
 "class": "NakamaAPI",
@@ -88,10 +98,17 @@ _global_script_classes=[ {
 "class": "NakamaWriteStorageObject",
 "language": "GDScript",
 "path": "res://addons/com.heroiclabs.nakama/api/NakamaWriteStorageObject.gd"
+}, {
+"base": "Reference",
+"class": "StorageWorker",
+"language": "GDScript",
+"path": "res://src/Autoload/Delegates/StorageWorker.gd"
 } ]
 _global_script_class_icons={
+"Authenticator": "",
 "Character": "",
 "ConnectionControl": "",
+"ExceptionHandler": "",
 "NakamaAPI": "",
 "NakamaAsyncResult": "",
 "NakamaClient": "",
@@ -105,7 +122,8 @@ _global_script_class_icons={
 "NakamaSocket": "",
 "NakamaSocketAdapter": "",
 "NakamaStorageObjectId": "",
-"NakamaWriteStorageObject": ""
+"NakamaWriteStorageObject": "",
+"StorageWorker": ""
 }
 
 [application]
@@ -117,7 +135,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
-Connection="*res://Autoload/Connection.gd"
+Connection="*res://src/Autoload/Connection.gd"
 
 [display]
 

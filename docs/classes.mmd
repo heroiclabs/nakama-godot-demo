@@ -5,25 +5,31 @@ classDiagram
 	
 	Nakama <-- Connection
 	
-	Connection : register()
-	Connection : login()
+	
 	Connection : connect_to_server()
 	Connection : save_email()
 	Connection : get_last_email()
 	Connection : clear_last_email()
 	Connection : join_world()
-	Connection : get_player_characters()
-	Connection : create_player_character()
-	Connection : update_player_character()
-	Connection : delete_player_character()
-	Connection : get_last_player_character()
-	Connection : store_last_player_character()
 	Connection : send_player_color_update()
 	Connection : send_position_update()
 	Connection : send_direction_update()
 	Connection : send_jump()
 	Connection : send_spawn()
 	Connection : send_text()
+	
+	Connection *-- Authenticator
+	Connection *-- StorageWorker
+	
+	Authenticator : register()
+	Authenticator : login()
+	
+	StorageWorker : get_player_characters()
+	StorageWorker : create_player_character()
+	StorageWorker : update_player_character()
+	StorageWorker : delete_player_character()
+	StorageWorker : get_last_player_character()
+	StorageWorker : store_last_player_character()
 	
 	Connection <-- LoginAndRegister
 	
