@@ -51,7 +51,7 @@ func _on_Register_down() -> void:
 
 	set_status("Authenticating...")
 	_disable_input(true)
-	var result: int = yield(Connection.register(new_email.text, new_password.text), "completed")
+	var result: int = yield(Connection.register_async(new_email.text, new_password.text), "completed")
 
 	if result == OK:
 		if register_remember_email.pressed:

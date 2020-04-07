@@ -35,9 +35,10 @@ func join_world(
 	state_colors: Dictionary,
 	state_names: Dictionary
 ) -> void:
-	assert(state_positions.has(Connection.session.user_id), "Server did not return valid state")
+	var user_id := Connection.get_user_id()
+	assert(state_positions.has(user_id), "Server did not return valid state")
 
-	var player_position: Dictionary = state_positions[Connection.session.user_id]
+	var player_position: Dictionary = state_positions[user_id]
 	_setup_player(username, player_color, Vector2(player_position.x, player_position.y))
 
 	var presences := Connection.presences
@@ -144,7 +145,7 @@ func _on_Color_changed(color: Color) -> void:
 	player.color = color
 	game_ui.setup(color)
 	Connection.send_player_color_update(color)
-	Connection.update_player_character(color, player.username)
+	Connection.update_player_character_async(color, player.username)
 
 
 func _on_Color_updated(id: String, color: Color) -> void:
@@ -156,13 +157,13 @@ func _on_Chat_Message_received(sender_id: String, sender_name: String, message: 
 	var color := Color.gray
 	if characters.has(sender_id):
 		color = characters[sender_id].color
-	elif sender_id == Connection.session.user_id:
+	elif sender_id == Connection.get_user_id():
 		color = player.color
 	game_ui.add_text(message, sender_name, color)
 
 
 func _on_Text_Sent(text: String) -> void:
-	Connection.send_text(text)
+	Connection.send_text_async(text)
 
 
 func _on_Character_spawned(id: String, color: Color) -> void:

@@ -21,7 +21,7 @@ services:
       - "-ecx"
       - >
           /nakama/nakama migrate up --database.address root@cockroachdb:26257 &&
-          exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257
+          exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --socket.server_key "wondrous_hippos"
     restart: always
     links:
       - "cockroachdb:db"

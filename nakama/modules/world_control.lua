@@ -4,6 +4,9 @@ local world_control = {}
 
 local nk = require("nakama")
 
+local SPAWN_HEIGHT = 463.15
+local WORLD_WIDTH = 1500
+
 --- Custom operation codes. Nakama specific codes are <= 0.
 local OpCodes = {
     update_position = 1,
@@ -62,9 +65,7 @@ commands[OpCodes.update_color] = function(data, state)
     end
 end
 
-local spawn_height = 463.15
-local world_width = 1500
-
+--- When the match is initialized. Creates empty tables in the game state that will be populated by clients.
 function world_control.match_init(_, _)
     local gamestate = {
         presences = {},
@@ -79,6 +80,7 @@ function world_control.match_init(_, _)
     return gamestate, tickrate, label
 end
 
+--- When someone tries to join the match. Checks if someone is already logged in and blocks them from doing so if so.
 function world_control.match_join_attempt(_, _, _, state, presence, _)
     if state.presences[presence.user_id] ~= nil then
         return state, false, "User already logged in."
@@ -86,6 +88,7 @@ function world_control.match_join_attempt(_, _, _, state, presence, _)
     return state, true
 end
 
+--- When someone does join the match. Initializes their entries in the game state tables with dummy values until they spawn in.
 function world_control.match_join(_, dispatcher, _, state, presences)
     for _, presence in ipairs(presences) do
         state.presences[presence.user_id] = presence
@@ -109,6 +112,7 @@ function world_control.match_join(_, dispatcher, _, state, presences)
     return state
 end
 
+--- When someone leaves the match. Clears their entries in the game state tables, but saves their position to storage for next time.
 function world_control.match_leave(_, _, _, state, presences)
     for _, presence in ipairs(presences) do
         local new_objects = {
@@ -131,56 +135,65 @@ function world_control.match_leave(_, _, _, state, presences)
     return state
 end
 
+--- Called tick rate times per second. Handles client messages and sends game state updates.
+-- Uses boiler plate commands from the command pattern except when specialization is required.
 function world_control.match_loop(_, dispatcher, _, state, messages)
     for _, message in ipairs(messages) do
+
         local op_code = message.op_code
-        if op_code < OpCodes.initial_state then
-            local decoded = nk.json_decode(message.data)
+
+        local decoded = nk.json_decode(message.data)
+
+        -- Run boiler plate commands (state updates.)
+        local command = commands[op_code]
+        if command ~= nil then
             commands[op_code](decoded, state)
+        end
 
-            if op_code == OpCodes.do_spawn then
-                local object_ids = {
-                    {
-                        collection = "player_data",
-                        key = "position_" .. decoded.nm,
-                        user_id = message.sender.user_id
-                    }
+        -- A client has selected a character and is spawning. Get or generate position data,
+        -- send them initial state, and broadcast their spawning to existing clients.
+        if op_code == OpCodes.do_spawn then
+            local object_ids = {
+                {
+                    collection = "player_data",
+                    key = "position_" .. decoded.nm,
+                    user_id = message.sender.user_id
                 }
+            }
 
-                local objects = nk.storage_read(object_ids)
+            local objects = nk.storage_read(object_ids)
 
-                local position
-                for _, object in ipairs(objects) do
-                    position = object.value
-                    if position ~= nil then
-                        state.positions[message.sender.user_id] = position
-                        break
-                    end
+            local position
+            for _, object in ipairs(objects) do
+                position = object.value
+                if position ~= nil then
+                    state.positions[message.sender.user_id] = position
+                    break
                 end
-
-                if position == nil then
-                    state.positions[message.sender.user_id] = {
-                        ["x"] = (math.random()*2-1)*world_width,
-                        ["y"] = spawn_height
-                    }
-                end
-
-                state.names[message.sender.user_id] = decoded.nm
-
-                local data = {
-                    ["pos"] = state.positions,
-                    ["inp"] = state.inputs,
-                    ["col"] = state.colors,
-                    ["nms"] = state.names
-                }
-
-                local encoded = nk.json_encode(data)
-                dispatcher.broadcast_message(OpCodes.initial_state, encoded, {message.sender})
-
-                dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
-            elseif op_code == OpCodes.update_color then
-                dispatcher.broadcast_message(OpCodes.update_color, message.data)
             end
+
+            if position == nil then
+                state.positions[message.sender.user_id] = {
+                    ["x"] = (math.random()*2-1)*WORLD_WIDTH,
+                    ["y"] = SPAWN_HEIGHT
+                }
+            end
+
+            state.names[message.sender.user_id] = decoded.nm
+
+            local data = {
+                ["pos"] = state.positions,
+                ["inp"] = state.inputs,
+                ["col"] = state.colors,
+                ["nms"] = state.names
+            }
+
+            local encoded = nk.json_encode(data)
+            dispatcher.broadcast_message(OpCodes.initial_state, encoded, {message.sender})
+
+            dispatcher.broadcast_message(OpCodes.do_spawn, message.data)
+        elseif op_code == OpCodes.update_color then
+            dispatcher.broadcast_message(OpCodes.update_color, message.data)
         end
     end
 
@@ -199,6 +212,7 @@ function world_control.match_loop(_, dispatcher, _, state, messages)
     return state
 end
 
+--- Server is shutting down. Save positions of all existing characters to storage.
 function world_control.match_terminate(_, _, _, state, _)
     local new_objects = {}
     for k, position in pairs(state.positions) do

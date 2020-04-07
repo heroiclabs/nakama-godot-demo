@@ -108,10 +108,12 @@ func update_state() -> void:
 	if next_jump:
 		jump()
 
-	if global_position.distance_squared_to(last_position) > 625:
+	if global_position.distance_squared_to(last_position) > 10000:
+		tween.interpolate_property(self, "global_position", global_position, last_position, 0.2)
+		tween.start()
+	else:
 		var anticipated := last_position + velocity * 0.2
-		anticipated.y = min(anticipated.y, FLOOR_HEIGHT)
-		tween.interpolate_property(self, "global_position", global_position, anticipated, 0.2)
+		tween.interpolate_method(self, "do_state_update_move", global_position, anticipated, 0.2)
 		tween.start()
 
 	next_jump = false
@@ -143,3 +145,8 @@ func _set_color(value: Color) -> void:
 	if not is_inside_tree():
 		yield(self, "ready")
 	sprite.modulate = color
+
+
+func do_state_update_move(new_position: Vector2) -> void:
+	var distance := new_position - global_position
+	move_and_slide(distance, Vector2.UP)

@@ -27,7 +27,7 @@ func setup() -> void:
 	#warning-ignore: return_value_discarded
 	login_button.connect("button_down", self, "_do_create_world")
 
-	var characters: Array = yield(Connection.get_player_characters(), "completed")
+	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
 	for i in range(characters.size()):
 		var character: Dictionary = characters[i]
 		var name: String = character.name
@@ -43,7 +43,7 @@ func setup() -> void:
 	if characters.size() > 5:
 		new_character.disable()
 
-	var last_character: Dictionary = yield(Connection.get_last_player_character(), "completed")
+	var last_character: Dictionary = yield(Connection.get_last_player_character_async(), "completed")
 	if last_character.size() > 0:
 		last_name = last_character.name
 		last_color = last_character.color
@@ -84,7 +84,7 @@ func _on_Delete_confirmed() -> void:
 	
 	var listing_name = listings.get_child(last_index).get_name()
 	listings.get_child(last_index).queue_free()
-	Connection.delete_player_character(last_index)
+	Connection.delete_player_character_async(last_index)
 	_enable_all()
 	confirmation.visible = false
 	if listings.get_child_count() == 0 or listing_name == last_name:
@@ -95,7 +95,7 @@ func _on_Delete_confirmed() -> void:
 
 
 func _on_New_Character_Created(name: String, color: Color) -> void:
-	var result: int = yield(Connection.create_player_character(color, name), "completed")
+	var result: int = yield(Connection.create_player_character_async(color, name), "completed")
 	if result == ERR_UNAVAILABLE:
 		new_character.name_field.text = "Name is unavailable"
 	elif result == OK:
@@ -108,7 +108,7 @@ func _do_create_world() -> void:
 	if WorldScene:
 		world = WorldScene.instance()
 		get_tree().root.add_child(world)
-		Connection.store_last_player_character(last_name, last_color)
+		Connection.store_last_player_character_async(last_name, last_color)
 		world.setup(last_name, last_color)
 		owner.queue_free()
 
@@ -131,7 +131,7 @@ func _hide_character() -> void:
 
 
 func _character_selected(index: int) -> void:
-	var characters: Array = yield(Connection.get_player_characters(), "completed")
+	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
 	if index >= characters.size():
 		return
 	var character: Dictionary = characters[index]

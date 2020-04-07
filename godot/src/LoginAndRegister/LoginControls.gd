@@ -33,7 +33,7 @@ func _on_Login_down() -> void:
 	set_status("Authenticating...")
 	_disable_input(true)
 
-	var result: int = yield(Connection.login(email.text, password.text), "completed")
+	var result: int = yield(Connection.login_async(email.text, password.text), "completed")
 	if result != OK:
 		set_status("Error code %s: %s" % [result, Connection.error_message])
 	else:
