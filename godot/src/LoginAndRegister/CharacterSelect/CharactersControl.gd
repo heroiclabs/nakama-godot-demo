@@ -21,8 +21,8 @@ onready var new_character := $MarginContainer/VBoxContainer/NewCharacter
 onready var confirmation := $CenterContainer/Confirmation
 
 
-# Initializes the control, and fetches the characters from a successfully logged
-# in player and adds them in a controllable list. Also gets the last successful
+# Initializes the control, fetches the characters from a successfully logged
+# in player, and adds them in a controllable list. Also gets the last successful
 # logged in character.
 func setup() -> void:
 	#warning-ignore: return_value_discarded

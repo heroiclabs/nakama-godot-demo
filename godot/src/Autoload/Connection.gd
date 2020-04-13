@@ -1,28 +1,30 @@
-# Autoloaded class that manages in and out bound messages from game client to Nakama server.
-# Anything that has to do with communicating with the server is sent here, though the class
-# delegates work to sub-classes - see Authenticator, ExceptionHandler, and StorageWorker. It would
-# be quite large otherwise.
-# 
-# Like Nakama, async methods are marked with `_async` and must be yielded to get a return value.
+# Autoloaded class that manages in and out bound messages from the game client to Nakama server.
 #
-# Example yielded method:
-# var result: int = yield(Connection.login_async(email, password), "completed")
-# if result == OK:
+# Anything that has to do with communicating with the server is first sent here, then this class
+# delegates work to sub-classes. See [Authenticator], [ExceptionHandler], and [StorageWorker].
+#
+# As in Nakama, asynchronous methods are named `*_async` and you must use yield to get their return value.
+#
+# For example:
+#
+# var return_code: int = yield(Connection.login_async(email, password), "completed")
+# if return_code == OK:
 # 	print("Authenticated")
 #
-# Other notes
-# Storage
-# The value being stored MUST be a JSON Dictionary. Trying to store anything else 
-# comes up empty when subsequently read from storage later.
-# As a result, being aware of what comes out of JSON.print is important; Color, for instance,
-# comes out as a single string of numbers, not a Dictionary with RGBA keys.
+# /!\ About Storage
+#
+# The value being stored **must** be a JSON dictionary. Trying to store anything else
+# will return an empty value when read from storage later.
+#
+# Being aware of what comes out of `JSON.print` is important; `Color`, for instance,
+# comes out as a single string with numbers, not a `Dictionary` with RGBA keys.
 #
 # Packet layout
+#
 # Messages sent in and out of the server are described in /docs/packets.md
-
 extends Node
 
-# Custom operational codes for state messages. Nakama built in codes are <= 0
+# Custom operational codes for state messages. Nakama built-in codes are values lower or equal to `0`.
 enum OpCodes {
 	UPDATE_POSITION = 1,
 	UPDATE_INPUT,

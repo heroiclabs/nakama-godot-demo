@@ -1,14 +1,14 @@
-# Class to control visibility on world elements
+# Controls the visibility of world elements
 extends Node2D
 
 onready var background := $CanvasLayer/Background
 
 
-func do_hide() -> void:
+func hide() -> void:
 	hide()
 	background.hide()
 
 
-func do_show() -> void:
+func show() -> void:
 	show()
 	background.show()
