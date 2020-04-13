@@ -125,13 +125,13 @@ func update_state() -> void:
 	last_position = next_position
 
 
-func hide() -> void:
+func do_hide() -> void:
 	collision_layer = 0
 	collision_mask = 0
 	hide()
 
 
-func show() -> void:
+func do_show() -> void:
 	collision_layer = last_collision_layer
 	collision_mask = last_collision_mask
 	show()

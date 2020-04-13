@@ -4,11 +4,11 @@ extends Node2D
 onready var background := $CanvasLayer/Background
 
 
-func hide() -> void:
+func do_hide() -> void:
 	hide()
 	background.hide()
 
 
-func show() -> void:
+func do_show() -> void:
 	show()
 	background.show()

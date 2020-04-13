@@ -68,15 +68,15 @@ func join_world(
 	Connection.connect("character_spawned", self, "_on_Character_spawned")
 
 
-func hide() -> void:
+func do_hide() -> void:
 	hide()
-	world.hide()
+	world.do_hide()
 	game_ui.hide()
 
 
-func show() -> void:
+func do_show() -> void:
 	show()
-	world.show()
+	world.do_show()
 	game_ui.show()
 
 
@@ -112,7 +112,7 @@ func _setup_character(
 	if spawn:
 		character.spawn()
 	else:
-		character.hide()
+		character.do_hide()
 
 
 func _on_Presences_changed() -> void:
@@ -189,7 +189,7 @@ func _on_Character_spawned(id: String, color: Color, name: String) -> void:
 		characters[id].color = color
 		characters[id].username = name
 		characters[id].spawn()
-		characters[id].show()
+		characters[id].do_show()
 		game_ui.add_notification(characters[id].username, color)
 
 
