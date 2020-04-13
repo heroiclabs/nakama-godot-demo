@@ -18,13 +18,13 @@ func _set_status(text: String) -> void:
 # Sends a connection attempt to the server and joins the world match.
 func do_connect() -> int:
 	_set_status("Connecting...")
-	
+
 	var result: int = yield(Connection.connect_to_server_async(), "completed")
 	if not result == OK:
 		_set_status("Error code %s: %s" % [result, Connection.error_message])
 	else:
 		_set_status("Connected. Joining world...")
-		
+
 		result = yield(Connection.join_world_async(), "completed")
 		if not result == OK:
 			_set_status("Error code %s: %s" % [result, Connection.error_message])

@@ -3,6 +3,7 @@ extends Reference
 
 var error_message: String
 
+
 # Helper function to turn a result into an exception if something went wrong.
 func parse_exception(result: NakamaAsyncResult) -> int:
 	if result.is_exception():

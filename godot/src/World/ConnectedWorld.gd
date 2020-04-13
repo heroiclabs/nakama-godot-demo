@@ -117,22 +117,22 @@ func _setup_character(
 
 func _on_Presences_changed() -> void:
 	var presences := Connection.presences
-	
+
 	for p in presences.keys():
 		if not characters.has(p):
 			_setup_character(p, "User", Vector2.ZERO, 0, Color.white, false)
-	
+
 	var despawns := []
 	for c in characters.keys():
 		if not presences.has(c):
 			despawns.append(c)
-	
+
 	for d in despawns:
 		characters[d].despawn()
-		
+
 		var username: String = characters[d].username
 		var color: Color = characters[d].color
-		
+
 		game_ui.add_notification(username, color, true)
 		#warning-ignore: return_value_discarded
 		characters.erase(d)
@@ -169,14 +169,14 @@ func _on_Color_updated(id: String, color: Color) -> void:
 func _on_Chat_Message_received(sender_id: String, message: String) -> void:
 	var color := Color.gray
 	var sender_name := "User"
-	
+
 	if characters.has(sender_id):
 		color = characters[sender_id].color
 		sender_name = characters[sender_id].username
 	elif sender_id == Connection.get_user_id():
 		color = player.color
 		sender_name = player.username
-	
+
 	game_ui.add_text(message, sender_name, color)
 
 

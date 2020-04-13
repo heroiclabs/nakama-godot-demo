@@ -107,9 +107,11 @@ func login_async(email: String, password: String) -> int:
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
 
-	var result: NakamaAsyncResult = yield(_socket.connect_async(_authenticator.session), "completed")
+	var result: NakamaAsyncResult = yield(
+		_socket.connect_async(_authenticator.session), "completed"
+	)
 	var parsed_result := _exception_handler.parse_exception(result)
-	
+
 	if parsed_result == OK:
 		#warning-ignore: return_value_discarded
 		_socket.connect("connected", self, "_on_socket_connected")
@@ -229,14 +231,18 @@ func delete_player_character_async(idx: int) -> int:
 # Returns a {name: String, color: Color} dictionary, or an empty dictionary if no
 # character is found, or something goes wrong.
 func get_last_player_character_async() -> Dictionary:
-	var character: Dictionary = yield(_storage_worker.get_last_player_character_async(), "completed")
+	var character: Dictionary = yield(
+		_storage_worker.get_last_player_character_async(), "completed"
+	)
 	return character
 
 
 # Async coroutine. Put the last logged in character into player storage on the server.
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
-	var result: int = yield(_storage_worker.store_last_player_character_async(name, color), "completed")
+	var result: int = yield(
+		_storage_worker.store_last_player_character_async(name, color), "completed"
+	)
 	return result
 
 

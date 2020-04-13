@@ -3,7 +3,6 @@
 class_name StorageWorker
 extends Reference
 
-
 # Nakama read permissions
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 
@@ -21,7 +20,6 @@ const CHARACTERS_KEY := "characters"
 
 # Key within the storage collection for hwere the last logged in character was
 const LAST_CHARACTER_KEY := "last_character"
-
 
 var _session: NakamaSession
 var _client: NakamaClient
