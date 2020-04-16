@@ -1,5 +1,5 @@
-# Control panel to confirm whether or not to delete a character
-extends PanelContainer
+# Confirmation popup with yes and no buttons
+extends Panel
 
 #warning-ignore: unused_signal
 signal confirmed
@@ -9,10 +9,10 @@ signal cancelled
 
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	$MarginContainer/VBoxContainer/HBoxContainer/Yes.connect(
+	$YesButton.connect(
 		"button_down", self, "emit_signal", ["confirmed"]
 	)
 	#warning-ignore: return_value_discarded
-	$MarginContainer/VBoxContainer/HBoxContainer/No.connect(
+	$NoButton.connect(
 		"button_down", self, "emit_signal", ["cancelled"]
 	)

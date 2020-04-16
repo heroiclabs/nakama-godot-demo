@@ -3,7 +3,11 @@
 [ext_resource path="res://src/LoginAndRegister/CharacterSelect/Confirmation.gd" type="Script" id=1]
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=2]
 
-[node name="Confirmation" type="PanelContainer"]
+[node name="Confirmation" type="Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 margin_left = -173.0
 margin_top = -69.0
 margin_right = 173.0
@@ -13,44 +17,30 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource( 2 )
 script = ExtResource( 1 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 330.0
+margin_bottom = 47.0
+text = "Delete character?"
+align = 1
+
+[node name="YesButton" type="Button" parent="."]
+margin_left = 45.0
+margin_top = 67.0
+margin_right = 165.0
+margin_bottom = 127.0
+rect_min_size = Vector2( 120, 60 )
+text = "Yes"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 346.0
-margin_bottom = 138.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 16.0
-margin_top = 16.0
-margin_right = 330.0
-margin_bottom = 122.0
-custom_constants/separation = 20
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
-margin_right = 314.0
-margin_bottom = 43.0
-text = "Delete character?"
-align = 1
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 63.0
-margin_right = 314.0
-margin_bottom = 106.0
-custom_constants/separation = 60
-alignment = 1
-
-[node name="Yes" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 71.0
-margin_right = 133.0
-margin_bottom = 43.0
-text = "Yes"
-
-[node name="No" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 193.0
-margin_right = 243.0
-margin_bottom = 43.0
+[node name="NoButton" type="Button" parent="."]
+margin_left = 181.0
+margin_top = 67.0
+margin_right = 301.0
+margin_bottom = 127.0
+rect_min_size = Vector2( 120, 60 )
 text = "No"

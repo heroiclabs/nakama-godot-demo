@@ -13,12 +13,12 @@ var last_index := 0
 var last_name: String
 var last_color: Color
 
-onready var listings := $MarginContainer/VBoxContainer/CharacterListing/CharacterList
-onready var character_tex := $MarginContainer/VBoxContainer/CharacterListing/Character/TextureRect
-onready var character_name := $MarginContainer/VBoxContainer/CharacterListing/Character/Label
-onready var login_button := $MarginContainer/VBoxContainer/CharacterListing/Character/Button
-onready var new_character := $MarginContainer/VBoxContainer/NewCharacter
-onready var confirmation := $CenterContainer/Confirmation
+onready var listings := $VBoxContainer/CharacterListing/CharacterList
+onready var character_tex := $VBoxContainer/CharacterListing/Character/TextureRect
+onready var character_name := $VBoxContainer/CharacterListing/Character/Label
+onready var login_button := $VBoxContainer/CharacterListing/Character/Button
+onready var new_character := $VBoxContainer/NewCharacter
+onready var confirmation := $Confirmation
 
 
 # Initializes the control, fetches the characters from a successfully logged
