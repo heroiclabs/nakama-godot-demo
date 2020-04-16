@@ -6,7 +6,7 @@ extends Control
 signal control_closed
 signal joined_world
 
-var status: Label
+var status
 
 
 # Sets the label to the provided status message
@@ -28,9 +28,11 @@ func do_connect() -> int:
 		result = yield(Connection.join_world_async(), "completed")
 		if not result == OK:
 			_set_status("Error code %s: %s" % [result, Connection.error_message])
+			status.show()
 		else:
 			_set_status("Joined world.")
 			emit_signal("joined_world")
+			status.hide()
 	return result
 
 

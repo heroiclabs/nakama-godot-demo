@@ -11,6 +11,20 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Panel
 
+var text := \"\" setget set_text
+
+onready var label := $Label
+
+
+func _ready() -> void:
+	hide()
+	self.text = \"\"
+
+
+func set_text(value: String) -> void:
+	text = value
+	if label:
+		label.text = value
 "
 
 [node name="Login" type="Panel"]
@@ -129,7 +143,7 @@ rect_min_size = Vector2( 120, 60 )
 size_flags_horizontal = 3
 text = "Register"
 
-[node name="Panel" type="Panel" parent="."]
+[node name="StatusPanel" type="Panel" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -141,17 +155,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Status" type="Label" parent="Panel"]
+[node name="Label" type="Label" parent="StatusPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 15.0
 margin_top = 3.04999
 margin_right = -15.0
-margin_bottom = -4.95001
+margin_bottom = -2.95001
 size_flags_vertical = 6
 custom_fonts/font = ExtResource( 3 )
 custom_colors/font_color = Color( 1, 1, 1, 0.6 )
-text = "This is a status message"
+text = "Optional error message"
 valign = 1
 clip_text = true
 __meta__ = {

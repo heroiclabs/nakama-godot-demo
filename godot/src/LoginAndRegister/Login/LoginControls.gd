@@ -11,7 +11,7 @@ onready var remember_email := $RememberEmail
 
 
 func _ready() -> void:
-	status = $Panel/Status
+	status = $StatusPanel
 
 	#warning-ignore: return_value_discarded
 	login.connect("pressed", self, "_on_Login_pressed")
@@ -38,8 +38,10 @@ func _on_Login_pressed() -> void:
 
 	var result: int = yield(Connection.login_async(email.text, password.text), "completed")
 	if result != OK:
+		status.show()
 		_set_status(Connection.error_message)
 	else:
+		status.hide()
 		if remember_email.pressed:
 			Connection.save_email(email.text)
 		yield(do_connect(), "completed")
