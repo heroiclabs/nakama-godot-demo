@@ -7,12 +7,13 @@ signal editing(value)
 
 var line_count := 0
 
-onready var chat_log := $MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/ChatLog
-onready var chat_entry := $MarginContainer/VBoxContainer/HBoxContainer/ChatEntry
-onready var send := $MarginContainer/VBoxContainer/HBoxContainer/Send
+onready var chat_log: RichTextLabel = $ScrollContainer/Log
+onready var chat_entry: LineEdit = $HBoxContainer/LineEdit
+onready var send: Button = $HBoxContainer/Send
 
 
 func _ready() -> void:
+	chat_log.bbcode_text = ""
 	#warning-ignore: return_value_discarded
 	send.connect("button_down", self, "send_chat_message")
 	#warning-ignore: return_value_discarded
