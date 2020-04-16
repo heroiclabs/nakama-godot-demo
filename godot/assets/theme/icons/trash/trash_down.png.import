@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/trash_hover.png-ca16322d28ee72ee63177a0daa866474.stex"
+path="res://.import/trash_down.png-17e074fb7f743acf5ec2151ebd23dced.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/theme/trash/trash_hover.png"
-dest_files=[ "res://.import/trash_hover.png-ca16322d28ee72ee63177a0daa866474.stex" ]
+source_file="res://assets/theme/icons/trash/trash_down.png"
+dest_files=[ "res://.import/trash_down.png-17e074fb7f743acf5ec2151ebd23dced.stex" ]
 
 [params]
 
