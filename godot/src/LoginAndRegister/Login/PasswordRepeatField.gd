@@ -4,10 +4,12 @@ extends LineEditValidate
 
 export var password_field_path: NodePath setget set_password_field_path
 
-onready var password_field: LineEdit = get_node(password_field_path)
+var password_field: LineEdit
 
 
 func _ready() -> void:
+	yield(owner, "ready")
+	password_field = get_node(password_field_path)
 	if not password_field:
 		printerr("%s: Missing Password Field Path NodePath" % [get_path()] )
 
@@ -23,4 +25,6 @@ func _validate(text: String) -> bool:
 
 func set_password_field_path(value: NodePath) -> void:
 	password_field_path = value
+	if not password_field:
+		return
 	password_field = get_node(password_field_path)

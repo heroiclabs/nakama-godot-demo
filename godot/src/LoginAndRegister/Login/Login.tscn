@@ -1,31 +1,12 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://src/LoginAndRegister/Login/LoginControls.gd" type="Script" id=2]
-[ext_resource path="res://assets/theme/fonts/font_info.tres" type="DynamicFont" id=3]
+[ext_resource path="res://src/LoginAndRegister/Login/StatusPanel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=4]
 [ext_resource path="res://src/LoginAndRegister/Login/EmailField.gd" type="Script" id=5]
 [ext_resource path="res://assets/theme/stylebox/button_focused.tres" type="StyleBox" id=6]
 [ext_resource path="res://src/LoginAndRegister/Login/PasswordField.gd" type="Script" id=7]
-
-[sub_resource type="GDScript" id=1]
-script/source = "extends Panel
-
-var text := \"\" setget set_text
-
-onready var label := $Label
-
-
-func _ready() -> void:
-	hide()
-	self.text = \"\"
-
-
-func set_text(value: String) -> void:
-	text = value
-	if label:
-		label.text = value
-"
 
 [node name="Login" type="Panel"]
 anchor_left = 0.5
@@ -143,31 +124,4 @@ rect_min_size = Vector2( 120, 60 )
 size_flags_horizontal = 3
 text = "Register"
 
-[node name="StatusPanel" type="Panel" parent="."]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_top = 19.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 0, 32 )
-script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="StatusPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 15.0
-margin_top = 3.04999
-margin_right = -15.0
-margin_bottom = -2.95001
-size_flags_vertical = 6
-custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color = Color( 1, 1, 1, 0.6 )
-text = "Optional error message"
-valign = 1
-clip_text = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="StatusPanel" parent="." instance=ExtResource( 3 )]

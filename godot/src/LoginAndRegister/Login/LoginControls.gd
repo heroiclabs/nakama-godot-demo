@@ -33,6 +33,16 @@ func _disable_input(value: bool) -> void:
 
 
 func _on_Login_pressed() -> void:
+	if not email.is_valid:
+		_set_status("The email address is not valid")
+		return
+	if password.text == "":
+		_set_status("Please enter your password to log in")
+		return
+	if password.text.length() < 8:
+		_set_status("The password should be at least 8 characters long")
+		return
+
 	_set_status("Authenticating...")
 	_disable_input(true)
 
