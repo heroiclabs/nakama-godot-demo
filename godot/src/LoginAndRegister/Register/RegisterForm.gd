@@ -1,18 +1,18 @@
 # Control panel that manages creating a new account.
 extends ConnectionControl
 
-onready var register := $MarginContainer/VBoxContainer/Buttons/Register
-onready var cancel := $MarginContainer/VBoxContainer/Buttons/Cancel
+onready var register := $Buttons/Register
+onready var cancel := $Buttons/Cancel
 
-onready var new_email := $MarginContainer/VBoxContainer/Email/LineEdit
-onready var new_password := $MarginContainer/VBoxContainer/Password/LineEdit
-onready var new_password_confirm := $MarginContainer/VBoxContainer/RPassword/LineEdit
+onready var field_email := $Email/LineEdit
+onready var field_password := $Password/LineEdit
+onready var field_password_repeat := $Password2/LineEdit
 
-onready var register_remember_email := $MarginContainer/VBoxContainer/RememberEmail
+onready var register_remember_email := $RememberEmail
 
 
 func _ready() -> void:
-	status = $MarginContainer/VBoxContainer/CenterContainer/Status
+	status = $StatusPanel
 
 	#warning-ignore: return_value_discarded
 	register.connect("button_down", self, "_on_Register_down")
@@ -23,19 +23,19 @@ func _ready() -> void:
 func _disable_input(value: bool) -> void:
 	cancel.disabled = value
 	register.disabled = value
-	new_email.editable = not value
-	new_password.editable = not value
-	new_password_confirm.editable = not value
+	field_email.editable = not value
+	field_password.editable = not value
+	field_password_repeat.editable = not value
 
 
 func is_valid() -> bool:
-	if new_email.text.empty():
+	if field_email.text.empty():
 		_set_status("Email cannot be empty")
 		return false
-	elif new_password.text.empty() or new_password_confirm.text.empty():
+	elif field_password.text.empty() or field_password_repeat.text.empty():
 		_set_status("Password cannot be empty")
 		return false
-	elif new_password.text.similarity(new_password_confirm.text) != 1:
+	elif field_password.text.similarity(field_password_repeat.text) != 1:
 		_set_status("Passwords do not match")
 		return false
 
@@ -50,11 +50,11 @@ func _on_Register_down() -> void:
 	_disable_input(true)
 
 	var result: int = yield(
-		Connection.register_async(new_email.text, new_password.text), "completed"
+		Connection.register_async(field_email.text, field_password.text), "completed"
 	)
 	if result == OK:
 		if register_remember_email.pressed:
-			Connection.save_email(new_email.text)
+			Connection.save_email(field_email.text)
 
 		yield(do_connect(), "completed")
 	else:

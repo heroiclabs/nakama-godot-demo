@@ -1,170 +1,202 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/LoginAndRegister/Register/RegisterControls.gd" type="Script" id=2]
+[ext_resource path="res://src/LoginAndRegister/Register/RegisterForm.gd" type="Script" id=2]
+[ext_resource path="res://assets/theme/stylebox/button_focused.tres" type="StyleBox" id=3]
+[ext_resource path="res://src/LoginAndRegister/Login/PasswordField.gd" type="Script" id=4]
+[ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=5]
+[ext_resource path="res://src/LoginAndRegister/Login/EmailField.gd" type="Script" id=6]
+[ext_resource path="res://assets/theme/fonts/font_info.tres" type="DynamicFont" id=7]
+[ext_resource path="res://src/LoginAndRegister/Login/PasswordRepeatField.gd" type="Script" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Panel
+
+var text := \"\" setget set_text
+
+onready var label := $Label
 
 
+func _ready() -> void:
+	hide()
+	self.text = \"\"
 
-[sub_resource type="InputEventKey" id=1]
-scancode = 16777221
 
-[sub_resource type="ShortCut" id=2]
-shortcut = SubResource( 1 )
+func set_text(value: String) -> void:
+	text = value
+	if label:
+		label.text = value
+"
 
-[sub_resource type="InputEventKey" id=3]
-scancode = 16777217
-
-[sub_resource type="ShortCut" id=4]
-shortcut = SubResource( 3 )
-
-[node name="Register" type="PanelContainer"]
+[node name="Register" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -407.5
-margin_top = -224.0
-margin_right = 407.5
-margin_bottom = 224.0
+margin_left = -292.0
+margin_top = -150.0
+margin_right = 292.0
+margin_bottom = 196.0
+rect_min_size = Vector2( 0, 272 )
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 815.0
-margin_bottom = 448.0
+[node name="Email" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = -17.0
+margin_bottom = 72.0
 size_flags_horizontal = 3
-custom_constants/margin_right = 20
-custom_constants/margin_top = 20
-custom_constants/margin_left = 20
-custom_constants/margin_bottom = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 795.0
-margin_bottom = 428.0
-size_flags_horizontal = 3
-custom_constants/separation = 20
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Email" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_right = 775.0
-margin_bottom = 53.0
-size_flags_horizontal = 3
-custom_constants/separation = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Email"]
-margin_top = 5.0
-margin_right = 184.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 184, 0 )
+[node name="Label" type="Label" parent="Email"]
+margin_top = 12.0
+margin_right = 120.0
+margin_bottom = 43.0
+rect_min_size = Vector2( 120, 0 )
 text = "Email"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Email"]
-margin_left = 209.0
-margin_right = 775.0
-margin_bottom = 53.0
+[node name="LineEdit" type="LineEdit" parent="Email"]
+margin_left = 136.0
+margin_right = 551.0
+margin_bottom = 56.0
 size_flags_horizontal = 3
+custom_styles/focus = ExtResource( 3 )
+shortcut_keys_enabled = false
+placeholder_text = "example@heroicslab.com"
+caret_blink = true
+script = ExtResource( 6 )
 
-[node name="Password" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 73.0
-margin_right = 775.0
-margin_bottom = 126.0
+[node name="Password" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+margin_left = 16.0
+margin_top = 88.0
+margin_right = -17.0
+margin_bottom = 136.0
 size_flags_horizontal = 3
-custom_constants/separation = 25
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Password"]
-margin_top = 5.0
-margin_right = 184.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 184, 0 )
+[node name="Label" type="Label" parent="Password"]
+margin_top = 8.0
+margin_right = 120.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 120, 0 )
 text = "Password"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Password"]
-margin_left = 209.0
-margin_right = 775.0
-margin_bottom = 53.0
+[node name="LineEdit" type="LineEdit" parent="Password"]
+margin_left = 136.0
+margin_right = 551.0
+margin_bottom = 48.0
 size_flags_horizontal = 3
 secret = true
+caret_blink = true
+script = ExtResource( 4 )
 
-[node name="RPassword" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 146.0
-margin_right = 775.0
-margin_bottom = 199.0
+[node name="Password2" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+margin_left = 16.0
+margin_top = 156.0
+margin_right = -17.0
+margin_bottom = 204.0
 size_flags_horizontal = 3
-custom_constants/separation = 25
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/RPassword"]
-margin_top = 5.0
-margin_right = 184.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 184, 0 )
-text = "    Repeat"
+[node name="Label" type="Label" parent="Password2"]
+margin_top = 8.0
+margin_right = 120.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 120, 0 )
+text = "Repeat"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/RPassword"]
-margin_left = 209.0
-margin_right = 775.0
-margin_bottom = 53.0
+[node name="LineEdit" type="LineEdit" parent="Password2"]
+margin_left = 136.0
+margin_right = 551.0
+margin_bottom = 48.0
 size_flags_horizontal = 3
 secret = true
+caret_blink = true
+script = ExtResource( 8 )
+password_field_path = NodePath("../../Password/LineEdit")
 
-[node name="RememberEmail" type="CheckBox" parent="MarginContainer/VBoxContainer"]
-margin_top = 219.0
-margin_right = 775.0
-margin_bottom = 262.0
-text = "Remember Email"
+[node name="RememberEmail" type="CheckBox" parent="."]
+anchor_right = 1.0
+margin_left = 152.0
+margin_top = 218.0
+margin_right = -228.0
+margin_bottom = 250.0
+custom_styles/focus = ExtResource( 5 )
+shortcut_in_tooltip = false
+text = "Remember me"
+flat = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 282.0
-margin_right = 775.0
-margin_bottom = 342.0
-
-[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_right = 775.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 775, 60 )
-
-[node name="Status" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_left = 387.0
-margin_right = 387.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 0, 60 )
-
-[node name="Buttons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_left = 193.0
-margin_top = 362.0
-margin_right = 581.0
-margin_bottom = 405.0
+[node name="Buttons" type="HBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = -80.0
+margin_right = -17.0
+margin_bottom = -16.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-custom_constants/separation = 120
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Register" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
-margin_right = 147.0
-margin_bottom = 43.0
-shortcut = SubResource( 2 )
+[node name="Register" type="Button" parent="Buttons"]
+margin_right = 267.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 120, 60 )
+size_flags_horizontal = 3
 text = "Register"
 
-[node name="Cancel" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
-margin_left = 267.0
-margin_right = 388.0
-margin_bottom = 43.0
-shortcut = SubResource( 4 )
+[node name="Cancel" type="Button" parent="Buttons"]
+margin_left = 283.0
+margin_right = 551.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 120, 60 )
+size_flags_horizontal = 3
 text = "Cancel"
+
+[node name="StatusPanel" type="Panel" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 19.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 0, 32 )
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="StatusPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 15.0
+margin_top = 3.04999
+margin_right = -15.0
+margin_bottom = -2.95001
+size_flags_vertical = 6
+custom_fonts/font = ExtResource( 7 )
+custom_colors/font_color = Color( 1, 1, 1, 0.6 )
+text = "Optional error message"
+valign = 1
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
