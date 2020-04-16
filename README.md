@@ -39,3 +39,11 @@ To log into the game, you need first to register a dummy local account. To do so
    - The password needs to contain at least 8 characters.
 
 Once you registered an account, you can log in, create a new character, and enter the game.
+
+## Using the Nakama admin area
+
+Nakama's server provides a web admin interface to see, modify, or purge users and other game data. To access it:
+
+1. Start the Nakama server.
+1. Navigate to http://127.0.0.1:7351/ in your web browser.
+1. Log into the platform. The default admin user's login is `admin` and its password is `password`.
