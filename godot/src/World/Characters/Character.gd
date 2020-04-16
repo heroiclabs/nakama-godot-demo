@@ -151,4 +151,5 @@ func _set_color(value: Color) -> void:
 
 func do_state_update_move(new_position: Vector2) -> void:
 	var distance := new_position - global_position
+# warning-ignore:return_value_discarded
 	move_and_slide(distance, Vector2.UP)
