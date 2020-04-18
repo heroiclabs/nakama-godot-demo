@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/UI/ChatUI.gd" type="Script" id=2]
+[ext_resource path="res://src/UI/ChatBox.gd" type="Script" id=2]
 
 [sub_resource type="InputEventKey" id=1]
 scancode = 16777221
@@ -9,7 +9,7 @@ scancode = 16777221
 [sub_resource type="ShortCut" id=2]
 shortcut = SubResource( 1 )
 
-[node name="ChatUI" type="Panel"]
+[node name="ChatBox" type="Panel"]
 self_modulate = Color( 1, 1, 1, 0.490196 )
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -36,7 +36,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Log" type="RichTextLabel" parent="ScrollContainer"]
+[node name="ChatLog" type="RichTextLabel" parent="ScrollContainer"]
 margin_right = 768.0
 margin_bottom = 272.0
 size_flags_horizontal = 3
@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 max_length = 144
 caret_blink = true
 
-[node name="Send" type="Button" parent="HBoxContainer"]
+[node name="SendButton" type="Button" parent="HBoxContainer"]
 margin_left = 648.0
 margin_right = 768.0
 margin_bottom = 80.0
@@ -75,3 +75,4 @@ rect_min_size = Vector2( 120, 80 )
 shortcut_in_tooltip = false
 shortcut = SubResource( 2 )
 text = "Send"
+[connection signal="pressed" from="HBoxContainer/SendButton" to="." method="_on_SendButton_pressed"]

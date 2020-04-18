@@ -18,8 +18,6 @@ func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	color_picker.connect("color_changed", self, "_on_Color_changed")
 	#warning-ignore: return_value_discarded
-	change_color.connect("button_down", self, "_on_Change_Color_down")
-	#warning-ignore: return_value_discarded
 	chat_ui.connect("text_sent", self, "_on_Chat_text_Sent")
 	#warning-ignore: return_value_discarded
 	chat_ui.connect("editing", self, "_on_Chat_editing")
@@ -38,10 +36,6 @@ func add_notification(username: String, text_color: Color, disconnected := false
 	notifications_ui.add_notification(username, text_color, disconnected)
 
 
-func _on_Change_Color_down() -> void:
-	color_picker.show()
-
-
 func _on_Color_changed(_color: Color) -> void:
 	color = _color
 	color_picker.setup(color)
@@ -55,3 +49,7 @@ func _on_Chat_text_Sent(text: String) -> void:
 
 func _on_Chat_editing(value: bool) -> void:
 	emit_signal("editing", value)
+
+
+func _on_ChangeColorButton_pressed() -> void:
+	color_picker.show()
