@@ -7,7 +7,7 @@ signal text_sent(text)
 signal editing(value)
 
 onready var color_editor := $CharacterColorEditor
-onready var chat_ui := $ChatUI
+onready var chat_box := $ChatBox
 onready var notifications_ui := $NotificationsUI
 
 
@@ -16,7 +16,7 @@ func setup(_color: Color) -> void:
 
 
 func add_text(text: String, sender: String, text_color: Color) -> void:
-	chat_ui.add_text(text, sender, text_color)
+	chat_box.add_text(text, sender, text_color)
 
 
 func add_notification(username: String, text_color: Color, disconnected := false) -> void:
