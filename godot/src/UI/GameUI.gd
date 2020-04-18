@@ -6,26 +6,13 @@ signal color_changed(color)
 signal text_sent(text)
 signal editing(value)
 
-var color: Color
-
-onready var color_picker := $ColorUI
-onready var change_color := $ChangeColorPanel/ChangeColor
+onready var color_editor := $CharacterColorEditor
 onready var chat_ui := $ChatUI
 onready var notifications_ui := $NotificationsUI
 
 
-func _ready() -> void:
-	#warning-ignore: return_value_discarded
-	color_picker.connect("color_changed", self, "_on_Color_changed")
-	#warning-ignore: return_value_discarded
-	chat_ui.connect("text_sent", self, "_on_Chat_text_Sent")
-	#warning-ignore: return_value_discarded
-	chat_ui.connect("editing", self, "_on_Chat_editing")
-
-
 func setup(_color: Color) -> void:
-	color = _color
-	color_picker.setup(color)
+	color_editor.color = _color
 
 
 func add_text(text: String, sender: String, text_color: Color) -> void:
@@ -36,20 +23,17 @@ func add_notification(username: String, text_color: Color, disconnected := false
 	notifications_ui.add_notification(username, text_color, disconnected)
 
 
-func _on_Color_changed(_color: Color) -> void:
-	color = _color
-	color_picker.setup(color)
-	emit_signal("color_changed", color)
-	color_picker.hide()
+func _on_ChangeColorButton_pressed() -> void:
+	color_editor.show()
 
 
-func _on_Chat_text_Sent(text: String) -> void:
-	emit_signal("text_sent", text)
-
-
-func _on_Chat_editing(value: bool) -> void:
+func _on_ChatBox_editing(value) -> void:
 	emit_signal("editing", value)
 
 
-func _on_ChangeColorButton_pressed() -> void:
-	color_picker.show()
+func _on_ChatBox_text_sent(text: String) -> void:
+	emit_signal("text_sent", text)
+
+
+func _on_CharacterColorEditor_color_changed(_color: Color) -> void:
+	emit_signal("color_changed", _color)

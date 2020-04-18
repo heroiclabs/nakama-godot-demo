@@ -5,12 +5,19 @@ signal color_changed(color)
 
 onready var texture_preview := $VBoxContainer/TextureRect
 
+var color := Color.white setget set_color
+
+
+func set_color(value: Color) -> void:
+	texture_preview.modulate = color
+
 
 func _on_OkButton_pressed() -> void:
-	var color: Color = texture_preview.modulate
-	hide()
+	color = texture_preview.modulate
 	emit_signal("color_changed", color)
+	hide()
 
 
 func _on_CancelButton_pressed() -> void:
+	texture_preview.modulate = color
 	hide()

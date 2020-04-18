@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://assets/world/character.svg" type="Texture" id=2]
-[ext_resource path="res://src/UI/ColorUI.gd" type="Script" id=3]
+[ext_resource path="res://src/UI/CharacterColorEditor.gd" type="Script" id=3]
 [ext_resource path="res://src/UI/Elements/Button.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/LoginAndRegister/CharacterSelect/CharacterColorPreview.gd" type="Script" id=5]
 [ext_resource path="res://src/UI/Components/ColorSelector.tscn" type="PackedScene" id=6]
