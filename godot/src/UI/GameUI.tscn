@@ -20,7 +20,6 @@ __meta__ = {
 [node name="ChangeColorPanel" parent="." instance=ExtResource( 2 )]
 
 [node name="ColorUI" parent="." instance=ExtResource( 4 )]
-visible = false
 
 [node name="ChatUI" parent="." instance=ExtResource( 3 )]
 

@@ -46,8 +46,8 @@ func join_world(
 	var user_id := Connection.get_user_id()
 	assert(state_positions.has(user_id), "Server did not return valid state")
 
-	var player_position: Dictionary = state_positions[user_id]
-	_setup_player(username, player_color, Vector2(player_position.x, player_position.y))
+	var player_position: Vector2 = Vector2(state_positions[user_id].x, state_positions[user_id].y)
+	_setup_player(username, player_color, player_position)
 
 	var presences := Connection.presences
 	for p in presences.keys():

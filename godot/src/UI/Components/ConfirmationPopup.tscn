@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+[ext_resource path="res://src/UI/Components/ConfirmationPopup.gd" type="Script" id=2]
+[ext_resource path="res://assets/theme/stylebox/panel_popup.tres" type="StyleBox" id=3]
+
+
+[node name="ConfirmationPopup" type="Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -192.0
+margin_top = -100.0
+margin_right = 192.0
+margin_bottom = 100.0
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 1 )
+custom_styles/panel = ExtResource( 3 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -157.0
+margin_top = -54.0
+margin_right = 157.0
+margin_bottom = -23.0
+text = "Delete character?"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="YesButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -128.0
+margin_top = -7.0
+margin_right = -8.0
+margin_bottom = 53.0
+rect_min_size = Vector2( 120, 60 )
+text = "Yes"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NoButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 8.0
+margin_top = -7.0
+margin_right = 128.0
+margin_bottom = 53.0
+rect_min_size = Vector2( 120, 60 )
+text = "No"
+__meta__ = {
+"_edit_use_anchors_": false
+}

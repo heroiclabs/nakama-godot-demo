@@ -1,19 +1,24 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/world/character.svg" type="Texture" id=1]
-[ext_resource path="res://src/LoginAndRegister/CharacterSelect/ColorPreview.gd" type="Script" id=2]
-[ext_resource path="res://src/LoginAndRegister/CharacterSelect/NewCharacter.gd" type="Script" id=3]
+[ext_resource path="res://src/LoginAndRegister/CharacterSelect/CharacterColorPreview.gd" type="Script" id=2]
+[ext_resource path="res://src/LoginAndRegister/CharacterSelect/CharacterEditor.gd" type="Script" id=3]
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=4]
+[ext_resource path="res://src/UI/Elements/Title.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/UI/Components/ColorSelector.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/UI/Elements/Button.tscn" type="PackedScene" id=7]
 
-[node name="NewCharacter" type="HBoxContainer"]
+
+[node name="CharacterEditor" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -398.0
-margin_top = -107.5
-margin_right = 398.0
-margin_bottom = 107.5
+margin_left = -372.0
+margin_top = -347.0
+margin_right = 372.0
+margin_bottom = 347.0
+rect_min_size = Vector2( 744, 694 )
 theme = ExtResource( 4 )
 script = ExtResource( 3 )
 __meta__ = {
@@ -21,93 +26,100 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 796.0
-margin_bottom = 215.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 724.0
+margin_bottom = 674.0
 size_flags_horizontal = 3
 custom_constants/separation = 20
 
+[node name="Title" parent="VBoxContainer" instance=ExtResource( 5 )]
+margin_right = 704.0
+text = "Character Creation"
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+margin_top = 60.0
+margin_right = 704.0
+margin_bottom = 64.0
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_top = 84.0
+margin_right = 704.0
+margin_bottom = 115.0
+text = "Color"
+align = 1
+
+[node name="Color" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 135.0
+margin_right = 704.0
+margin_bottom = 439.0
+size_flags_horizontal = 3
+custom_constants/separation = 25
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorSelector" parent="VBoxContainer/Color" instance=ExtResource( 6 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 80.0
+margin_top = 0.0
+margin_right = 624.0
+margin_bottom = 304.0
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+margin_top = 459.0
+margin_right = 704.0
+margin_bottom = 463.0
+
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_right = 796.0
-margin_bottom = 47.0
+margin_top = 483.0
+margin_right = 704.0
+margin_bottom = 550.0
+alignment = 1
+
+[node name="CharacterTexture" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+margin_left = 136.0
+margin_right = 203.0
+margin_bottom = 67.0
+rect_min_size = Vector2( 67, 67 )
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 6
+script = ExtResource( 2 )
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
-margin_top = 8.0
-margin_right = 73.0
-margin_bottom = 39.0
+margin_left = 219.0
+margin_top = 18.0
+margin_right = 292.0
+margin_bottom = 49.0
 text = "Name"
 
 [node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
-margin_left = 89.0
-margin_right = 796.0
-margin_bottom = 47.0
-size_flags_horizontal = 3
+margin_left = 308.0
+margin_right = 568.0
+margin_bottom = 67.0
+rect_min_size = Vector2( 260, 0 )
 max_length = 32
 caret_blink = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Color" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 67.0
-margin_right = 796.0
-margin_bottom = 135.0
-size_flags_horizontal = 3
-custom_constants/separation = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Color"]
-margin_right = 67.0
-margin_bottom = 68.0
-rect_min_size = Vector2( 67, 67 )
-texture = ExtResource( 1 )
-expand = true
-stretch_mode = 6
-script = ExtResource( 2 )
-red_path = NodePath("../../../../NewCharacter/VBoxContainer/Color/VBoxContainer/Red")
-green_path = NodePath("../../../../NewCharacter/VBoxContainer/Color/VBoxContainer/Green")
-blue_path = NodePath("../../../../NewCharacter/VBoxContainer/Color/VBoxContainer/Blue")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Color"]
-margin_left = 92.0
-margin_right = 796.0
-margin_bottom = 68.0
-size_flags_horizontal = 3
-custom_constants/separation = 10
-
-[node name="Red" type="HSlider" parent="VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 1, 0, 0, 1 )
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+margin_top = 570.0
 margin_right = 704.0
-margin_bottom = 16.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
+margin_bottom = 574.0
 
-[node name="Green" type="HSlider" parent="VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 0, 1, 0, 1 )
-margin_top = 26.0
-margin_right = 704.0
-margin_bottom = 42.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Blue" type="HSlider" parent="VBoxContainer/Color/VBoxContainer"]
-modulate = Color( 0, 0, 1, 1 )
-margin_top = 52.0
-margin_right = 704.0
-margin_bottom = 68.0
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="Create" type="Button" parent="VBoxContainer"]
-margin_top = 155.0
-margin_right = 796.0
-margin_bottom = 215.0
-rect_min_size = Vector2( 0, 60 )
+[node name="CreateButton" parent="VBoxContainer" instance=ExtResource( 7 )]
+margin_left = 252.0
+margin_top = 594.0
+margin_right = 452.0
+margin_bottom = 654.0
+rect_min_size = Vector2( 200, 60 )
+size_flags_horizontal = 4
 text = "Create"
+[connection signal="color_changed" from="VBoxContainer/Color/ColorSelector" to="VBoxContainer/HBoxContainer/CharacterTexture" method="_on_ColorSelector_color_changed"]

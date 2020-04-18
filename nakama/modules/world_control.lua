@@ -4,6 +4,7 @@ local world_control = {}
 
 local nk = require("nakama")
 
+local SPAWN_POSITION = {1800.0, 1280.0}
 local SPAWN_HEIGHT = 463.15
 local WORLD_WIDTH = 1500
 
@@ -174,8 +175,8 @@ function world_control.match_loop(_, dispatcher, _, state, messages)
 
             if position == nil then
                 state.positions[message.sender.user_id] = {
-                    ["x"] = (math.random()*2-1)*WORLD_WIDTH,
-                    ["y"] = SPAWN_HEIGHT
+                    ["x"] = SPAWN_POSITION[1],
+                    ["y"] = SPAWN_POSITION[2]
                 }
             end
 

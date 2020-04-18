@@ -2,7 +2,9 @@
 # Also acts as the spawner and point of entry into the multiplayer world scene.
 extends Control
 
-const MAX_CHARACTERS := 5
+const MAX_CHARACTERS := 4
+const ConfirmationPopup := preload("res://src/LoginAndRegister/CharacterSelect/CharactersMenu.tscn")
+
 
 export var CharacterListing: PackedScene
 export var WorldScene: PackedScene
@@ -13,12 +15,12 @@ var last_index := 0
 var last_name: String
 var last_color: Color
 
-onready var listings := $VBoxContainer/CharacterListing/CharacterList
+onready var listings := $CharacterListing/CharacterList
 onready var character_tex := $VBoxContainer/CharacterListing/Character/TextureRect
 onready var character_name := $VBoxContainer/CharacterListing/Character/Label
-onready var login_button := $VBoxContainer/CharacterListing/Character/Button
+onready var login_button := $CharacterListing/LoginButton
 onready var new_character := $VBoxContainer/NewCharacter
-onready var confirmation := $Confirmation
+
 
 
 # Initializes the control, fetches the characters from a successfully logged

@@ -1,0 +1,12 @@
+[gd_scene format=2]
+
+[node name="Button" type="Button"]
+margin_right = 120.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 120, 60 )
+size_flags_horizontal = 3
+shortcut_in_tooltip = false
+text = "Button"
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -1,44 +1,44 @@
 # A control representing a listing for a single character
-extends HBoxContainer
+extends Button
 
 signal deleted_down(character_index)
 signal character_selected(character_index)
 
 var index: int
 
-onready var texture := $TextureRect
-onready var select_button := $Button
-onready var delete_button := $Delete
+onready var texture := $HBoxContainer/TextureRect
+onready var label := $HBoxContainer/Label
+onready var delete_button := $HBoxContainer/DeleteButton
 
 
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	delete_button.connect("button_down", self, "_on_Deleted_down")
+	delete_button.connect("pressed", self, "_on_DeleteButton_down")
 	#warning-ignore: return_value_discarded
-	select_button.connect("button_down", self, "_on_Character_Select_down")
+	connect("pressed", self, "_on_Character_Select_down")
 
 
 func setup(character_index: int, character_name: String, character_color: Color) -> void:
-	select_button.text = character_name
+	label.text = character_name
 	texture.modulate = character_color
 	index = character_index
 
 
 func get_name() -> String:
-	return select_button.text
+	return label.text
 
 
 func disable() -> void:
-	select_button.disabled = true
+	label.disabled = true
 	delete_button.disabled = true
 
 
 func enable() -> void:
-	select_button.disabled = false
+	label.disabled = false
 	delete_button.disabled = false
 
 
-func _on_Deleted_down() -> void:
+func _on_DeleteButton_down() -> void:
 	emit_signal("deleted_down", index)
 
 

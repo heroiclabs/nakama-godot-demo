@@ -3,10 +3,10 @@ extends VBoxContainer
 
 
 func disable() -> void:
-	for c in get_children():
-		c.disable()
+	for character_listing in get_children():
+		character_listing.disable()
 
 
 func enable() -> void:
-	for c in get_children():
-		c.enable()
+	for character_listing in get_children():
+		character_listing.enable()
