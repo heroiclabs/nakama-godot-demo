@@ -20,4 +20,4 @@ visible = false
 [node name="Register" parent="." instance=ExtResource( 2 )]
 visible = false
 
-[node name="CharactersControl" parent="." instance=ExtResource( 4 )]
+[node name="CharactersMenu" parent="." instance=ExtResource( 4 )]

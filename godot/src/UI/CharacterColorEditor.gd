@@ -8,7 +8,7 @@ onready var texture_preview := $VBoxContainer/TextureRect
 var color := Color.white setget set_color
 
 
-func set_color(value: Color) -> void:
+func set_color(_value: Color) -> void:
 	texture_preview.modulate = color
 
 
