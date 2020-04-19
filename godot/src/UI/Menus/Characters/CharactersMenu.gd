@@ -3,8 +3,6 @@
 extends Control
 
 const MAX_CHARACTERS := 4
-const ConfirmationPopup := preload("res://src/LoginAndRegister/CharacterSelect/CharactersMenu.tscn")
-
 
 export var CharacterListing: PackedScene
 export var WorldScene: PackedScene
@@ -15,11 +13,12 @@ var last_index := 0
 var last_name: String
 var last_color: Color
 
-onready var listings := $CharacterListing/CharacterList
-onready var character_tex := $VBoxContainer/CharacterListing/Character/TextureRect
-onready var character_name := $VBoxContainer/CharacterListing/Character/Label
-onready var login_button := $CharacterListing/LoginButton
-onready var new_character := $VBoxContainer/NewCharacter
+
+onready var character_list := $MarginContainer/VBoxContainer/CharacterList
+onready var character_tex := $MarginContainer/VBoxContainer/CharacterList/CharacterListing/HBoxContainer/TextureRect
+onready var character_name := $MarginContainer/VBoxContainer/CharacterList/CharacterListing/HBoxContainer/Label
+onready var login_button := $MarginContainer/VBoxContainer/HBoxContainer/LoginButton
+onready var new_character := $MarginContainer/VBoxContainer/HBoxContainer/CreateButton
 
 
 
@@ -27,10 +26,6 @@ onready var new_character := $VBoxContainer/NewCharacter
 # in player, and adds them in a controllable list. Also gets the last successful
 # logged in character.
 func setup() -> void:
-	#warning-ignore: return_value_discarded
-	confirmation.connect("cancelled", self, "_on_Delete_cancelled")
-	#warning-ignore: return_value_discarded
-	confirmation.connect("confirmed", self, "_on_Delete_confirmed")
 	#warning-ignore: return_value_discarded
 	new_character.connect("new_character_created", self, "_on_New_Character_Created")
 	#warning-ignore: return_value_discarded
@@ -44,13 +39,13 @@ func setup() -> void:
 		var color: Color = character.color
 		var listing := CharacterListing.instance()
 
-		listings.add_child(listing)
+		character_list.add_child(listing)
 		listing.setup(i, name, color)
 
 		#warning-ignore: return_value_discarded
-		listing.connect("deleted_down", self, "_deleted_down")
+		listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
 		#warning-ignore: return_value_discarded
-		listing.connect("character_selected", self, "_character_selected")
+		listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
 
 	if characters.size() > MAX_CHARACTERS:
 		new_character.disable()
@@ -68,48 +63,22 @@ func setup() -> void:
 
 func _disable_all() -> void:
 	login_button.disabled = true
-	for c in listings.get_children():
+	for c in character_list.get_children():
 		c.disable()
 	new_character.disable()
 
 
 func _enable_all() -> void:
 	login_button.disabled = false
-	for c in listings.get_children():
+	for c in character_list.get_children():
 		c.enable()
-	if listings.get_child_count() < MAX_CHARACTERS:
+	if character_list.get_child_count() < MAX_CHARACTERS:
 		new_character.enable()
 
 
 func _deleted_down(index: int) -> void:
 	last_index = index
-	confirmation.visible = true
 	_disable_all()
-
-
-func _on_Delete_cancelled() -> void:
-	_enable_all()
-	confirmation.visible = false
-
-
-func _on_Delete_confirmed() -> void:
-	if listings.get_child_count() <= last_index:
-		return
-
-	var listing_name = listings.get_child(last_index).get_name()
-	listings.get_child(last_index).queue_free()
-
-	Connection.delete_player_character_async(last_index)
-
-	_enable_all()
-
-	confirmation.visible = false
-
-	if listings.get_child_count() == 0 or listing_name == last_name:
-		_hide_character()
-		last_index = 0
-	for i in range(listings.get_child_count()):
-		listings.get_child(i).index = i
 
 
 func _on_New_Character_Created(name: String, color: Color) -> void:
@@ -166,3 +135,25 @@ func _character_selected(index: int) -> void:
 
 	_update_character()
 	_show_character()
+
+
+func _on_ConfirmationPopup_cancelled() -> void:
+	_enable_all()
+
+
+func _on_ConfirmationPopup_confirmed() -> void:
+	if character_list.get_child_count() <= last_index:
+		return
+
+	var listing_name = character_list.get_child(last_index).get_name()
+	character_list.get_child(last_index).queue_free()
+
+	Connection.delete_player_character_async(last_index)
+
+	_enable_all()
+
+	if character_list.get_child_count() == 0 or listing_name == last_name:
+		_hide_character()
+		last_index = 0
+	for i in range(character_list.get_child_count()):
+		character_list.get_child(i).index = i

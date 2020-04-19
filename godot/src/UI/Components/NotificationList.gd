@@ -1,7 +1,7 @@
-# List of notifications that appear when users join or leave.
+# List of notifications that appear when users join or leave the game.
 extends Control
 
-export var Notification: PackedScene
+const Notification := preload("res://src/UI/Elements/Notification.tscn")
 
 
 func add_notification(username: String, color: Color, disconnected := false) -> void:

@@ -1,7 +1,7 @@
 # A control representing a listing for a single character
 extends Button
 
-signal deleted_down(character_index)
+signal requested_deletion(character_index)
 signal character_selected(character_index)
 
 var index: int
@@ -39,7 +39,7 @@ func enable() -> void:
 
 
 func _on_DeleteButton_down() -> void:
-	emit_signal("deleted_down", index)
+	emit_signal("requested_deletion", index)
 
 
 func _on_Character_Select_down() -> void:

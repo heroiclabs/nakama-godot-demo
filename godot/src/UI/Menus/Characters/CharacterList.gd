@@ -1,4 +1,5 @@
-# A control representing a list of characters
+# VBoxContainer that contains a list of buttons.
+# Can enable and disable them all.
 extends VBoxContainer
 
 

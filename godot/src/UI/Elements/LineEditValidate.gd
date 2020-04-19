@@ -1,4 +1,5 @@
 # Line edit with the ability to validate the content.
+# Override the _validate virtual method to validate user's text input.
 class_name LineEditValidate
 extends LineEdit
 
@@ -8,12 +9,8 @@ var focus_error: StyleBoxFlat = preload("res://assets/theme/stylebox/button_focu
 var is_valid := true setget set_is_valid
 
 
-func _ready() -> void:
-# warning-ignore:return_value_discarded
-	connect("text_changed", self, "_on_text_changed")
-
-
 # Returns `true` if the text input is valid.
+# Override this method in classes that extend `LineEditValidate`.
 # @tags - virtual
 func _validate(_text: String) -> bool:
 	return true

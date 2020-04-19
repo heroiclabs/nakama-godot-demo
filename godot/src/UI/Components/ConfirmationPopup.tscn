@@ -4,7 +4,6 @@
 [ext_resource path="res://src/UI/Components/ConfirmationPopup.gd" type="Script" id=2]
 [ext_resource path="res://assets/theme/stylebox/panel_popup.tres" type="StyleBox" id=3]
 
-
 [node name="ConfirmationPopup" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
@@ -23,6 +22,7 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+text = "Confirm?"
 
 [node name="Label" type="Label" parent="."]
 anchor_left = 0.5
@@ -33,7 +33,7 @@ margin_left = -157.0
 margin_top = -54.0
 margin_right = 157.0
 margin_bottom = -23.0
-text = "Delete character?"
+text = "Confirm?"
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -68,3 +68,5 @@ text = "No"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="pressed" from="YesButton" to="." method="_on_YesButton_pressed"]
+[connection signal="pressed" from="NoButton" to="." method="_on_NoButton_pressed"]

@@ -1,14 +1,12 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/LoginAndRegister/Login/LoginControls.gd" type="Script" id=2]
-[ext_resource path="res://src/LoginAndRegister/Login/StatusPanel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/UI/LoginAndRegister/Login/LoginForm.gd" type="Script" id=2]
+[ext_resource path="res://src/UI/Elements/StatusPanel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=4]
-[ext_resource path="res://src/LoginAndRegister/Login/EmailField.gd" type="Script" id=5]
-[ext_resource path="res://assets/theme/stylebox/button_focused.tres" type="StyleBox" id=6]
-[ext_resource path="res://src/LoginAndRegister/Login/PasswordField.gd" type="Script" id=7]
+[ext_resource path="res://src/UI/Elements/LineEditValidate.tscn" type="PackedScene" id=5]
 
-[node name="Login" type="Panel"]
+[node name="LoginForm" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -42,16 +40,10 @@ margin_bottom = 43.0
 rect_min_size = Vector2( 120, 0 )
 text = "Email"
 
-[node name="LineEdit" type="LineEdit" parent="Email"]
+[node name="LineEditValidate" parent="Email" instance=ExtResource( 5 )]
 margin_left = 136.0
 margin_right = 551.0
-margin_bottom = 56.0
-size_flags_horizontal = 3
-custom_styles/focus = ExtResource( 6 )
-shortcut_keys_enabled = false
-placeholder_text = "example@heroicslab.com"
-caret_blink = true
-script = ExtResource( 5 )
+placeholder_text = "me@example.com"
 
 [node name="Password" type="HBoxContainer" parent="."]
 anchor_right = 1.0
@@ -71,14 +63,10 @@ margin_bottom = 39.0
 rect_min_size = Vector2( 120, 0 )
 text = "Password"
 
-[node name="LineEdit" type="LineEdit" parent="Password"]
+[node name="LineEditValidate" parent="Password" instance=ExtResource( 5 )]
 margin_left = 136.0
 margin_right = 551.0
 margin_bottom = 48.0
-size_flags_horizontal = 3
-secret = true
-caret_blink = true
-script = ExtResource( 7 )
 
 [node name="RememberEmail" type="CheckBox" parent="."]
 anchor_right = 1.0

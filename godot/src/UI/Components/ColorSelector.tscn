@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/UI/Elements/ColorSwatch/ColorSwatch.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/UI/Elements/ColorSwatch.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/UI/Components/ColorSelector.gd" type="Script" id=3]
 
 [node name="ColorSelector" type="GridContainer"]

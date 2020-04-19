@@ -4,8 +4,8 @@ extends ConnectionControl
 onready var open_register := $Buttons/Register
 onready var login := $Buttons/Login
 
-onready var email := $Email/LineEdit
-onready var password := $Password/LineEdit
+onready var email := $Email/LineEditValidate
+onready var password := $Password/LineEditValidate
 
 onready var remember_email := $RememberEmail
 

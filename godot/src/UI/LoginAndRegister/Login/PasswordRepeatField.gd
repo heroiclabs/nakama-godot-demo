@@ -8,7 +8,7 @@ var password_field: LineEdit
 
 
 func _ready() -> void:
-	yield(owner, "ready")
+	yield(self, "ready")
 	password_field = get_node(password_field_path)
 	if not password_field:
 		printerr("%s: Missing Password Field Path NodePath" % [get_path()] )

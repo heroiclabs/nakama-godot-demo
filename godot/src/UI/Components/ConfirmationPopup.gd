@@ -1,18 +1,31 @@
 # Confirmation popup with yes and no buttons
+tool
 extends Panel
 
-#warning-ignore: unused_signal
 signal confirmed
-#warning-ignore: unused_signal
 signal cancelled
+
+export var text := "Label" setget set_text
+
+onready var label: Label = $Label
 
 
 func _ready() -> void:
-	#warning-ignore: return_value_discarded
-	$YesButton.connect(
-		"button_down", self, "emit_signal", ["confirmed"]
-	)
-	#warning-ignore: return_value_discarded
-	$NoButton.connect(
-		"button_down", self, "emit_signal", ["cancelled"]
-	)
+	hide()
+
+
+func set_text(value: String) -> void:
+	text = value
+	if not label:
+		yield(self, "ready")
+	label.text = text
+
+
+func _on_YesButton_pressed() -> void:
+	emit_signal("confirmed")
+	hide()
+
+
+func _on_NoButton_pressed() -> void:
+	emit_signal("cancelled")
+	hide()

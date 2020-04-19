@@ -22,12 +22,12 @@ _global_script_classes=[ {
 "base": "Button",
 "class": "ColorSwatch",
 "language": "GDScript",
-"path": "res://src/UI/Elements/ColorSwatch/ColorSwatch.gd"
+"path": "res://src/UI/Elements/ColorSwatch.gd"
 }, {
-"base": "Control",
+"base": "Reference",
 "class": "ConnectionControl",
 "language": "GDScript",
-"path": "res://src/LoginAndRegister/ConnectionControl.gd"
+"path": "res://src/UI/LoginAndRegister/ConnectionControl.gd"
 }, {
 "base": "Reference",
 "class": "ExceptionHandler",
@@ -37,7 +37,7 @@ _global_script_classes=[ {
 "base": "LineEdit",
 "class": "LineEditValidate",
 "language": "GDScript",
-"path": "res://src/LoginAndRegister/Login/LineEditValidate.gd"
+"path": "res://src/UI/Elements/LineEditValidate.gd"
 }, {
 "base": "Reference",
 "class": "NakamaAPI",
@@ -141,7 +141,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Intro to Nakama"
-run/main_scene="res://src/LoginAndRegister/LoginAndRegister.tscn"
+run/main_scene="res://src/UI/LoginAndRegister/LoginAndRegister.tscn"
 config/icon="res://icon.png"
 
 [autoload]
