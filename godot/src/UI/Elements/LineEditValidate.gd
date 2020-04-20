@@ -9,6 +9,9 @@ var focus_error: StyleBoxFlat = preload("res://assets/theme/stylebox/button_focu
 var is_valid := true setget set_is_valid
 
 
+func _ready() -> void:
+	connect("text_changed", self, "_on_text_changed")
+
 # Returns `true` if the text input is valid.
 # Override this method in classes that extend `LineEditValidate`.
 # @tags - virtual
