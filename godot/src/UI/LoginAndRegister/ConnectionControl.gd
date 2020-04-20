@@ -3,7 +3,7 @@ class_name ConnectionControl
 extends Control
 
 #warning-ignore: unused_signal
-signal control_closed
+signal closed
 signal joined_world
 
 var status

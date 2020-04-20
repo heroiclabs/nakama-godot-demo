@@ -16,7 +16,7 @@ func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	login.connect("pressed", self, "_on_Login_pressed")
 	#warning-ignore: return_value_discarded
-	open_register.connect("button_down", self, "emit_signal", ["control_closed"])
+	open_register.connect("button_down", self, "emit_signal", ["closed"])
 
 	email.text = Connection.get_last_email()
 	if not email.text.empty():

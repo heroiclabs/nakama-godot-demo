@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/UI/Elements/ColorSwatch.gd"
 }, {
-"base": "Reference",
+"base": "Control",
 "class": "ConnectionControl",
 "language": "GDScript",
 "path": "res://src/UI/LoginAndRegister/ConnectionControl.gd"
@@ -141,7 +141,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Intro to Nakama"
-run/main_scene="res://src/UI/LoginAndRegister/LoginAndRegister.tscn"
+run/main_scene="res://src/UI/LoginAndRegister/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

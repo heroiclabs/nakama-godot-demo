@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/UI/LoginAndRegister/Register/RegisterForm.gd" type="Script" id=2]
+[ext_resource path="res://src/UI/Menus/Register/RegisterForm.gd" type="Script" id=2]
 [ext_resource path="res://assets/theme/stylebox/button_focused.tres" type="StyleBox" id=3]
-[ext_resource path="res://src/UI/LoginAndRegister/Login/PasswordField.gd" type="Script" id=4]
+[ext_resource path="res://src/UI/Menus/Login/PasswordField.gd" type="Script" id=4]
 [ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=5]
-[ext_resource path="res://src/UI/LoginAndRegister/Login/EmailField.gd" type="Script" id=6]
+[ext_resource path="res://src/UI/Menus/Login/EmailField.gd" type="Script" id=6]
 [ext_resource path="res://src/UI/Elements/StatusPanel.tscn" type="PackedScene" id=7]
-[ext_resource path="res://src/UI/LoginAndRegister/Login/PasswordRepeatField.gd" type="Script" id=8]
+[ext_resource path="res://src/UI/Menus/Login/PasswordRepeatField.gd" type="Script" id=8]
 
 [node name="RegisterForm" type="Panel"]
 anchor_left = 0.5
@@ -123,7 +123,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Buttons" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -138,14 +138,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Register" type="Button" parent="Buttons"]
+[node name="RegisterButton" type="Button" parent="HBoxContainer"]
 margin_right = 267.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 120, 60 )
 size_flags_horizontal = 3
 text = "Register"
 
-[node name="Cancel" type="Button" parent="Buttons"]
+[node name="CancelButton" type="Button" parent="HBoxContainer"]
 margin_left = 283.0
 margin_right = 551.0
 margin_bottom = 64.0
@@ -154,3 +154,5 @@ size_flags_horizontal = 3
 text = "Cancel"
 
 [node name="StatusPanel" parent="." instance=ExtResource( 7 )]
+[connection signal="pressed" from="HBoxContainer/RegisterButton" to="." method="_on_RegisterButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]
