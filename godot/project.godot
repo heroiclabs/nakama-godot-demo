@@ -27,7 +27,7 @@ _global_script_classes=[ {
 "base": "Control",
 "class": "ConnectionControl",
 "language": "GDScript",
-"path": "res://src/UI/LoginAndRegister/ConnectionControl.gd"
+"path": "res://src/UI/Menus/ConnectionControl.gd"
 }, {
 "base": "Reference",
 "class": "ExceptionHandler",
@@ -141,7 +141,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Intro to Nakama"
-run/main_scene="res://src/UI/LoginAndRegister/MainMenu.tscn"
+run/main_scene="res://src/Main/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

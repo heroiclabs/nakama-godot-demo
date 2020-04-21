@@ -1,15 +1,16 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://src/World/World.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/World/ConnectedWorld.gd" type="Script" id=2]
+[ext_resource path="res://src/World/Level.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/World/Characters/Character.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/World/Characters/Player.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/World/Characters/Character.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Main/GameWorld.gd" type="Script" id=4]
 [ext_resource path="res://src/UI/GameUI.tscn" type="PackedScene" id=5]
 
-[node name="ConnectedWorld" type="Node2D"]
-script = ExtResource( 2 )
+
+[node name="GameWorld" type="Node2D"]
+script = ExtResource( 4 )
 PlayerScene = ExtResource( 3 )
-CharacterScene = ExtResource( 4 )
+CharacterScene = ExtResource( 2 )
 
 [node name="World" parent="." instance=ExtResource( 1 )]
 

@@ -1,7 +1,7 @@
 # Editor panel for creating new characters. Allows you to pick a color from a palette and set the character's name.
 extends Control
 
-signal new_character_created(name, color)
+signal character_created(name, color)
 
 onready var create := $VBoxContainer/CreateButton
 onready var name_field := $VBoxContainer/HBoxContainer/LineEdit
@@ -28,4 +28,4 @@ func enable() -> void:
 func _on_CreateButton_pressed() -> void:
 	if name_field.text.length() == 0:
 		return
-	emit_signal("new_character_created", name_field.text, color_selector.color)
+	emit_signal("character_created", name_field.text, color_selector.color)

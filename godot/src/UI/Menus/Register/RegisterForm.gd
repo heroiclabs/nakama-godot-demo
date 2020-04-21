@@ -10,12 +10,17 @@ onready var field_password_repeat :LineEdit= $Password2/LineEdit
 
 onready var register_remember_email : CheckBox= $RememberEmail
 
+var is_enabled := true setget set_is_enabled
+
 
 func _ready() -> void:
 	status = $StatusPanel
 
 
-func _disable_input(value: bool) -> void:
+func set_is_enabled(value: bool) -> void:
+	is_enabled = value
+	if not cancel_button:
+		yield(self, "ready")
 	cancel_button.disabled = value
 	register_button.disabled = value
 	field_email.editable = not value
@@ -43,7 +48,7 @@ func _on_RegisterButton_pressed() -> void:
 		return
 
 	_set_status("Authenticating...")
-	_disable_input(true)
+	self.is_enabled = false
 
 	var result: int = yield(
 		Connection.register_async(field_email.text, field_password.text), "completed"
@@ -51,13 +56,13 @@ func _on_RegisterButton_pressed() -> void:
 	if result == OK:
 		if register_remember_email.pressed:
 			Connection.save_email(field_email.text)
-
 		yield(do_connect(), "completed")
 	else:
 		_set_status("Error code %s: %s" % [result, Connection.error_message])
 
-	_disable_input(false)
+	self.is_enabled = true
 
 
 func _on_CancelButton_pressed() -> void:
 	emit_signal("closed")
+	hide()

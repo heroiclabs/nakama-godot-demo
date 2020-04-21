@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/world/tileset/tileset_tileset.tres" type="TileSet" id=1]
-[ext_resource path="res://src/World/World.gd" type="Script" id=2]
+[ext_resource path="res://src/World/Level.gd" type="Script" id=2]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;

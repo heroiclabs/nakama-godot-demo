@@ -15,6 +15,7 @@ func _set_status(text: String) -> void:
 		status.text = text
 
 
+# TODO: move out of the UI
 # Sends a connection attempt to the server and joins the world match.
 func do_connect() -> int:
 	_set_status("Connecting...")
