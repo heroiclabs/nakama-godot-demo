@@ -22,7 +22,13 @@ func setup(username: String, color := Color.white, disconnected := false) -> voi
 	)
 # warning-ignore:return_value_discarded
 	tween.interpolate_property(
-		self, "rect_scale", Vector2.ZERO, Vector2.ONE, DURATION_SCALE, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		self,
+		"rect_scale",
+		Vector2.ZERO,
+		Vector2.ONE,
+		DURATION_SCALE,
+		Tween.TRANS_LINEAR,
+		Tween.EASE_OUT
 	)
 # warning-ignore:return_value_discarded
 	tween.interpolate_property(

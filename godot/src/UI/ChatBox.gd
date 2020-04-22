@@ -24,7 +24,10 @@ func add_text(text: String, sender_name: String, color: Color) -> void:
 		chat_log.bbcode_text = chat_log.bbcode_text.substr(chat_log.bbcode_text.find("\n"))
 	else:
 		reply_count += 1
-	chat_log.bbcode_text += "\n[color=#%s]%s[/color]: %s" % [color.to_html(false), sender_name, text]
+	chat_log.bbcode_text += (
+		"\n[color=#%s]%s[/color]: %s"
+		% [color.to_html(false), sender_name, text]
+	)
 
 
 func send_chat_message() -> void:

@@ -11,9 +11,11 @@ onready var texture := $HBoxContainer/TextureRect
 onready var label := $HBoxContainer/Label
 onready var delete_button := $HBoxContainer/DeleteButton
 
+
 func _ready() -> void:
 	setup(1, "hello", Color.green)
 	self.is_enabled = false
+
 
 func setup(character_index: int, character_name: String, character_color: Color) -> void:
 	label.text = character_name

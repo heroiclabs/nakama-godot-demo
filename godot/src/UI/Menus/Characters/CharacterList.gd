@@ -1,4 +1,4 @@
-# Menu that lists the user's characters. 
+# Menu that lists the user's characters.
 # Each CharacterListing in the menu allows the player to select and delete a character.
 extends VBoxContainer
 
@@ -7,12 +7,14 @@ signal character_selected(character_index)
 
 const CharacterListing := preload("res://src/UI/Menus/Characters/CharacterListing.tscn")
 
-var selected_character_index := -1
 var is_enabled := true setget set_is_enabled
 
 
 func _ready() -> void:
-	setup([{name = "Test", color = Color.white}, {name = "Test2", color = Color.red}], {name = "Test2", color = Color.red})
+	setup(
+		[{name = "Test", color = Color.white}, {name = "Test2", color = Color.red}],
+		{name = "Test2", color = Color.red}
+	)
 
 
 func setup(characters: Array, last_played_character: Dictionary) -> void:
@@ -28,7 +30,6 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 		listing.setup(i, name, color)
 		if name == last_played_character.name:
 			listing.grab_focus()
-			selected_character_index = i
 
 		#warning-ignore: return_value_discarded
 		listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
@@ -46,7 +47,3 @@ func set_is_enabled(value: bool) -> void:
 
 func _on_CharacterListing_requested_deletion(index: int) -> void:
 	emit_signal("requested_deletion", index)
-
-
-func _on_CharacterListing_character_selected(index: int) -> void:
-	selected_character_index = index

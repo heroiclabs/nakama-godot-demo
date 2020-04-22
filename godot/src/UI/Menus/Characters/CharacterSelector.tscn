@@ -68,3 +68,6 @@ margin_bottom = 60.0
 rect_min_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Create new"
+[connection signal="character_selected" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_character_selected"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_CreateButton_pressed"]

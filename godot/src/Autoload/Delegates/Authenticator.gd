@@ -13,7 +13,7 @@ func _init(client: NakamaClient, exception_handler: ExceptionHandler) -> void:
 	_exception_handler = exception_handler
 
 
-# Async coroutine. Authenticates a new session via email and password, and
+# Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes session.
 # Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
 func register_async(email: String, password: String) -> int:
@@ -33,7 +33,7 @@ func register_async(email: String, password: String) -> int:
 	return parsed_result
 
 
-# Async coroutine. Authenticates a new session via email and password, but will
+# Asynchronous coroutine. Authenticates a new session via email and password, but will
 # not try to create a new account when it did not previously exist, then
 # initializes session. If a session previously existed in `AUTH`, will try to
 # recover it without needing the authentication server. 

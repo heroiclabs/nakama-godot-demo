@@ -32,7 +32,7 @@ func _init(session: NakamaSession, client: NakamaClient, exception_handler: Exce
 	_exception_handler = exception_handler
 
 
-# Async coroutine. Gets the list of characters belonging to the user out of
+# Asynchronous coroutine. Gets the list of characters belonging to the user out of
 # server storage.
 # Returns an Array of {name: String, color: Color} dictionaries.
 # Returns an empty array if there is a failure or if no characters are found.
@@ -117,7 +117,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 		return OK
 
 
-# Async coroutine. Delete the character at the specified index in the array from
+# Asynchronous coroutine. Delete the character at the specified index in the array from
 # player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR 
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
@@ -134,7 +134,7 @@ func delete_player_character_async(idx: int) -> int:
 		return ERR_PARAMETER_RANGE_ERROR
 
 
-# Async coroutine. Get the last logged in character from the server, if any.
+# Asynchronous coroutine. Get the last logged in character from the server, if any.
 # Returns a {name: String, color: Color} dictionary, or an empty dictionary if no
 # character is found, or something goes wrong.
 func get_last_player_character_async() -> Dictionary:
@@ -165,7 +165,7 @@ func get_last_player_character_async() -> Dictionary:
 	return {}
 
 
-# Async coroutine. Put the last logged in character into player storage on the server.
+# Asynchronous coroutine. Put the last logged in character into player storage on the server.
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
 	var character := {name = name, color = JSON.print(color)}
@@ -182,7 +182,7 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 	return parsed_result
 
 
-# Async coroutine. Writes the player's characters into storage on the server.
+# Asynchronous coroutine. Writes the player's characters into storage on the server.
 # Returns OK or a nakama error code.
 func _write_player_characters_async(characters: Array) -> int:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://src/UI/Menus/Register/RegisterForm.gd" type="Script" id=2]
-[ext_resource path="res://assets/theme/stylebox/button_focused.tres" type="StyleBox" id=3]
+[ext_resource path="res://src/UI/Elements/LineEditValidate.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/UI/Menus/Login/PasswordField.gd" type="Script" id=4]
 [ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=5]
 [ext_resource path="res://src/UI/Menus/Login/EmailField.gd" type="Script" id=6]
@@ -43,15 +43,9 @@ margin_bottom = 43.0
 rect_min_size = Vector2( 120, 0 )
 text = "Email"
 
-[node name="LineEdit" type="LineEdit" parent="Email"]
+[node name="LineEditValidate" parent="Email" instance=ExtResource( 3 )]
 margin_left = 136.0
 margin_right = 551.0
-margin_bottom = 56.0
-size_flags_horizontal = 3
-custom_styles/focus = ExtResource( 3 )
-shortcut_keys_enabled = false
-placeholder_text = "example@heroicslab.com"
-caret_blink = true
 script = ExtResource( 6 )
 
 [node name="Password" type="HBoxContainer" parent="."]
@@ -72,16 +66,13 @@ margin_bottom = 39.0
 rect_min_size = Vector2( 120, 0 )
 text = "Password"
 
-[node name="LineEdit" type="LineEdit" parent="Password"]
+[node name="LineEditValidate" parent="Password" instance=ExtResource( 3 )]
 margin_left = 136.0
 margin_right = 551.0
 margin_bottom = 48.0
-size_flags_horizontal = 3
-secret = true
-caret_blink = true
 script = ExtResource( 4 )
 
-[node name="Password2" type="HBoxContainer" parent="."]
+[node name="PasswordRepeat" type="HBoxContainer" parent="."]
 anchor_right = 1.0
 margin_left = 16.0
 margin_top = 156.0
@@ -92,22 +83,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="Password2"]
+[node name="Label" type="Label" parent="PasswordRepeat"]
 margin_top = 8.0
 margin_right = 120.0
 margin_bottom = 39.0
 rect_min_size = Vector2( 120, 0 )
 text = "Repeat"
 
-[node name="LineEdit" type="LineEdit" parent="Password2"]
+[node name="LineEditValidate" parent="PasswordRepeat" instance=ExtResource( 3 )]
 margin_left = 136.0
 margin_right = 551.0
 margin_bottom = 48.0
-size_flags_horizontal = 3
-secret = true
-caret_blink = true
 script = ExtResource( 8 )
-password_field_path = NodePath("../../../RegisterForm/Password/LineEdit")
+password_field_path = NodePath("../../Password/LineEditValidate")
 
 [node name="RememberEmail" type="CheckBox" parent="."]
 anchor_right = 1.0

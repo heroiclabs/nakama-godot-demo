@@ -1,64 +1,57 @@
 # Control panel that manages logging into an existing account.
-extends ConnectionControl
+extends Control
 
 signal register_pressed
+signal login_pressed(email, password, do_remember_email)
 
-onready var open_register := $HBoxContainer/RegisterButton
-onready var login := $HBoxContainer/LoginButton
-
-onready var email := $Email/LineEditValidate
-onready var password := $Password/LineEditValidate
+var is_enabled := true setget set_is_enabled
 
 onready var remember_email := $RememberEmail
 
+onready var email_field := $Email/LineEditValidate
+onready var password_field := $Password/LineEditValidate
+onready var login_button := $HBoxContainer/LoginButton
+onready var register_button := $HBoxContainer/RegisterButton
+
+onready var status_panel := $StatusPanel
+
 
 func _ready() -> void:
-	status = $StatusPanel
-
-	#warning-ignore: return_value_discarded
-	login.connect("pressed", self, "_on_Login_pressed")
-	#warning-ignore: return_value_discarded
-	open_register.connect("button_down", self, "emit_signal", ["closed"])
-
-	email.text = Connection.get_last_email()
-	if not email.text.empty():
+	email_field.text = Connection.get_last_email()
+	if not email_field.text.empty():
 		remember_email.pressed = true
 
-	email.grab_focus()
+	email_field.grab_focus()
 
 
-func _disable_input(value: bool) -> void:
-	email.editable = not value
-	password.editable = not value
-	login.disabled = value
-	open_register.disabled = value
+func set_is_enabled(value: bool) -> void:
+	is_enabled = value
+	if not email_field:
+		yield(self, "ready")
+	email_field.editable = is_enabled
+	password_field.editable = is_enabled
+	remember_email.disabled = not is_enabled
+	login_button.disabled = not is_enabled
+	register_button.disabled = not is_enabled
+
+
+func update_status(text: String) -> void:
+	status_panel.text = text
 
 
 func _on_LoginButton_pressed() -> void:
-	if not email.is_valid:
-		_set_status("The email address is not valid")
+	if not email_field.is_valid:
+		status_panel.text = "The email address is not valid"
 		return
-	if password.text == "":
-		_set_status("Please enter your password to log in")
+	if password_field.text == "":
+		status_panel.text = "Please enter your password to log in"
 		return
-	if password.text.length() < 8:
-		_set_status("The password should be at least 8 characters long")
+	if password_field.text.length() < 8:
+		status_panel.text = "The password should be at least 8 characters long"
 		return
 
-	_set_status("Authenticating...")
-	_disable_input(true)
-
-	var result: int = yield(Connection.login_async(email.text, password.text), "completed")
-	if result != OK:
-		status.show()
-		_set_status(Connection.error_message)
-	else:
-		status.hide()
-		if remember_email.pressed:
-			Connection.save_email(email.text)
-		yield(do_connect(), "completed")
-
-	_disable_input(false)
+	emit_signal("login_pressed", email_field.text, password_field.text, remember_email.pressed)
+	status_panel.text = "Authenticating..."
 
 
 func _on_RegisterButton_pressed() -> void:

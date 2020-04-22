@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Main/MainMenu.gd" type="Script" id=1]
 [ext_resource path="res://src/UI/Menus/Register/RegisterForm.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/UI/Menus/Characters/CharacterMenu.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/UI/Menus/Login/LoginForm.tscn" type="PackedScene" id=4]
 
 [node name="MainMenu" type="Control"]
@@ -12,12 +11,13 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-CharacterSelect = ExtResource( 3 )
 
 [node name="LoginForm" parent="." instance=ExtResource( 4 )]
 visible = false
 
 [node name="RegisterForm" parent="." instance=ExtResource( 2 )]
 visible = false
+[connection signal="login_pressed" from="LoginForm" to="." method="_on_LoginForm_login_pressed"]
 [connection signal="register_pressed" from="LoginForm" to="." method="_on_LoginForm_register_pressed"]
-[connection signal="closed" from="RegisterForm" to="." method="_on_RegisterForm_closed"]
+[connection signal="cancel_pressed" from="RegisterForm" to="." method="_on_RegisterForm_cancel_pressed"]
+[connection signal="register_pressed" from="RegisterForm" to="." method="_on_RegisterForm_register_pressed"]

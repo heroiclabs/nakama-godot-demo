@@ -80,7 +80,7 @@ var _authenticator := Authenticator.new(_client, _exception_handler)
 var _storage_worker: StorageWorker
 
 
-# Async coroutine. Authenticates a new session via email and password, and
+# Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes _session.
 # Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
 func register_async(email: String, password: String) -> int:
@@ -90,7 +90,7 @@ func register_async(email: String, password: String) -> int:
 	return result
 
 
-# Async coroutine. Authenticates a new session via email and password, but will
+# Asynchronous coroutine. Authenticates a new session via email and password, but will
 # not try to create a new account when it did not previously exist, then
 # initializes _session. If a session previously existed in `AUTH`, will try to
 # recover it without needing the authentication server. 
@@ -102,7 +102,7 @@ func login_async(email: String, password: String) -> int:
 	return result
 
 
-# Async coroutine. Connects the socket to the live server.
+# Asynchronous coroutine. Connects the socket to the live server.
 # Returns OK or a nakama error number. Error messages are stored in `Connection.error_message`
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
@@ -150,7 +150,7 @@ func get_user_id() -> String:
 	return ""
 
 
-# Async coroutine. Joins the match representing the world and the global chat
+# Asynchronous coroutine. Joins the match representing the world and the global chat
 # room. Will get the match ID from the server through a remote procedure (see world_rpc.lua).
 # Returns OK, a nakama error number, or ERR_UNAVAILABLE if the socket is not connected.
 # Stores any error message in `Connection.error_message`
@@ -193,7 +193,7 @@ func join_world_async() -> int:
 	return parsed_result
 
 
-# Async coroutine. Gets the list of characters belonging to the user out of
+# Asynchronous coroutine. Gets the list of characters belonging to the user out of
 # server storage.
 # Returns an Array of {name: String, color: Color} dictionaries.
 # Returns an empty array if there is a failure or if no characters are found.
@@ -219,7 +219,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 	return result
 
 
-# Async coroutine. Delete the character at the specified index in the array from
+# Asynchronous coroutine. Delete the character at the specified index in the array from
 # player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR 
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
@@ -227,7 +227,7 @@ func delete_player_character_async(idx: int) -> int:
 	return result
 
 
-# Async coroutine. Get the last logged in character from the server, if any.
+# Asynchronous coroutine. Get the last logged in character from the server, if any.
 # Returns a {name: String, color: Color} dictionary, or an empty dictionary if no
 # character is found, or something goes wrong.
 func get_last_player_character_async() -> Dictionary:
@@ -237,7 +237,7 @@ func get_last_player_character_async() -> Dictionary:
 	return character
 
 
-# Async coroutine. Put the last logged in character into player storage on the server.
+# Asynchronous coroutine. Put the last logged in character into player storage on the server.
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
 	var result: int = yield(
