@@ -1,5 +1,6 @@
 # Confirmation popup with yes and no buttons
 tool
+class_name ConfirmationPopup
 extends Panel
 
 signal confirmed

@@ -20,4 +20,6 @@ visible = false
 
 [node name="ConfirmationPopup" parent="." instance=ExtResource( 3 )]
 visible = false
+[connection signal="create_pressed" from="CharacterSelector" to="." method="_on_CharacterSelector_create_pressed"]
+[connection signal="login_pressed" from="CharacterSelector" to="." method="_on_CharacterSelector_login_pressed"]
 [connection signal="new_character_requested" from="CharacterCreator" to="." method="_on_CharacterCreator_new_character_requested"]

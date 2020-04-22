@@ -1,18 +1,19 @@
 # Panel that controls the loading and displaying of characters in a character list.
 # Also acts as the spawner and point of entry into the multiplayer level scene.
-extends Control
+extends Menu
 
 signal create_pressed
 signal login_pressed
 
 const MAX_CHARACTERS := 4
 
-var is_enabled := true setget set_is_enabled
 var last_index := -1
 
 onready var character_list := $MarginContainer/VBoxContainer/CharacterList
 onready var login_button := $MarginContainer/VBoxContainer/HBoxContainer/LoginButton
 onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/CreateButton
+
+# TODO: move connection calls out of the UI
 
 
 # Initializes the control, fetches the characters from a successfully logged
@@ -30,7 +31,7 @@ func setup() -> void:
 
 
 func set_is_enabled(value: bool) -> void:
-	is_enabled = value
+	.set_is_enabled(value)
 	login_button.disabled = not is_enabled
 	create_button.disabled = not is_enabled
 	character_list.is_enabled = is_enabled
@@ -46,10 +47,11 @@ func _on_ConfirmationPopup_confirmed() -> void:
 
 	character_list.get_child(last_index).queue_free()
 	Connection.delete_player_character_async(last_index)
-	self.is_enabled = true
 
 	for i in range(character_list.get_child_count()):
 		character_list.get_child(i).index = i
+
+	self.is_enabled = true
 
 
 func _on_LoginButton_pressed() -> void:

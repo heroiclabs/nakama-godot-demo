@@ -1,10 +1,8 @@
 # Control panel that manages logging into an existing account.
-extends Control
+extends Menu
 
 signal register_pressed
 signal login_pressed(email, password, do_remember_email)
-
-var is_enabled := true setget set_is_enabled
 
 onready var remember_email := $RememberEmail
 
@@ -25,7 +23,7 @@ func _ready() -> void:
 
 
 func set_is_enabled(value: bool) -> void:
-	is_enabled = value
+	.set_is_enabled(value)
 	if not email_field:
 		yield(self, "ready")
 	email_field.editable = is_enabled
@@ -35,7 +33,8 @@ func set_is_enabled(value: bool) -> void:
 	register_button.disabled = not is_enabled
 
 
-func update_status(text: String) -> void:
+func set_status(text: String) -> void:
+	.set_status(text)
 	status_panel.text = text
 
 

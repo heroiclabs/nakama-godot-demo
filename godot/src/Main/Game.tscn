@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Main/Game.gd" type="Script" id=1]
-[ext_resource path="res://src/Main/MainMenu.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Main/LoginAndRegister.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterMenu.tscn" type="PackedScene" id=3]
 
 [node name="Game" type="Node"]

@@ -70,6 +70,7 @@ text = "Password"
 margin_left = 136.0
 margin_right = 551.0
 margin_bottom = 48.0
+secret = true
 script = ExtResource( 4 )
 
 [node name="PasswordRepeat" type="HBoxContainer" parent="."]
@@ -94,6 +95,7 @@ text = "Repeat"
 margin_left = 136.0
 margin_right = 551.0
 margin_bottom = 48.0
+secret = true
 script = ExtResource( 8 )
 password_field_path = NodePath("../../Password/LineEditValidate")
 

@@ -53,6 +53,7 @@ func join_game_world() -> int:
 		)
 	return result
 
+
 # Requests the server to authenticate the player using their credentials.
 # Attempts authentication up to `MAX_REQUEST_ATTEMPTS` times.
 func authenticate_user(email: String, password: String, do_remember_email: bool) -> void:
@@ -69,9 +70,10 @@ func authenticate_user(email: String, password: String, do_remember_email: bool)
 		main_menu.hide()
 		character_menu.show()
 	else:
-		main_menu.update_status("Error code %s: %s" % [result, Connection.error_message])
+		main_menu.status = "Error code %s: %s" % [result, Connection.error_message]
 
 	_server_request_attempts = 0
+
 
 # Requests the server to authenticate the player using their credentials.
 func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
@@ -94,15 +96,13 @@ func _on_MainMenu_login_pressed(email: String, password: String, do_remember_ema
 
 
 func _on_MainMenu_register_pressed(email: String, password: String, do_remember_email: bool) -> void:
-	main_menu.update_status("Authenticating...")
+	main_menu.status = "Authenticating..."
 	main_menu.is_enabled = false
 
-	var result: int = yield(
-		Connection.register_async(email, password), "completed"
-	)
+	var result: int = yield(Connection.register_async(email, password), "completed")
 	if result == OK:
 		authenticate_user(email, password, do_remember_email)
 	else:
-		main_menu.update_status("Error code %s: %s" % [result, Connection.error_message])
+		main_menu.status = "Error code %s: %s" % [result, Connection.error_message]
 
 	main_menu.is_enabled = true

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/UI/Elements/Button.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=2]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterSelector.gd" type="Script" id=3]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterList.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/UI/Components/ConfirmationPopup.tscn" type="PackedScene" id=5]
 
 [node name="CharacterSelector" type="PanelContainer"]
 anchor_left = 0.5
@@ -68,6 +69,19 @@ margin_bottom = 60.0
 rect_min_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Create new"
+
+[node name="ConfirmationPopup" parent="." instance=ExtResource( 5 )]
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 63.0
+margin_top = 103.0
+margin_right = 447.0
+margin_bottom = 303.0
 [connection signal="character_selected" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_character_selected"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_CreateButton_pressed"]
+[connection signal="cancelled" from="ConfirmationPopup" to="." method="_on_ConfirmationPopup_cancelled"]
+[connection signal="confirmed" from="ConfirmationPopup" to="." method="_on_ConfirmationPopup_confirmed"]
