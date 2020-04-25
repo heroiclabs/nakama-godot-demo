@@ -29,9 +29,9 @@ func set_is_enabled(value: bool) -> void:
 	delete_button.disabled = not is_enabled
 
 
-func _on_pressed() -> void:
-	emit_signal("character_selected", get_position_in_parent())
-
-
 func _on_DeleteButton_pressed() -> void:
 	emit_signal("requested_deletion", get_position_in_parent())
+
+
+func _on_focus_entered() -> void:
+	emit_signal("character_selected", get_position_in_parent())
