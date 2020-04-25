@@ -38,7 +38,7 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 # Deletes the listing for the selected character and updates the `selected_index`.
 func delete_selected_character() -> void:
 	get_child(selected_index).queue_free()
-	selected_index %= get_child_count() - 1
+	selected_index = selected_index % int(max(get_child_count() - 1, 1))
 	get_child(selected_index).grab_focus()
 
 
