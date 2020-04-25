@@ -46,6 +46,8 @@ func _on_CharacterList_requested_deletion(character_index) -> void:
 	
 	confirmation_popup.open()
 	var is_confirmed: bool = yield(confirmation_popup, "option_picked")
-	emit_signal("character_deletion_requested", character_index)
+	if is_confirmed:
+		emit_signal("character_deletion_requested", character_index)
 
 	self.is_enabled = true
+
