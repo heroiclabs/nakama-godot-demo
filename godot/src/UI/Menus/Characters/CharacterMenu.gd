@@ -7,7 +7,6 @@ signal character_selected(index)
 
 onready var character_selector := $CharacterSelector
 onready var character_creator := $CharacterCreator
-onready var confirmation_popup := $ConfirmationPopup
 
 
 func _ready() -> void:
