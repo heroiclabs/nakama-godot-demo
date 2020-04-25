@@ -4,6 +4,7 @@ extends Button
 
 signal requested_deletion(character_index)
 signal character_selected(index)
+signal double_clicked(index)
 
 var is_enabled := true setget set_is_enabled
 
@@ -35,3 +36,8 @@ func _on_DeleteButton_pressed() -> void:
 
 func _on_focus_entered() -> void:
 	emit_signal("character_selected", get_position_in_parent())
+
+
+func _gui_input(event: InputEvent) -> void:
+    if event is InputEventMouseButton and event.doubleclick:
+        emit_signal("double_clicked", get_position_in_parent())

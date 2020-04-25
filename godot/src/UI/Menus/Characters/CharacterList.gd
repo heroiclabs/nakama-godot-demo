@@ -3,7 +3,7 @@
 extends Menu
 
 signal requested_deletion(character_index)
-signal character_pressed(index)
+signal character_selected(index)
 
 const CharacterListing := preload("res://src/UI/Menus/Characters/CharacterListing.tscn")
 
@@ -31,7 +31,8 @@ func add_character(name: String, color: Color) -> Node:
 	listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
 	#warning-ignore: return_value_discarded
 	listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
-	listing.connect("pressed", self, "_on_CharacterListing_pressed")
+	# warning-ignore:return_value_discarded
+	listing.connect("double_clicked", self, "_on_CharacterListing_double_clicked")
 	return listing
 
 
@@ -59,5 +60,5 @@ func _on_CharacterListing_requested_deletion(index: int) -> void:
 func _on_CharacterListing_character_selected(index: int) -> void:
 	selected_index = index
 
-func _on_CharacterListing_pressed() -> void:
-	emit_signal("character_pressed", selected_index)
+func _on_CharacterListing_double_clicked(index: int) -> void:
+	emit_signal("character_selected", index)

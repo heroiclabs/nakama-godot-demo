@@ -57,5 +57,4 @@ texture_hover = ExtResource( 3 )
 expand = true
 stretch_mode = 5
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
-[connection signal="pressed" from="." to="." method="_on_pressed"]
 [connection signal="pressed" from="HBoxContainer/DeleteButton" to="." method="_on_DeleteButton_pressed"]

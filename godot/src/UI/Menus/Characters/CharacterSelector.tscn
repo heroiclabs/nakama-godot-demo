@@ -80,6 +80,7 @@ margin_left = 63.0
 margin_top = 103.0
 margin_right = 447.0
 margin_bottom = 303.0
+[connection signal="character_selected" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_character_selected"]
 [connection signal="requested_deletion" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_requested_deletion"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_CreateButton_pressed"]

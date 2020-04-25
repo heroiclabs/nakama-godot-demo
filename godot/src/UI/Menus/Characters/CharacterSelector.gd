@@ -51,3 +51,6 @@ func _on_CharacterList_requested_deletion(character_index) -> void:
 
 	self.is_enabled = true
 
+
+func _on_CharacterList_character_selected(index) -> void:
+	emit_signal("login_pressed", index)
