@@ -72,14 +72,23 @@ func authenticate_user(email: String, password: String, do_remember_email: bool)
 			break
 
 	if result == OK:
-		login_and_register.hide()
-		character_menu.show()
+		open_character_menu()
 	else:
 		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
 
 	_server_request_attempts = 0
 	return result
 
+
+func open_character_menu() -> void:
+	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
+	var last_played_character: Dictionary = yield(
+		Connection.get_last_player_character_async(), "completed"
+	)
+	character_menu.setup(characters, last_played_character)
+	login_and_register.hide()
+	character_menu.show()
+	
 
 # Requests the server to authenticate the player using their credentials.
 func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
@@ -103,12 +112,9 @@ func _on_LoginAndRegister_login_pressed(email: String, password: String, do_reme
 	login_and_register.status = "Authenticating..."
 	login_and_register.is_enabled = false
 	
-	var result: int = yield(authenticate_user(email, password, do_remember_email), "completed")
-	if result == OK:
-		get_tree().change_scene(next_scene_path)
-	else:
-		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
-		login_and_register.is_enabled = true
+	yield(authenticate_user(email, password, do_remember_email), "completed")
+
+	login_and_register.is_enabled = true
 
 
 # Deactivates the user interface, registers, and authenticates the user.
@@ -120,7 +126,7 @@ func _on_LoginAndRegister_register_pressed(email: String, password: String, do_r
 	var result: int = yield(Connection.register_async(email, password), "completed")
 	if result == OK:
 		yield(authenticate_user(email, password, do_remember_email), "completed")
-		get_tree().change_scene(next_scene_path)
 	else:
 		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
-		login_and_register.is_enabled = true
+
+	login_and_register.is_enabled = true

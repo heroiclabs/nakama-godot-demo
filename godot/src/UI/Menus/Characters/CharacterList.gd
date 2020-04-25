@@ -36,15 +36,17 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 
 
 # Deletes the listing for the selected character and updates the `selected_index`.
-func delete_selected_character() -> void:
-	get_child(selected_index).queue_free()
-	selected_index = selected_index % int(max(get_child_count() - 1, 1))
-	get_child(selected_index).grab_focus()
+func delete_character(index: int) -> void:
+	get_child(index).queue_free()
+	var new_index: int = selected_index % int(max(get_child_count() - 1, 1))
+	if new_index != selected_index:
+		selected_index = new_index
+		get_child(selected_index).grab_focus()
 
 
 func set_is_enabled(value: bool) -> void:
 	.set_is_enabled(value)
-	if not get_child(0):
+	if get_child_count() == 0:
 		yield(self, "ready")
 	for character_listing in get_children():
 		character_listing.is_enabled = is_enabled

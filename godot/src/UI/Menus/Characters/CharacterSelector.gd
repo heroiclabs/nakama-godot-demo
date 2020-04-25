@@ -16,16 +16,10 @@ onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/Create
 
 onready var confirmation_popup := $ConfirmationPopup
 
-# TODO: move connection calls out of the UI
-
 # Initializes the control, fetches the characters from a successfully logged
 # in player, and adds them in a controllable list. Also gets the last successful
 # logged in character.
-func setup() -> void:
-	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
-	var last_played_character: Dictionary = yield(
-		Connection.get_last_player_character_async(), "completed"
-	)
+func setup(characters: Array, last_played_character: Dictionary) -> void:
 	character_list.setup(characters, last_played_character)
 
 	if characters.size() == MAX_CHARACTERS:
@@ -55,6 +49,6 @@ func _on_CharacterList_requested_deletion(character_index) -> void:
 	if is_confirmed:
 		emit_signal("character_deletion_requested", character_index)
 		# TODO: wait for confirmation from the server to delete the UI element
-		character_list.delete_selected_character()
+		character_list.delete_character(character_index)
 
 	self.is_enabled = true

@@ -12,6 +12,8 @@ onready var character_creator := $CharacterCreator
 func _ready() -> void:
 	self.menu_current = character_selector
 
+func setup(characters: Array, last_played_character: Dictionary) -> void:
+	character_selector.setup(characters, last_played_character)
 
 func _on_CharacterSelector_create_pressed() -> void:
 	self.menu_current = character_creator
