@@ -26,15 +26,29 @@ func create_level(player_data: Dictionary) -> void:
 # Returns a dictionary with the player's name and color if it worked.
 # Otherwise, returns an empty dictionary.
 func create_character(name: String, color: Color) -> void:
+	character_menu.is_enabled = false
+
 	var result: int = yield(Connection.create_player_character_async(color, name), "completed")
 
 	var data := {}
-	if result == ERR_UNAVAILABLE:
-		printerr("Character %s unavailable." % name)
-	elif result == OK:
+	if result == OK:
 		data = {name = name, color = color}
+		character_menu.add_character(name, color)
 		Connection.store_last_player_character_async(name, color)
+	elif result == ERR_UNAVAILABLE:
+		printerr("Character %s unavailable." % name)
+
+	character_menu.is_enabled = true
 	return data
+
+
+func delete_character(index: int) -> void:
+	character_menu.is_enabled = false
+	var result: int = yield(Connection.delete_player_character_async(index), "completed")
+
+	if result == OK:
+		character_menu.delete_character(index)
+	character_menu.is_enabled = true
 
 
 # Gets a player's data asynchronously by `index` from the server.
@@ -61,7 +75,7 @@ func join_game_world() -> int:
 
 # Requests the server to authenticate the player using their credentials.
 # Attempts authentication up to `MAX_REQUEST_ATTEMPTS` times.
-func authenticate_user(email: String, password: String, do_remember_email: bool) -> int:
+func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
 	var result := -1
 
 	while result != OK:
@@ -130,3 +144,7 @@ func _on_LoginAndRegister_register_pressed(email: String, password: String, do_r
 		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
 
 	login_and_register.is_enabled = true
+
+
+func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
+	delete_character(index)

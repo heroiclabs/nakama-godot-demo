@@ -12,21 +12,24 @@ var selected_index := -1
 func setup(characters: Array, last_played_character: Dictionary) -> void:
 	for index in range(characters.size()):
 		var character: Dictionary = characters[index]
+		var listing := add_character(character.name, character.color)
 
-		var name: String = character.name
-		var color: Color = character.color
-		var listing := CharacterListing.instance()
-
-		add_child(listing)
-		listing.setup(name, color)
-		if name == last_played_character.name:
+		if character.name == last_played_character.name:
 			listing.grab_focus()
 			selected_index = index
 
-		#warning-ignore: return_value_discarded
-		listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
-		#warning-ignore: return_value_discarded
-		listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
+
+
+
+func add_character(name: String, color: Color) -> Node:
+	var listing := CharacterListing.instance()
+	add_child(listing)
+	listing.setup(name, color)
+	#warning-ignore: return_value_discarded
+	listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
+	#warning-ignore: return_value_discarded
+	listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
+	return listing
 
 
 # Deletes the listing for the selected character and updates the `selected_index`.

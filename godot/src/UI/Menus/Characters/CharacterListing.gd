@@ -1,4 +1,5 @@
 # A flat button representing a listing for a single character
+class_name CharacterListing
 extends Button
 
 signal requested_deletion(character_index)
