@@ -3,12 +3,14 @@
 extends Menu
 
 signal requested_deletion(character_index)
+signal character_pressed(index)
 
 const CharacterListing := preload("res://src/UI/Menus/Characters/CharacterListing.tscn")
 
 var selected_index := -1
 
 
+# Fills the list with character listings and gives focus to the last played character's listing.
 func setup(characters: Array, last_played_character: Dictionary) -> void:
 	for index in range(characters.size()):
 		var character: Dictionary = characters[index]
@@ -20,7 +22,7 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 
 
 
-
+# Creates a new `CharacterListing` that represents a character in the interface.
 func add_character(name: String, color: Color) -> Node:
 	var listing := CharacterListing.instance()
 	add_child(listing)
@@ -29,6 +31,7 @@ func add_character(name: String, color: Color) -> Node:
 	listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
 	#warning-ignore: return_value_discarded
 	listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
+	listing.connect("pressed", self, "_on_CharacterListing_pressed")
 	return listing
 
 
@@ -55,3 +58,6 @@ func _on_CharacterListing_requested_deletion(index: int) -> void:
 
 func _on_CharacterListing_character_selected(index: int) -> void:
 	selected_index = index
+
+func _on_CharacterListing_pressed() -> void:
+	emit_signal("character_pressed", selected_index)
