@@ -12,6 +12,7 @@
 margin_right = 120.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 480, 80 )
+mouse_filter = 1
 size_flags_horizontal = 4
 theme = ExtResource( 5 )
 custom_styles/normal = ExtResource( 7 )
@@ -49,6 +50,7 @@ margin_left = 297.0
 margin_right = 347.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 50, 50 )
+shortcut_in_tooltip = false
 texture_normal = ExtResource( 1 )
 texture_pressed = ExtResource( 2 )
 texture_hover = ExtResource( 3 )

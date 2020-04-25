@@ -2,9 +2,8 @@
 extends Button
 
 signal requested_deletion(character_index)
-signal character_selected(character_index)
+signal character_selected(index)
 
-var index: int = -1
 var is_enabled := true setget set_is_enabled
 
 onready var texture := $HBoxContainer/TextureRect
@@ -12,15 +11,9 @@ onready var label := $HBoxContainer/Label
 onready var delete_button := $HBoxContainer/DeleteButton
 
 
-func _ready() -> void:
-	setup(1, "hello", Color.green)
-	self.is_enabled = false
-
-
-func setup(character_index: int, character_name: String, character_color: Color) -> void:
+func setup(character_name: String, character_color: Color) -> void:
 	label.text = character_name
 	texture.modulate = character_color
-	index = character_index
 
 
 func get_name() -> String:
@@ -36,8 +29,8 @@ func set_is_enabled(value: bool) -> void:
 
 
 func _on_pressed() -> void:
-	emit_signal("character_selected", index)
+	emit_signal("character_selected", get_position_in_parent())
 
 
 func _on_DeleteButton_pressed() -> void:
-	emit_signal("requested_deletion", index)
+	emit_signal("requested_deletion", get_position_in_parent())

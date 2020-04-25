@@ -2,8 +2,9 @@
 # Also acts as the spawner and point of entry into the multiplayer level scene.
 extends Menu
 
+signal character_deletion_requested(index)
+signal login_pressed(selected_index)
 signal create_pressed
-signal login_pressed
 
 const MAX_CHARACTERS := 4
 
@@ -13,8 +14,9 @@ onready var character_list := $MarginContainer/VBoxContainer/CharacterList
 onready var login_button := $MarginContainer/VBoxContainer/HBoxContainer/LoginButton
 onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/CreateButton
 
-# TODO: move connection calls out of the UI
+onready var confirmation_popup := $ConfirmationPopup
 
+# TODO: move connection calls out of the UI
 
 # Initializes the control, fetches the characters from a successfully logged
 # in player, and adds them in a controllable list. Also gets the last successful
@@ -37,30 +39,22 @@ func set_is_enabled(value: bool) -> void:
 	character_list.is_enabled = is_enabled
 
 
-func _on_ConfirmationPopup_cancelled() -> void:
-	self.is_enabled = true
-
-
-func _on_ConfirmationPopup_confirmed() -> void:
-	if character_list.get_child_count() <= last_index:
-		return
-
-	character_list.get_child(last_index).queue_free()
-	Connection.delete_player_character_async(last_index)
-
-	for i in range(character_list.get_child_count()):
-		character_list.get_child(i).index = i
-
-	self.is_enabled = true
-
-
 func _on_LoginButton_pressed() -> void:
-	pass  # Replace with function body.
-
-
-func _on_CharacterList_character_selected(character_index) -> void:
-	pass  # Replace with function body.
+	emit_signal("login_pressed", character_list.selected_index)
 
 
 func _on_CreateButton_pressed() -> void:
-	pass  # Replace with function body.
+	emit_signal("create_pressed")
+
+
+func _on_CharacterList_requested_deletion(character_index) -> void:
+	self.is_enabled = false
+	
+	confirmation_popup.open()
+	var is_confirmed: bool = yield(confirmation_popup, "option_picked")
+	if is_confirmed:
+		emit_signal("character_deletion_requested", character_index)
+		# TODO: wait for confirmation from the server to delete the UI element
+		character_list.delete_selected_character()
+
+	self.is_enabled = true
