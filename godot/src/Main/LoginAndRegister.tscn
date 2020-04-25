@@ -13,7 +13,6 @@ __meta__ = {
 }
 
 [node name="LoginForm" parent="." instance=ExtResource( 4 )]
-visible = false
 
 [node name="RegisterForm" parent="." instance=ExtResource( 2 )]
 visible = false
