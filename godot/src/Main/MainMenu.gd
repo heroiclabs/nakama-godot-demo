@@ -115,11 +115,6 @@ func _request_authentication(email: String, password: String, do_remember_email 
 	login_and_register.is_enabled = true
 	return result
 
-
-func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
-	create_character(name, color)
-
-
 # Deactivates the user interface and authenticates the user.
 # If the server authenticated the user, goes to the game level scene.
 func _on_LoginAndRegister_login_pressed(email: String, password: String, do_remember_email: bool) -> void:
@@ -148,3 +143,13 @@ func _on_LoginAndRegister_register_pressed(email: String, password: String, do_r
 
 func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
 	delete_character(index)
+
+
+func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
+	create_character(name, color)
+
+
+
+func _on_CharacterMenu_character_selected(_index: int) -> void:
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))

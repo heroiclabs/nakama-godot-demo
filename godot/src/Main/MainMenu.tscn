@@ -14,4 +14,5 @@ visible = false
 [connection signal="login_pressed" from="LoginAndRegister" to="." method="_on_LoginAndRegister_login_pressed"]
 [connection signal="register_pressed" from="LoginAndRegister" to="." method="_on_LoginAndRegister_register_pressed"]
 [connection signal="character_deletion_requested" from="CharacterMenu" to="." method="_on_CharacterMenu_character_deletion_requested"]
+[connection signal="character_selected" from="CharacterMenu" to="." method="_on_CharacterMenu_character_selected"]
 [connection signal="new_character_requested" from="CharacterMenu" to="." method="_on_CharacterMenu_new_character_requested"]
