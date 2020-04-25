@@ -8,12 +8,6 @@ const CharacterListing := preload("res://src/UI/Menus/Characters/CharacterListin
 
 var selected_index := -1
 
-func _ready() -> void:
-	setup(
-		[{name = "Test", color = Color.white}, {name = "Test2", color = Color.red}],
-		{name = "Test2", color = Color.red}
-	)
-
 
 func setup(characters: Array, last_played_character: Dictionary) -> void:
 	for index in range(characters.size()):
