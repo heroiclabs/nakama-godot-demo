@@ -15,15 +15,10 @@ onready var world := $World
 onready var game_ui := $CanvasLayer/GameUI
 
 
+# TODO: Separate the UI and the level
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	game_ui.connect("color_changed", self, "_on_Color_changed")
-	#warning-ignore: return_value_discarded
-	game_ui.connect("text_sent", self, "_on_Text_Sent")
-	#warning-ignore: return_value_discarded
-	game_ui.connect("editing", self, "_on_Chat_editing")
-	#warning-ignore: return_value_discarded
-	Connection.connect("initial_state_received", self, "_on_state_received")
+	Connection.connect("initial_state_received", self, "_on_Connection_initial_state_received")
 
 
 func setup(username: String, color: Color) -> void:
@@ -57,15 +52,15 @@ func join_world(
 		)
 
 	#warning-ignore: return_value_discarded
-	Connection.connect("presences_changed", self, "_on_Presences_changed")
+	Connection.connect("presences_changed", self, "_on_Connection_presences_changed")
 	#warning-ignore: return_value_discarded
-	Connection.connect("state_updated", self, "_on_State_updated")
+	Connection.connect("state_updated", self, "_on_Connection_state_updated")
 	#warning-ignore: return_value_discarded
-	Connection.connect("color_updated", self, "_on_Color_updated")
+	Connection.connect("color_updated", self, "_on_Connection_color_updated")
 	#warning-ignore: return_value_discarded
-	Connection.connect("chat_message_received", self, "_on_Chat_Message_received")
+	Connection.connect("chat_message_received", self, "_on_Connection_chat_message_received")
 	#warning-ignore: return_value_discarded
-	Connection.connect("character_spawned", self, "_on_Character_spawned")
+	Connection.connect("character_spawned", self, "_on_Connection_character_spawned")
 
 
 func do_hide() -> void:
@@ -115,7 +110,7 @@ func _setup_character(
 		character.do_hide()
 
 
-func _on_Presences_changed() -> void:
+func _on_Connection_presences_changed() -> void:
 	var presences := Connection.presences
 
 	for p in presences.keys():
@@ -138,7 +133,7 @@ func _on_Presences_changed() -> void:
 		characters.erase(d)
 
 
-func _on_State_updated(positions: Dictionary, inputs: Dictionary) -> void:
+func _on_Connection_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
 	var update := false
 	for c in characters.keys():
 		update = false
@@ -154,19 +149,16 @@ func _on_State_updated(positions: Dictionary, inputs: Dictionary) -> void:
 			characters[c].update_state()
 
 
-func _on_Color_changed(color: Color) -> void:
-	player.color = color
-	game_ui.setup(color)
-	Connection.send_player_color_update(color)
-	Connection.update_player_character_async(color, player.username)
 
 
-func _on_Color_updated(id: String, color: Color) -> void:
+
+func _on_Connection_color_updated(id: String, color: Color) -> void:
 	if characters.has(id):
 		characters[id].color = color
 
 
-func _on_Chat_Message_received(sender_id: String, message: String) -> void:
+# TODO: Needs to be testable without the server running
+func _on_Connection_chat_message_received(sender_id: String, message: String) -> void:
 	var color := Color.gray
 	var sender_name := "User"
 
@@ -180,11 +172,9 @@ func _on_Chat_Message_received(sender_id: String, message: String) -> void:
 	game_ui.add_text(message, sender_name, color)
 
 
-func _on_Text_Sent(text: String) -> void:
-	Connection.send_text_async(text)
 
 
-func _on_Character_spawned(id: String, color: Color, name: String) -> void:
+func _on_Connection_character_spawned(id: String, color: Color, name: String) -> void:
 	if characters.has(id):
 		characters[id].color = color
 		characters[id].username = name
@@ -193,13 +183,24 @@ func _on_Character_spawned(id: String, color: Color, name: String) -> void:
 		game_ui.add_notification(characters[id].username, color)
 
 
-func _on_state_received(
+func _on_Connection_initial_state_received(
 	positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary
 ) -> void:
 	#warning-ignore: return_value_discarded
-	Connection.disconnect("initial_state_received", self, "_on_state_received")
+	Connection.disconnect("initial_state_received", self, "_on_Connection_initial_state_received")
 	join_world(last_name, last_color, positions, inputs, colors, names)
 
 
-func _on_Chat_editing(value: bool) -> void:
+func _on_GameUI_color_changed(color) -> void:
+	player.color = color
+	game_ui.setup(color)
+	Connection.send_player_color_update(color)
+	Connection.update_player_character_async(color, player.username)
+
+
+func _on_GameUI_text_sent(text) -> void:
+	Connection.send_text_async(text)
+
+
+func _on_GameUI_editing(value) -> void:
 	player.input_locked = value

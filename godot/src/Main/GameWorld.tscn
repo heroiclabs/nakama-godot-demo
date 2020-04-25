@@ -6,7 +6,6 @@
 [ext_resource path="res://src/Main/GameWorld.gd" type="Script" id=4]
 [ext_resource path="res://src/UI/GameUI.tscn" type="PackedScene" id=5]
 
-
 [node name="GameWorld" type="Node2D"]
 script = ExtResource( 4 )
 PlayerScene = ExtResource( 3 )
@@ -14,6 +13,12 @@ CharacterScene = ExtResource( 2 )
 
 [node name="World" parent="." instance=ExtResource( 1 )]
 
+[node name="Player" parent="World" instance=ExtResource( 3 )]
+position = Vector2( 1178.21, 551.34 )
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="GameUI" parent="CanvasLayer" instance=ExtResource( 5 )]
+[connection signal="color_changed" from="CanvasLayer/GameUI" to="." method="_on_GameUI_color_changed"]
+[connection signal="editing" from="CanvasLayer/GameUI" to="." method="_on_GameUI_editing"]
+[connection signal="text_sent" from="CanvasLayer/GameUI" to="." method="_on_GameUI_text_sent"]
