@@ -16,6 +16,7 @@ onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/Create
 
 onready var confirmation_popup := $ConfirmationPopup
 
+
 # Initializes the control, fetches the characters from a successfully logged
 # in player, and adds them in a controllable list. Also gets the last successful
 # logged in character.
@@ -43,7 +44,7 @@ func _on_CreateButton_pressed() -> void:
 
 func _on_CharacterList_requested_deletion(character_index) -> void:
 	self.is_enabled = false
-	
+
 	confirmation_popup.open()
 	var is_confirmed: bool = yield(confirmation_popup, "option_picked")
 	if is_confirmed:

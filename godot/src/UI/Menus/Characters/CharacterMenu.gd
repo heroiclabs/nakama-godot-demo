@@ -20,8 +20,10 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 func add_character(name: String, color: Color) -> void:
 	character_selector.character_list.add_character(name, color)
 
+
 func delete_character(index: int) -> void:
 	character_selector.character_list.delete_character(index)
+
 
 func _on_CharacterSelector_create_pressed() -> void:
 	self.menu_current = character_creator

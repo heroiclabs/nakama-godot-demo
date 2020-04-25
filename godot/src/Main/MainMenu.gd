@@ -6,7 +6,7 @@ extends Node
 const MAX_REQUEST_ATTEMPTS := 3
 const LevelScene: PackedScene = preload("res://src/World/Level.tscn")
 
-export(String, FILE) var next_scene_path := ""
+export (String, FILE) var next_scene_path := ""
 
 var level: Node
 
@@ -102,7 +102,7 @@ func open_character_menu() -> void:
 	character_menu.setup(characters, last_played_character)
 	login_and_register.hide()
 	character_menu.show()
-	
+
 
 # Requests the server to authenticate the player using their credentials.
 func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
@@ -115,12 +115,13 @@ func _request_authentication(email: String, password: String, do_remember_email 
 	login_and_register.is_enabled = true
 	return result
 
+
 # Deactivates the user interface and authenticates the user.
 # If the server authenticated the user, goes to the game level scene.
 func _on_LoginAndRegister_login_pressed(email: String, password: String, do_remember_email: bool) -> void:
 	login_and_register.status = "Authenticating..."
 	login_and_register.is_enabled = false
-	
+
 	yield(authenticate_user(email, password, do_remember_email), "completed")
 
 	login_and_register.is_enabled = true
@@ -147,7 +148,6 @@ func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
 
 func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
 	create_character(name, color)
-
 
 
 func _on_CharacterMenu_character_selected(_index: int) -> void:

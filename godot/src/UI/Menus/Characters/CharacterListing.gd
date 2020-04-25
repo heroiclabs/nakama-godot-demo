@@ -39,5 +39,5 @@ func _on_focus_entered() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.doubleclick:
-        emit_signal("double_clicked", get_position_in_parent())
+	if event is InputEventMouseButton and event.doubleclick:
+		emit_signal("double_clicked", get_position_in_parent())

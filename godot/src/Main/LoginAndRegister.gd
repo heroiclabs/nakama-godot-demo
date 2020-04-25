@@ -10,6 +10,7 @@ onready var register_form := $RegisterForm
 
 var status := "" setget set_status
 
+
 func _ready() -> void:
 	self.menu_current = login_form
 
@@ -17,6 +18,7 @@ func _ready() -> void:
 func set_status(value: String) -> void:
 	status = value
 	menu_current.status = status
+
 
 func _on_LoginForm_register_pressed() -> void:
 	self.menu_current = register_form

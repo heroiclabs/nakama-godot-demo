@@ -21,7 +21,6 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 			selected_index = index
 
 
-
 # Creates a new `CharacterListing` that represents a character in the interface.
 func add_character(name: String, color: Color) -> Node:
 	var listing := CharacterListing.instance()
@@ -59,6 +58,7 @@ func _on_CharacterListing_requested_deletion(index: int) -> void:
 
 func _on_CharacterListing_character_selected(index: int) -> void:
 	selected_index = index
+
 
 func _on_CharacterListing_double_clicked(index: int) -> void:
 	emit_signal("character_selected", index)

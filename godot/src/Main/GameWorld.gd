@@ -149,9 +149,6 @@ func _on_Connection_state_updated(positions: Dictionary, inputs: Dictionary) -> 
 			characters[c].update_state()
 
 
-
-
-
 func _on_Connection_color_updated(id: String, color: Color) -> void:
 	if characters.has(id):
 		characters[id].color = color
@@ -170,8 +167,6 @@ func _on_Connection_chat_message_received(sender_id: String, message: String) ->
 		sender_name = player.username
 
 	game_ui.add_text(message, sender_name, color)
-
-
 
 
 func _on_Connection_character_spawned(id: String, color: Color, name: String) -> void:
