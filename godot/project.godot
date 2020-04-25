@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/UI/Elements/ColorSwatch.gd"
 }, {
-"base": "Panel",
+"base": "Menu",
 "class": "ConfirmationPopup",
 "language": "GDScript",
 "path": "res://src/UI/Components/ConfirmationPopup.gd"
@@ -153,7 +153,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Intro to Nakama"
-run/main_scene="res://src/Main/Game.tscn"
+run/main_scene="res://src/Main/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

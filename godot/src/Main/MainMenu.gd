@@ -1,13 +1,18 @@
+# Handles communication with the server, character creation, etc. for the main menus.
+# The menus send signals to this node, and `MainMenu` processes the data or forwards it to the 
+# server.
 extends Node
 
 const MAX_REQUEST_ATTEMPTS := 3
 const LevelScene: PackedScene = preload("res://src/World/Level.tscn")
 
+export(String, FILE) var next_scene_path := ""
+
 var level: Node
 
 var _server_request_attempts := 0
 
-onready var main_menu := $MainMenu
+onready var login_and_register := $LoginAndRegister
 onready var character_menu := $CharacterMenu
 
 
@@ -56,7 +61,7 @@ func join_game_world() -> int:
 
 # Requests the server to authenticate the player using their credentials.
 # Attempts authentication up to `MAX_REQUEST_ATTEMPTS` times.
-func authenticate_user(email: String, password: String, do_remember_email: bool) -> void:
+func authenticate_user(email: String, password: String, do_remember_email: bool) -> int:
 	var result := -1
 
 	while result != OK:
@@ -67,23 +72,24 @@ func authenticate_user(email: String, password: String, do_remember_email: bool)
 			break
 
 	if result == OK:
-		main_menu.hide()
+		login_and_register.hide()
 		character_menu.show()
 	else:
-		main_menu.status = "Error code %s: %s" % [result, Connection.error_message]
+		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
 
 	_server_request_attempts = 0
+	return result
 
 
 # Requests the server to authenticate the player using their credentials.
 func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
-	main_menu.is_enabled = false
+	login_and_register.is_enabled = false
 
 	var result: int = yield(Connection.login_async(email, password), "completed")
 	if result == OK and do_remember_email:
 		Connection.save_email(email)
 
-	main_menu.is_enabled = true
+	login_and_register.is_enabled = true
 	return result
 
 
@@ -91,18 +97,30 @@ func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> vo
 	create_character(name, color)
 
 
-func _on_MainMenu_login_pressed(email: String, password: String, do_remember_email: bool) -> void:
-	authenticate_user(email, password, do_remember_email)
+# Deactivates the user interface and authenticates the user.
+# If the server authenticated the user, goes to the game level scene.
+func _on_LoginAndRegister_login_pressed(email: String, password: String, do_remember_email: bool) -> void:
+	login_and_register.status = "Authenticating..."
+	login_and_register.is_enabled = false
+	
+	var result: int = yield(authenticate_user(email, password, do_remember_email), "completed")
+	if result == OK:
+		get_tree().change_scene(next_scene_path)
+	else:
+		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
+		login_and_register.is_enabled = true
 
 
-func _on_MainMenu_register_pressed(email: String, password: String, do_remember_email: bool) -> void:
-	main_menu.status = "Authenticating..."
-	main_menu.is_enabled = false
+# Deactivates the user interface, registers, and authenticates the user.
+# If the server authenticated the user, goes to the game level scene.
+func _on_LoginAndRegister_register_pressed(email: String, password: String, do_remember_email: bool) -> void:
+	login_and_register.status = "Authenticating..."
+	login_and_register.is_enabled = false
 
 	var result: int = yield(Connection.register_async(email, password), "completed")
 	if result == OK:
-		authenticate_user(email, password, do_remember_email)
+		yield(authenticate_user(email, password, do_remember_email), "completed")
+		get_tree().change_scene(next_scene_path)
 	else:
-		main_menu.status = "Error code %s: %s" % [result, Connection.error_message]
-
-	main_menu.is_enabled = true
+		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
+		login_and_register.is_enabled = true
