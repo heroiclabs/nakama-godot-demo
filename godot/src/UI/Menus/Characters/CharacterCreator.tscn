@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://src/UI/Elements/Button.tscn" type="PackedScene" id=2]
@@ -7,7 +7,6 @@
 [ext_resource path="res://assets/world/character.svg" type="Texture" id=5]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterColorPreview.gd" type="Script" id=6]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterCreator.gd" type="Script" id=7]
-[ext_resource path="res://assets/theme/stylebox/panel_popup.tres" type="StyleBox" id=8]
 
 [node name="CharacterCreator" type="Panel"]
 anchor_left = 0.5
@@ -20,7 +19,6 @@ margin_right = 372.0
 margin_bottom = 347.0
 rect_min_size = Vector2( 744, 694 )
 theme = ExtResource( 1 )
-custom_styles/panel = ExtResource( 8 )
 script = ExtResource( 7 )
 __meta__ = {
 "_edit_use_anchors_": false
