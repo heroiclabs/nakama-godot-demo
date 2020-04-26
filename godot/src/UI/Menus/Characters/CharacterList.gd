@@ -16,7 +16,7 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 		var character: Dictionary = characters[index]
 		var listing := add_character(character.name, character.color)
 
-		if character.name == last_played_character.name:
+		if last_played_character and character.name == last_played_character.name:
 			listing.grab_focus()
 			selected_index = index
 
