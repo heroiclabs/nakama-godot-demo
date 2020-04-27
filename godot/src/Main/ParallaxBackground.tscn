@@ -119,6 +119,13 @@ rotation = 0.223291
 scale = Vector2( 1.00669, 1.00669 )
 texture = ExtResource( 2 )
 
+[node name="graph5" type="Sprite" parent="ParallaxLayer4"]
+material = SubResource( 6 )
+position = Vector2( 1904.47, 12.8508 )
+rotation = 3.79454
+scale = Vector2( 1.19873, 1.19873 )
+texture = ExtResource( 2 )
+
 [node name="graph4" type="Sprite" parent="ParallaxLayer4"]
 material = SubResource( 6 )
 position = Vector2( 226.379, -6.65726 )
