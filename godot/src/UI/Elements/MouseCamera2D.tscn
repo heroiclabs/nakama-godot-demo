@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/UI/MouseCamera2D.gd" type="Script" id=1]
+
+[node name="MouseCamera2D" type="Camera2D"]
+position = Vector2( 957.134, 541.452 )
+current = true
+script = ExtResource( 1 )
