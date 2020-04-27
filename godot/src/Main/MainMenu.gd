@@ -151,3 +151,8 @@ func _on_CharacterMenu_character_selected(_index: int) -> void:
 	character_menu.is_enabled = false
 	yield(join_game_world(), "completed")
 	character_menu.is_enabled = true
+
+
+func _on_CharacterMenu_go_back_requested() -> void:
+	character_menu.hide()
+	login_and_register.show()

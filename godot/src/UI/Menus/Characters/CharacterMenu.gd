@@ -4,6 +4,7 @@ extends MenuList
 signal new_character_requested(name, color)
 signal character_deletion_requested(index)
 signal character_selected(index)
+signal go_back_requested
 
 onready var character_selector := $CharacterSelector
 onready var character_creator := $CharacterCreator
@@ -41,3 +42,7 @@ func _on_CharacterCreator_new_character_requested(name: String, color: Color) ->
 
 func _on_CharacterSelector_character_deletion_requested(index: int) -> void:
 	emit_signal("character_deletion_requested", index)
+
+
+func _on_LogOutButton_pressed() -> void:
+	emit_signal("go_back_requested")
