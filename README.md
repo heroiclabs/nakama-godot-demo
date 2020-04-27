@@ -49,3 +49,10 @@ Nakama's server provides a web admin interface to see, modify, or purge users an
 1. Start the Nakama server.
 1. Navigate to http://127.0.0.1:7351/ in your web browser.
 1. Log into the platform. The default admin user's login is `admin` and its password is `password`.
+
+## Licenses
+
+This project is dual-licensed:
+
+- The source code is available under the Apache 2.0 license.
+- Art assets (images, audio files) are [CC-By-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). You should attribute them to Heroic Labs (https://heroiclabs.com/).
