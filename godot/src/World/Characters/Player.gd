@@ -1,6 +1,7 @@
 # Extended character that is controlled by the user and does not respond to
 # server events. Intead, it sends some of its own to notify the server of certain
 # inputs.
+class_name Player
 extends Character
 
 var input_locked := false
@@ -23,6 +24,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("jump") and not input_locked:
 		jump()
 		ServerConnection.send_jump()
+
+
+func setup(username: String, color: Color, position: Vector2) -> void:
+	self.username = username
+	self.color = color
+	global_position = position
+	spawn()
 
 
 func spawn() -> void:

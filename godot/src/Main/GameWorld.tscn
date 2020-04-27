@@ -11,10 +11,10 @@ script = ExtResource( 4 )
 PlayerScene = ExtResource( 3 )
 CharacterScene = ExtResource( 2 )
 
-[node name="World" parent="." instance=ExtResource( 1 )]
-
-[node name="Player" parent="World" instance=ExtResource( 3 )]
+[node name="Player" parent="." instance=ExtResource( 3 )]
 position = Vector2( 1178.21, 551.34 )
+
+[node name="World" parent="." instance=ExtResource( 1 )]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

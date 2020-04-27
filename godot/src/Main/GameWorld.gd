@@ -6,12 +6,12 @@ extends Node2D
 export var PlayerScene: PackedScene
 export var CharacterScene: PackedScene
 
-var player: Node
 var characters := {}
 var last_name: String
 var last_color: Color
 
 onready var world := $World
+onready var player: Node = $Player
 onready var game_ui := $CanvasLayer/GameUI
 
 
@@ -21,6 +21,8 @@ func _ready() -> void:
 	ServerConnection.connect(
 		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
 	)
+	player.setup("Bibi", Color.green, Vector2.ZERO)
+	game_ui.setup(Color.green)
 
 
 func setup(username: String, color: Color) -> void:
@@ -44,7 +46,8 @@ func join_world(
 	assert(state_positions.has(user_id), "Server did not return valid state")
 
 	var player_position: Vector2 = Vector2(state_positions[user_id].x, state_positions[user_id].y)
-	create_player(username, player_color, player_position)
+	player.setup(username, player_color, player_position)
+	game_ui.setup(player_color)
 
 	var presences := ServerConnection.presences
 	for p in presences.keys():
@@ -67,17 +70,7 @@ func join_world(
 	ServerConnection.connect("character_spawned", self, "_on_ServerConnection_character_spawned")
 
 
-func create_player(username: String, color: Color, position: Vector2) -> void:
-	player = PlayerScene.instance()
 
-	player.username = username
-	player.color = color
-	player.global_position = position
-
-	world.add_child(player)
-
-	game_ui.setup(color)
-	player.spawn()
 
 
 func create_character(
