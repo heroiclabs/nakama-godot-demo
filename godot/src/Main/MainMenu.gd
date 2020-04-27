@@ -3,23 +3,21 @@
 # server.
 extends Node
 
+# Maximum number of times to retry a server request if the previous attempt failed.
 const MAX_REQUEST_ATTEMPTS := 3
-const LevelScene: PackedScene = preload("res://src/World/Level.tscn")
 
+# Path to the scene to load after selecting a character.
 export (String, FILE) var next_scene_path := ""
-
-var level: Node
 
 var _server_request_attempts := 0
 
-onready var login_and_register := $LoginAndRegister
-onready var character_menu := $CharacterMenu
+onready var login_and_register := $CanvasLayer/LoginAndRegister
+onready var character_menu := $CanvasLayer/CharacterMenu
 
 
-func create_level(player_data: Dictionary) -> void:
-	level = LevelScene.instance()
-	add_child(level)
-	level.setup(player_data.name, player_data.color)
+func _ready() -> void:
+	yield(authenticate_user("test4@test.com", "password"), "completed")
+	
 
 
 # Asks the server to create a new character asynchronously.
@@ -60,12 +58,11 @@ func get_player(index: int) -> Dictionary:
 # Attempts to connect to the server, then to join the world match.
 func join_game_world() -> int:
 	var result: int = yield(Connection.connect_to_server_async(), "completed")
-
 	if result == OK:
 		result = yield(Connection.join_world_async(), "completed")
-
 	if result == OK:
-		emit_signal("server_request_succeeded")
+		# warning-ignore:return_value_discarded
+		get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))
 	else:
 		emit_signal(
 			"server_request_failed", "Error code %s: %s" % [result, Connection.error_message]
@@ -151,5 +148,6 @@ func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> vo
 
 
 func _on_CharacterMenu_character_selected(_index: int) -> void:
-	# warning-ignore:return_value_discarded
-	get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))
+	character_menu.is_enabled = false
+	yield(join_game_world(), "completed")
+	character_menu.is_enabled = true
