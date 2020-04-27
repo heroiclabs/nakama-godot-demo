@@ -4,6 +4,9 @@ class_name Character
 extends KinematicBody2D
 
 signal spawned
+signal jumped
+
+enum States { ON_GROUND, IN_AIR }
 
 const TRUE_SCALE := Vector2.ONE
 const SQUASHED_SCALE := TRUE_SCALE * Vector2(1, 0.5)
@@ -14,15 +17,13 @@ const GRAVITY := 4500.0
 const ACCELERATION := 4500.0
 const MAX_SPEED := 600.0
 const JUMP_SPEED := 2000.0
-const FLOOR_HEIGHT := 463.15
 
-export var color := Color.white setget _set_color
+var color := Color.white setget _set_color
+var state: int = States.ON_GROUND
 
 var velocity := Vector2.ZERO
-var moving := false
-var falling := false
 var direction := Vector2.ZERO
-var username: String setget _set_username
+var username := "" setget _set_username
 
 var last_position := Vector2.ZERO
 var last_input := 0.0
@@ -39,14 +40,16 @@ onready var last_collision_mask := collision_mask
 
 func _physics_process(delta: float) -> void:
 	move(delta)
-	velocity.y += GRAVITY * delta
-	velocity = move_and_slide(velocity, Vector2.UP)
-	if falling and is_on_floor():
-		falling = false
-		squash()
-	if not falling and not is_on_floor():
-		falling = true
-		stretch()
+
+	match state:
+		States.ON_GROUND:
+			if not is_on_floor():
+				state = States.IN_AIR
+				stretch()
+		States.IN_AIR:
+			if is_on_floor():
+				state = States.ON_GROUND
+				squash()
 
 
 func move(delta: float) -> void:
@@ -55,13 +58,15 @@ func move(delta: float) -> void:
 	velocity.x = clamp(velocity.x, -MAX_SPEED, MAX_SPEED)
 	if direction.x == 0:
 		velocity.x = lerp(velocity.x, 0, DRAG_AMOUNT)
+	velocity.y += GRAVITY * delta
+	velocity = move_and_slide(velocity, Vector2.UP)
 
 
 func jump() -> void:
-	if is_on_floor():
-		stretch()
-		velocity.y -= JUMP_SPEED
-		falling = true
+	stretch()
+	velocity.y -= JUMP_SPEED
+	state = States.IN_AIR
+	emit_signal("jumped")
 
 
 func stretch() -> void:
@@ -109,6 +114,7 @@ func despawn() -> void:
 func update_state() -> void:
 	if next_jump:
 		jump()
+		next_jump = false
 
 	if global_position.distance_squared_to(last_position) > 10000:
 		tween.interpolate_property(self, "global_position", global_position, last_position, 0.2)
@@ -118,7 +124,6 @@ func update_state() -> void:
 		tween.interpolate_method(self, "do_state_update_move", global_position, anticipated, 0.2)
 		tween.start()
 
-	next_jump = false
 	direction.x = last_input
 
 	last_input = next_input
@@ -151,5 +156,5 @@ func _set_color(value: Color) -> void:
 
 func do_state_update_move(new_position: Vector2) -> void:
 	var distance := new_position - global_position
-# warning-ignore:return_value_discarded
+	# warning-ignore:return_value_discarded
 	move_and_slide(distance, Vector2.UP)

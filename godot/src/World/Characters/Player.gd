@@ -4,6 +4,7 @@
 class_name Player
 extends Character
 
+
 var input_locked := false
 var accel := Vector2.ZERO
 var last_direction := Vector2.ZERO
@@ -21,7 +22,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("jump") and not input_locked:
+	if event.is_action_pressed("jump") and state == States.ON_GROUND:
 		jump()
 		ServerConnection.send_jump()
 
@@ -34,15 +35,16 @@ func setup(username: String, color: Color, position: Vector2) -> void:
 
 
 func spawn() -> void:
-	input_locked = true
+	set_process_unhandled_input(false)
 	.spawn()
 	yield(self, "spawned")
-	input_locked = false
+	set_process_unhandled_input(true)
 
 
 func _get_direction() -> Vector2:
-	if input_locked:
+	if not is_processing_unhandled_input():
 		return Vector2.ZERO
+
 	var new_direction := Vector2(
 		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"), 0
 	)
