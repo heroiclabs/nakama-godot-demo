@@ -7,7 +7,7 @@
 #
 # For example:
 #
-# var return_code: int = yield(Connection.login_async(email, password), "completed")
+# var return_code: int = yield(ServerConnection.login_async(email, password), "completed")
 # if return_code == OK:
 # 	print("Authenticated")
 #
@@ -82,7 +82,7 @@ var _storage_worker: StorageWorker
 
 # Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes _session.
-# Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
+# Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func register_async(email: String, password: String) -> int:
 	var result: int = yield(_authenticator.register_async(email, password), "completed")
 	if result == OK:
@@ -94,7 +94,7 @@ func register_async(email: String, password: String) -> int:
 # not try to create a new account when it did not previously exist, then
 # initializes _session. If a session previously existed in `AUTH`, will try to
 # recover it without needing the authentication server. 
-# Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
+# Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func login_async(email: String, password: String) -> int:
 	var result: int = yield(_authenticator.login_async(email, password), "completed")
 	if result == OK:
@@ -103,7 +103,7 @@ func login_async(email: String, password: String) -> int:
 
 
 # Asynchronous coroutine. Connects the socket to the live server.
-# Returns OK or a nakama error number. Error messages are stored in `Connection.error_message`
+# Returns OK or a nakama error number. Error messages are stored in `ServerConnection.error_message`
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
 
@@ -130,7 +130,7 @@ func connect_to_server_async() -> int:
 
 
 # Asynchronous coroutine. Leaves chat and disconnects from the live server.
-# Returns OK or a nakama error number and puts the error message in `Connection.error_message`
+# Returns OK or a nakama error number and puts the error message in `ServerConnection.error_message`
 func disconnect_from_server_async() -> int:
 	var result: NakamaAsyncResult = yield(_socket.leave_chat_async(_channel_id), "completed")
 	var parsed_result := _exception_handler.parse_exception(result)
@@ -169,7 +169,7 @@ func get_user_id() -> String:
 # Asynchronous coroutine. Joins the match representing the world and the global chat
 # room. Will get the match ID from the server through a remote procedure (see world_rpc.lua).
 # Returns OK, a nakama error number, or ERR_UNAVAILABLE if the socket is not connected.
-# Stores any error message in `Connection.error_message`
+# Stores any error message in `ServerConnection.error_message`
 func join_world_async() -> int:
 	if not _socket:
 		error_message = "Server not connected."

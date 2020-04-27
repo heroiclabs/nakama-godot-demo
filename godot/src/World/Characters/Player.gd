@@ -22,7 +22,7 @@ func _physics_process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("jump") and not input_locked:
 		jump()
-		Connection.send_jump()
+		ServerConnection.send_jump()
 
 
 func spawn() -> void:
@@ -39,10 +39,10 @@ func _get_direction() -> Vector2:
 		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"), 0
 	)
 	if new_direction != last_direction:
-		Connection.send_direction_update(new_direction.x)
+		ServerConnection.send_direction_update(new_direction.x)
 		last_direction = new_direction
 	return new_direction
 
 
 func _on_Timer_timeout() -> void:
-	Connection.send_position_update(global_position)
+	ServerConnection.send_position_update(global_position)

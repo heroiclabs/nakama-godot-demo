@@ -1,5 +1,5 @@
 # Delegate class that handles logging in and registering accounts. Holds the 
-# authenticated session that Connection uses to send messages or create a socket.
+# authenticated session that ServerConnection uses to send messages or create a socket.
 class_name Authenticator
 extends Reference
 
@@ -15,7 +15,7 @@ func _init(client: NakamaClient, exception_handler: ExceptionHandler) -> void:
 
 # Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes session.
-# Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
+# Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func register_async(email: String, password: String) -> int:
 	var new_session: NakamaSession = yield(
 		_client.authenticate_email_async(email, password, email, true), "completed"
@@ -37,7 +37,7 @@ func register_async(email: String, password: String) -> int:
 # not try to create a new account when it did not previously exist, then
 # initializes session. If a session previously existed in `AUTH`, will try to
 # recover it without needing the authentication server. 
-# Returns OK or a nakama error code. Stores error messages in `Connection.error_message`
+# Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func login_async(email: String, password: String) -> int:
 	var token := SessionFileWorker.recover_session_token(email, password)
 	if not token == "":

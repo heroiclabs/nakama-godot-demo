@@ -1,4 +1,4 @@
-# Class that Connection delegates work to. Stores and fetches data in and out
+# Class that ServerConnection delegates work to. Stores and fetches data in and out
 # of server storage - namely, character listing and color data.
 class_name StorageWorker
 extends Reference

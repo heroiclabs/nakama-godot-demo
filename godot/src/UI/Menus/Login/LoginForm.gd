@@ -15,7 +15,7 @@ onready var status_panel := $StatusPanel
 
 
 func _ready() -> void:
-	email_field.text = Connection.get_last_email()
+	email_field.text = ServerConnection.get_last_email()
 	if not email_field.text.empty():
 		remember_email.pressed = true
 

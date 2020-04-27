@@ -26,13 +26,13 @@ func _ready() -> void:
 func create_character(name: String, color: Color) -> void:
 	character_menu.is_enabled = false
 
-	var result: int = yield(Connection.create_player_character_async(color, name), "completed")
+	var result: int = yield(ServerConnection.create_player_character_async(color, name), "completed")
 
 	var data := {}
 	if result == OK:
 		data = {name = name, color = color}
 		character_menu.add_character(name, color)
-		Connection.store_last_player_character_async(name, color)
+		ServerConnection.store_last_player_character_async(name, color)
 	elif result == ERR_UNAVAILABLE:
 		printerr("Character %s unavailable." % name)
 
@@ -42,7 +42,7 @@ func create_character(name: String, color: Color) -> void:
 
 func delete_character(index: int) -> void:
 	character_menu.is_enabled = false
-	var result: int = yield(Connection.delete_player_character_async(index), "completed")
+	var result: int = yield(ServerConnection.delete_player_character_async(index), "completed")
 
 	if result == OK:
 		character_menu.delete_character(index)
@@ -51,21 +51,21 @@ func delete_character(index: int) -> void:
 
 # Gets a player's data asynchronously by `index` from the server.
 func get_player(index: int) -> Dictionary:
-	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
+	var characters: Array = yield(ServerConnection.get_player_characters_async(), "completed")
 	return characters[index]
 
 
 # Attempts to connect to the server, then to join the world match.
 func join_game_world() -> int:
-	var result: int = yield(Connection.connect_to_server_async(), "completed")
+	var result: int = yield(ServerConnection.connect_to_server_async(), "completed")
 	if result == OK:
-		result = yield(Connection.join_world_async(), "completed")
+		result = yield(ServerConnection.join_world_async(), "completed")
 	if result == OK:
 		# warning-ignore:return_value_discarded
 		get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))
 	else:
 		emit_signal(
-			"server_request_failed", "Error code %s: %s" % [result, Connection.error_message]
+			"server_request_failed", "Error code %s: %s" % [result, ServerConnection.error_message]
 		)
 	return result
 
@@ -85,16 +85,16 @@ func authenticate_user(email: String, password: String, do_remember_email := fal
 	if result == OK:
 		open_character_menu()
 	else:
-		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
+		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
 
 	_server_request_attempts = 0
 	return result
 
 
 func open_character_menu() -> void:
-	var characters: Array = yield(Connection.get_player_characters_async(), "completed")
+	var characters: Array = yield(ServerConnection.get_player_characters_async(), "completed")
 	var last_played_character: Dictionary = yield(
-		Connection.get_last_player_character_async(), "completed"
+		ServerConnection.get_last_player_character_async(), "completed"
 	)
 	character_menu.setup(characters, last_played_character)
 	login_and_register.hide()
@@ -105,9 +105,9 @@ func open_character_menu() -> void:
 func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
 	login_and_register.is_enabled = false
 
-	var result: int = yield(Connection.login_async(email, password), "completed")
+	var result: int = yield(ServerConnection.login_async(email, password), "completed")
 	if result == OK and do_remember_email:
-		Connection.save_email(email)
+		ServerConnection.save_email(email)
 
 	login_and_register.is_enabled = true
 	return result
@@ -130,11 +130,11 @@ func _on_LoginAndRegister_register_pressed(email: String, password: String, do_r
 	login_and_register.status = "Authenticating..."
 	login_and_register.is_enabled = false
 
-	var result: int = yield(Connection.register_async(email, password), "completed")
+	var result: int = yield(ServerConnection.register_async(email, password), "completed")
 	if result == OK:
 		yield(authenticate_user(email, password, do_remember_email), "completed")
 	else:
-		login_and_register.status = "Error code %s: %s" % [result, Connection.error_message]
+		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
 
 	login_and_register.is_enabled = true
 

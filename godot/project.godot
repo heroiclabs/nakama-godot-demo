@@ -165,7 +165,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
-Connection="*res://src/Autoload/Connection.gd"
+ServerConnection="*res://src/Autoload/ServerConnection.gd"
 
 [display]
 

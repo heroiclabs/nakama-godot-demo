@@ -18,13 +18,13 @@ onready var game_ui := $CanvasLayer/GameUI
 # TODO: Separate the UI and the level
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	Connection.connect("initial_state_received", self, "_on_Connection_initial_state_received")
+	ServerConnection.connect("initial_state_received", self, "_on_ServerConnection_initial_state_received")
 
 
 func setup(username: String, color: Color) -> void:
 	last_name = username
 	last_color = color
-	Connection.send_spawn(color, username)
+	ServerConnection.send_spawn(color, username)
 
 
 # The main entry point. Sets up the client player and the various characters that
@@ -38,13 +38,13 @@ func join_world(
 	state_colors: Dictionary,
 	state_names: Dictionary
 ) -> void:
-	var user_id := Connection.get_user_id()
+	var user_id := ServerConnection.get_user_id()
 	assert(state_positions.has(user_id), "Server did not return valid state")
 
 	var player_position: Vector2 = Vector2(state_positions[user_id].x, state_positions[user_id].y)
 	create_player(username, player_color, player_position)
 
-	var presences := Connection.presences
+	var presences := ServerConnection.presences
 	for p in presences.keys():
 		var character_position := Vector2(state_positions[p].x, state_positions[p].y)
 		create_character(
@@ -52,15 +52,15 @@ func join_world(
 		)
 
 	#warning-ignore: return_value_discarded
-	Connection.connect("presences_changed", self, "_on_Connection_presences_changed")
+	ServerConnection.connect("presences_changed", self, "_on_ServerConnection_presences_changed")
 	#warning-ignore: return_value_discarded
-	Connection.connect("state_updated", self, "_on_Connection_state_updated")
+	ServerConnection.connect("state_updated", self, "_on_ServerConnection_state_updated")
 	#warning-ignore: return_value_discarded
-	Connection.connect("color_updated", self, "_on_Connection_color_updated")
+	ServerConnection.connect("color_updated", self, "_on_ServerConnection_color_updated")
 	#warning-ignore: return_value_discarded
-	Connection.connect("chat_message_received", self, "_on_Connection_chat_message_received")
+	ServerConnection.connect("chat_message_received", self, "_on_ServerConnection_chat_message_received")
 	#warning-ignore: return_value_discarded
-	Connection.connect("character_spawned", self, "_on_Connection_character_spawned")
+	ServerConnection.connect("character_spawned", self, "_on_ServerConnection_character_spawned")
 
 
 func create_player(username: String, color: Color, position: Vector2) -> void:
@@ -99,8 +99,8 @@ func create_character(
 		character.do_hide()
 
 
-func _on_Connection_presences_changed() -> void:
-	var presences := Connection.presences
+func _on_ServerConnection_presences_changed() -> void:
+	var presences := ServerConnection.presences
 
 	for key in presences:
 		if not key in characters:
@@ -118,7 +118,7 @@ func _on_Connection_presences_changed() -> void:
 		characters.erase(key)
 
 
-func _on_Connection_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
+func _on_ServerConnection_state_updated(positions: Dictionary, inputs: Dictionary) -> void:
 	var update := false
 	for key in characters:
 		update = false
@@ -134,27 +134,27 @@ func _on_Connection_state_updated(positions: Dictionary, inputs: Dictionary) -> 
 			characters[key].update_state()
 
 
-func _on_Connection_color_updated(id: String, color: Color) -> void:
+func _on_ServerConnection_color_updated(id: String, color: Color) -> void:
 	if id in characters:
 		characters[id].color = color
 
 
 # TODO: Needs to be testable without the server running
-func _on_Connection_chat_message_received(sender_id: String, message: String) -> void:
+func _on_ServerConnection_chat_message_received(sender_id: String, message: String) -> void:
 	var color := Color.gray
 	var sender_name := "User"
 
 	if sender_id in characters:
 		color = characters[sender_id].color
 		sender_name = characters[sender_id].username
-	elif sender_id == Connection.get_user_id():
+	elif sender_id == ServerConnection.get_user_id():
 		color = player.color
 		sender_name = player.username
 
 	game_ui.add_text(message, sender_name, color)
 
 
-func _on_Connection_character_spawned(id: String, color: Color, name: String) -> void:
+func _on_ServerConnection_character_spawned(id: String, color: Color, name: String) -> void:
 	if id in characters:
 		characters[id].color = color
 		characters[id].username = name
@@ -163,23 +163,23 @@ func _on_Connection_character_spawned(id: String, color: Color, name: String) ->
 		game_ui.add_notification(characters[id].username, color)
 
 
-func _on_Connection_initial_state_received(
+func _on_ServerConnection_initial_state_received(
 	positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary
 ) -> void:
 	#warning-ignore: return_value_discarded
-	Connection.disconnect("initial_state_received", self, "_on_Connection_initial_state_received")
+	ServerConnection.disconnect("initial_state_received", self, "_on_ServerConnection_initial_state_received")
 	join_world(last_name, last_color, positions, inputs, colors, names)
 
 
 func _on_GameUI_color_changed(color) -> void:
 	player.color = color
 	game_ui.setup(color)
-	Connection.send_player_color_update(color)
-	Connection.update_player_character_async(color, player.username)
+	ServerConnection.send_player_color_update(color)
+	ServerConnection.update_player_character_async(color, player.username)
 
 
 func _on_GameUI_text_sent(text) -> void:
-	Connection.send_text_async(text)
+	ServerConnection.send_text_async(text)
 
 
 func _on_GameUI_editing(value) -> void:
@@ -187,6 +187,6 @@ func _on_GameUI_editing(value) -> void:
 
 
 func _on_GameUI_logged_out() -> void:
-	var result: int = yield(Connection.disconnect_from_server_async(), "completed")
+	var result: int = yield(ServerConnection.disconnect_from_server_async(), "completed")
 	if result == OK:
 		get_tree().change_scene_to(load("res://src/Main/MainMenu.tscn"))
