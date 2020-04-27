@@ -1,7 +1,7 @@
 # Controls the visibility of world elements
 extends Node2D
 
-onready var background := $CanvasLayer/Background
+onready var background := $ParallaxBackground
 onready var spawn_default: Position2D = $SpawnDefault
 
 

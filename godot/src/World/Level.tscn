@@ -1,47 +1,13 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://assets/world/tileset/tileset_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://src/World/Level.gd" type="Script" id=2]
-
-[sub_resource type="Shader" id=1]
-code = "shader_type canvas_item;
-
-void fragment() {
-	float sine = sin(1.5707963267948966192313216916398);
-	float cosine = cos(1.5707963267948966192313216916398);
-	
-	vec2 uv = vec2(UV.x * cosine - UV.y * sine, UV.x * sine + UV.y * cosine);
-	
-	COLOR = texture(TEXTURE, uv);
-}"
-
-[sub_resource type="ShaderMaterial" id=2]
-shader = SubResource( 1 )
-
-[sub_resource type="Gradient" id=3]
-offsets = PoolRealArray( 0.5, 1 )
-colors = PoolColorArray( 0.196078, 0.160784, 0.278431, 1, 0.230469, 0.0792236, 0.221016, 1 )
-
-[sub_resource type="GradientTexture" id=4]
-gradient = SubResource( 3 )
+[ext_resource path="res://src/Main/ParallaxBackground.tscn" type="PackedScene" id=3]
 
 [node name="World" type="Node2D"]
 script = ExtResource( 2 )
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = -1
-
-[node name="Background" type="TextureRect" parent="CanvasLayer"]
-material = SubResource( 2 )
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -0.00012207
-texture = SubResource( 4 )
-expand = true
-stretch_mode = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="ParallaxBackground" parent="." instance=ExtResource( 3 )]
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2( 1800, 1200 )
