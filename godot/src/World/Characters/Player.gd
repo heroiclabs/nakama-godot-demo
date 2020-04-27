@@ -9,7 +9,9 @@ var input_locked := false
 var accel := Vector2.ZERO
 var last_direction := Vector2.ZERO
 
-onready var timer := $Timer
+
+onready var timer: Timer = $Timer
+onready var camera_2d: Camera2D = $Camera2D
 
 
 func _ready() -> void:
@@ -26,11 +28,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		jump()
 
 
-func setup(username: String, color: Color, position: Vector2) -> void:
+func setup(username: String, color: Color, position: Vector2, level_limits: Rect2) -> void:
 	self.username = username
 	self.color = color
 	global_position = position
 	spawn()
+	camera_2d.set_limits(level_limits)
+	print(level_limits)
 
 
 func spawn() -> void:

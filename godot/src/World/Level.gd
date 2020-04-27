@@ -1,15 +1,10 @@
 # Controls the visibility of world elements
 extends Node2D
 
-onready var background := $ParallaxBackground
-onready var spawn_default: Position2D = $SpawnDefault
+onready var tilemap: TileMap = $TileMap
 
-
-func do_hide() -> void:
-	hide()
-	background.hide()
-
-
-func do_show() -> void:
-	show()
-	background.show()
+func get_limits() -> Rect2:
+	var limits: Rect2 = tilemap.get_used_rect()
+	limits.position = limits.position * tilemap.cell_size + tilemap.global_position
+	limits.size *= tilemap.cell_size
+	return limits

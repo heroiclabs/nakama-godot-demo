@@ -21,7 +21,7 @@ func _ready() -> void:
 	ServerConnection.connect(
 		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
 	)
-	player.setup("Bibi", Color.green, Vector2.ZERO)
+	player.setup("Bibi", Color.green, Vector2.ZERO, world.get_limits())
 	game_ui.setup(Color.green)
 
 
