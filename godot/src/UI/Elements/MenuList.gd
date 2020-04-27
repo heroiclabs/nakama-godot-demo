@@ -29,8 +29,8 @@ func set_menu_current(value: Menu) -> void:
 		return
 
 	for menu in _menus:
-		menu.hide()
-	menu_current.show()
+		menu.close()
+	menu_current.open()
 	menu_current.is_enabled = is_enabled
 
 

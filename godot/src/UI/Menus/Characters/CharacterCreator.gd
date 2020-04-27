@@ -17,6 +17,11 @@ func set_is_enabled(value: bool) -> void:
 	name_field.editable = value
 
 
+func open() -> void:
+	.open()
+	color_selector.focus_first_swatch()
+
+
 func _on_CreateButton_pressed() -> void:
 	if name_field.text.length() == 0:
 		return

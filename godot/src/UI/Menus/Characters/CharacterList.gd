@@ -31,7 +31,7 @@ func add_character(name: String, color: Color) -> Node:
 	#warning-ignore: return_value_discarded
 	listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
 	# warning-ignore:return_value_discarded
-	listing.connect("double_clicked", self, "_on_CharacterListing_double_clicked")
+	listing.connect("character_accepted", self, "_on_CharacterListing_character_accepted")
 	return listing
 
 
@@ -65,5 +65,5 @@ func _on_CharacterListing_character_selected(index: int) -> void:
 	selected_index = index
 
 
-func _on_CharacterListing_double_clicked(index: int) -> void:
+func _on_CharacterListing_character_accepted(index: int) -> void:
 	emit_signal("character_selected", index)

@@ -12,12 +12,16 @@ func _ready() -> void:
 		swatch.connect("pressed", self, "_on_ColorSwatch_pressed", [swatch.color])
 
 
-func _on_ColorSwatch_pressed(selected_color: Color) -> void:
-	color = selected_color
-	emit_signal("color_changed", color)
-
-
 func set_disabled(value: bool) -> void:
 	disabled = value
 	for button in get_children():
 		button.disabled = disabled
+
+
+func focus_first_swatch() -> void:
+	get_child(0).grab_focus()
+
+
+func _on_ColorSwatch_pressed(selected_color: Color) -> void:
+	color = selected_color
+	emit_signal("color_changed", color)

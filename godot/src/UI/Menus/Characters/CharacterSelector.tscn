@@ -47,6 +47,7 @@ margin_left = 0.0
 margin_top = 0.0
 margin_right = 464.0
 margin_bottom = 280.0
+alignment = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 300.0
