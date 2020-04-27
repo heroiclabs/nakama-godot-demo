@@ -26,12 +26,17 @@ margin_bottom = 84.0
 rect_min_size = Vector2( 200, 60 )
 text = "Change Color"
 
-[node name="LogoutButton" parent="." instance=ExtResource( 2 )]
-margin_left = 1776.0
-margin_top = 24.0
-margin_right = 1896.0
-margin_bottom = 88.0
-text = "Log Out"
+[node name="LogOutButton" parent="." instance=ExtResource( 2 )]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -248.0
+margin_top = -112.0
+margin_right = -32.0
+margin_bottom = -32.0
+text = "Log out"
+flat = true
 
 [node name="ChatBox" parent="." instance=ExtResource( 3 )]
 margin_left = 24.0
@@ -48,7 +53,7 @@ margin_bottom = -24.0
 [node name="CharacterColorEditor" parent="." instance=ExtResource( 4 )]
 visible = false
 [connection signal="pressed" from="ChangeColorButton" to="." method="_on_ChangeColorButton_pressed"]
-[connection signal="pressed" from="LogoutButton" to="." method="_on_LogoutButton_pressed"]
+[connection signal="pressed" from="LogOutButton" to="." method="_on_LogoutButton_pressed"]
 [connection signal="editing" from="ChatBox" to="." method="_on_ChatBox_editing"]
 [connection signal="text_sent" from="ChatBox" to="." method="_on_ChatBox_text_sent"]
 [connection signal="color_changed" from="CharacterColorEditor" to="." method="_on_CharacterColorEditor_color_changed"]
