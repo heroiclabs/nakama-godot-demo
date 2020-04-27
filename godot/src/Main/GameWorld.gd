@@ -182,7 +182,7 @@ func _on_GameUI_text_sent(text) -> void:
 
 
 func _on_GameUI_editing(value) -> void:
-	player.input_locked = value
+	get_tree().paused = value
 
 
 func _on_GameUI_logged_out() -> void:

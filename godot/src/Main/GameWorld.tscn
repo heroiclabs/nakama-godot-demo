@@ -7,11 +7,13 @@
 [ext_resource path="res://src/UI/GameUI.tscn" type="PackedScene" id=5]
 
 [node name="GameWorld" type="Node2D"]
+pause_mode = 2
 script = ExtResource( 4 )
 PlayerScene = ExtResource( 3 )
 CharacterScene = ExtResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
+pause_mode = 1
 position = Vector2( 1178.21, 551.34 )
 
 [node name="World" parent="." instance=ExtResource( 1 )]
