@@ -4,19 +4,20 @@ class_name Character
 extends KinematicBody2D
 
 signal spawned
-signal jumped
 
 enum States { ON_GROUND, IN_AIR }
 
-const TRUE_SCALE := Vector2.ONE
-const SQUASHED_SCALE := TRUE_SCALE * Vector2(1, 0.5)
-const STRETCHED_SCALE := TRUE_SCALE * Vector2(1, 1.25)
-const SQUASH_TIME := 0.1
-const DRAG_AMOUNT := 0.2
-const GRAVITY := 4500.0
-const ACCELERATION := 4500.0
+const SCALE_BASE := Vector2.ONE
+const SCALE_SQUASHED := SCALE_BASE * Vector2(1.25, 0.5)
+const SCALE_STRETCHED := SCALE_BASE * Vector2(0.8, 1.35)
+const SQUASH_DURATION := 0.1
+const STRETCH_DURATION := 0.25
+
 const MAX_SPEED := 600.0
 const JUMP_SPEED := 2000.0
+const GRAVITY := 4500.0
+const ACCELERATION := 4500.0
+const DRAG_AMOUNT := 0.2
 
 var color := Color.white setget _set_color
 var state: int = States.ON_GROUND
@@ -66,36 +67,38 @@ func jump() -> void:
 	stretch()
 	velocity.y -= JUMP_SPEED
 	state = States.IN_AIR
-	emit_signal("jumped")
 
 
 func stretch() -> void:
 	tween.interpolate_property(
-		sprite, "scale", scale, STRETCHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		sprite, "scale", scale, SCALE_STRETCHED, STRETCH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
+	)
+	tween.interpolate_property(
+		sprite, "scale", SCALE_STRETCHED, SCALE_BASE, STRETCH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT, STRETCH_DURATION
 	)
 	tween.start()
 
 
 func squash() -> void:
 	tween.interpolate_property(
-		sprite, "scale", scale, SQUASHED_SCALE, SQUASH_TIME, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		sprite, "scale", scale, SCALE_SQUASHED, SQUASH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
 	)
 	tween.interpolate_property(
 		sprite,
 		"scale",
-		SQUASHED_SCALE,
-		TRUE_SCALE,
-		SQUASH_TIME,
+		SCALE_SQUASHED,
+		SCALE_BASE,
+		SQUASH_DURATION,
 		Tween.TRANS_LINEAR,
 		Tween.EASE_OUT,
-		SQUASH_TIME
+		SQUASH_DURATION
 	)
 	tween.start()
 
 
 func spawn() -> void:
 	tween.interpolate_property(
-		sprite, "scale", Vector2.ZERO, TRUE_SCALE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT
+		sprite, "scale", Vector2.ZERO, SCALE_BASE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT
 	)
 	tween.start()
 	yield(tween, "tween_all_completed")

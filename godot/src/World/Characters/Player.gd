@@ -24,7 +24,6 @@ func _physics_process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("jump") and state == States.ON_GROUND:
 		jump()
-		ServerConnection.send_jump()
 
 
 func setup(username: String, color: Color, position: Vector2) -> void:
@@ -39,6 +38,11 @@ func spawn() -> void:
 	.spawn()
 	yield(self, "spawned")
 	set_process_unhandled_input(true)
+
+
+func jump() -> void:
+	.jump()
+	ServerConnection.send_jump()
 
 
 func _get_direction() -> Vector2:
