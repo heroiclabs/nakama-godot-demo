@@ -18,7 +18,7 @@ func _ready() -> void:
 func set_status(value: String) -> void:
 	status = value
 	menu_current.status = status
-	
+
 
 func reset() -> void:
 	status = ""

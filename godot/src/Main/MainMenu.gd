@@ -17,7 +17,6 @@ onready var character_menu := $CanvasLayer/CharacterMenu
 
 func _ready() -> void:
 	yield(authenticate_user("test4@test.com", "password"), "completed")
-	
 
 
 # Asks the server to create a new character asynchronously.
@@ -26,7 +25,9 @@ func _ready() -> void:
 func create_character(name: String, color: Color) -> void:
 	character_menu.is_enabled = false
 
-	var result: int = yield(ServerConnection.create_player_character_async(color, name), "completed")
+	var result: int = yield(
+		ServerConnection.create_player_character_async(color, name), "completed"
+	)
 
 	var data := {}
 	if result == OK:

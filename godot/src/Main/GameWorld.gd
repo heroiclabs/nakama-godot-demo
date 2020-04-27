@@ -18,7 +18,9 @@ onready var game_ui := $CanvasLayer/GameUI
 # TODO: Separate the UI and the level
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("initial_state_received", self, "_on_ServerConnection_initial_state_received")
+	ServerConnection.connect(
+		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
+	)
 
 
 func setup(username: String, color: Color) -> void:
@@ -58,7 +60,9 @@ func join_world(
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect("color_updated", self, "_on_ServerConnection_color_updated")
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("chat_message_received", self, "_on_ServerConnection_chat_message_received")
+	ServerConnection.connect(
+		"chat_message_received", self, "_on_ServerConnection_chat_message_received"
+	)
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect("character_spawned", self, "_on_ServerConnection_character_spawned")
 
@@ -167,7 +171,9 @@ func _on_ServerConnection_initial_state_received(
 	positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary
 ) -> void:
 	#warning-ignore: return_value_discarded
-	ServerConnection.disconnect("initial_state_received", self, "_on_ServerConnection_initial_state_received")
+	ServerConnection.disconnect(
+		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
+	)
 	join_world(last_name, last_color, positions, inputs, colors, names)
 
 

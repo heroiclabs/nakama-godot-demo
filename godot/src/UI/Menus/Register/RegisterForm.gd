@@ -30,6 +30,7 @@ func set_status(text: String) -> void:
 	.set_status(text)
 	status_panel.text = text
 
+
 func reset() -> void:
 	.reset()
 	self.status = ""

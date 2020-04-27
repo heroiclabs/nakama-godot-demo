@@ -29,6 +29,7 @@ func delete_character(index: int) -> void:
 func reset() -> void:
 	character_selector.character_list.reset()
 
+
 func _on_CharacterSelector_create_pressed() -> void:
 	self.menu_current = character_creator
 

@@ -141,7 +141,7 @@ func disconnect_from_server_async() -> int:
 			_cleanup()
 			_authenticator.cleanup()
 			return OK
-	
+
 	return parsed_result
 
 

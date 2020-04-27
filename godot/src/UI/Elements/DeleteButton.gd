@@ -1,6 +1,5 @@
 extends TextureButton
 
-
 const COLOR_HOVER := Color("#0d9ad1")
 const COLOR_PRESSED := Color("#1973dc")
 
