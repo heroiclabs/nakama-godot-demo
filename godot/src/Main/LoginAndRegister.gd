@@ -18,6 +18,13 @@ func _ready() -> void:
 func set_status(value: String) -> void:
 	status = value
 	menu_current.status = status
+	
+
+func reset() -> void:
+	status = ""
+	for child in get_children():
+		child.reset()
+	self.menu_current = login_form
 
 
 func _on_LoginForm_register_pressed() -> void:

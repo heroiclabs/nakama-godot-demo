@@ -38,6 +38,14 @@ func set_status(text: String) -> void:
 	status_panel.text = text
 
 
+func reset() -> void:
+	.reset()
+	self.status = ""
+	password_field.text = ""
+	if not remember_email.pressed:
+		email_field.text = ""
+
+
 func _on_LoginButton_pressed() -> void:
 	if not email_field.is_valid:
 		status_panel.text = "The email address is not valid"

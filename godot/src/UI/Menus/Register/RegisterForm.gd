@@ -7,9 +7,9 @@ signal cancel_pressed
 onready var register_button: Button = $HBoxContainer/RegisterButton
 onready var cancel_button: Button = $HBoxContainer/CancelButton
 
-onready var field_email: LineEdit = $Email/LineEditValidate
-onready var field_password: LineEdit = $Password/LineEditValidate
-onready var field_password_repeat: LineEdit = $PasswordRepeat/LineEditValidate
+onready var email_field: LineEdit = $Email/LineEditValidate
+onready var password_field: LineEdit = $Password/LineEditValidate
+onready var password_field_repeat: LineEdit = $PasswordRepeat/LineEditValidate
 
 onready var remember_email: CheckBox = $RememberEmail
 onready var status_panel := $StatusPanel
@@ -21,28 +21,35 @@ func set_is_enabled(value: bool) -> void:
 		yield(self, "ready")
 	cancel_button.disabled = not value
 	register_button.disabled = not value
-	field_email.editable = value
-	field_password.editable = value
-	field_password_repeat.editable = value
+	email_field.editable = value
+	password_field.editable = value
+	password_field_repeat.editable = value
 
 
 func set_status(text: String) -> void:
 	.set_status(text)
 	status_panel.text = text
 
+func reset() -> void:
+	.reset()
+	self.status = ""
+	password_field.text = ""
+	password_field_repeat.text = ""
+	email_field.text = ""
+
 
 func _on_RegisterButton_pressed() -> void:
-	if field_email.text.empty():
+	if email_field.text.empty():
 		self.status = "Email cannot be empty"
 		return
-	elif field_password.text.empty() or field_password_repeat.text.empty():
+	elif password_field.text.empty() or password_field_repeat.text.empty():
 		self.status = "Password cannot be empty"
 		return
-	elif field_password.text.similarity(field_password_repeat.text) != 1:
+	elif password_field.text.similarity(password_field_repeat.text) != 1:
 		self.status = "Passwords do not match"
 		return
 
-	emit_signal("register_pressed", field_email.text, field_password.text, remember_email.pressed)
+	emit_signal("register_pressed", email_field.text, password_field.text, remember_email.pressed)
 
 
 func _on_CancelButton_pressed() -> void:

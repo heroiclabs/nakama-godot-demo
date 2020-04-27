@@ -21,6 +21,10 @@ func close() -> void:
 	emit_signal("closed")
 
 
+func reset() -> void:
+	pass
+
+
 func set_is_enabled(value: bool) -> void:
 	is_enabled = value
 

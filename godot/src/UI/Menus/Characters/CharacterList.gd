@@ -52,6 +52,11 @@ func set_is_enabled(value: bool) -> void:
 		character_listing.is_enabled = is_enabled
 
 
+func reset() -> void:
+	for child in get_children():
+		child.queue_free()
+
+
 func _on_CharacterListing_requested_deletion(index: int) -> void:
 	emit_signal("requested_deletion", index)
 

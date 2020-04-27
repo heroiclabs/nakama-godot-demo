@@ -154,5 +154,7 @@ func _on_CharacterMenu_character_selected(_index: int) -> void:
 
 
 func _on_CharacterMenu_go_back_requested() -> void:
+	login_and_register.reset()
+	character_menu.reset()
 	character_menu.hide()
 	login_and_register.show()
