@@ -4,7 +4,7 @@ services:
     container_name: cockroachdb
     image: cockroachdb/cockroach:v19.2.5
     command: start --insecure --store=attrs=ssd,path=/var/lib/cockroach/
-    restart: always
+    restart: "no"
     volumes:
       - data:/var/lib/cockroach
     expose:
@@ -22,7 +22,7 @@ services:
       - >
           /nakama/nakama migrate up --database.address root@cockroachdb:26257 &&
           exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --socket.server_key "wondrous_hippos"
-    restart: always
+    restart: "no"
     links:
       - "cockroachdb:db"
     depends_on:

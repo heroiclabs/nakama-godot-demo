@@ -5,6 +5,7 @@ extends Control
 signal color_changed(color)
 signal text_sent(text)
 signal editing(value)
+signal logged_out
 
 onready var color_editor := $CharacterColorEditor
 onready var chat_box := $ChatBox
@@ -37,3 +38,7 @@ func _on_ChatBox_text_sent(text: String) -> void:
 
 func _on_CharacterColorEditor_color_changed(_color: Color) -> void:
 	emit_signal("color_changed", _color)
+
+
+func _on_LogoutButton_pressed() -> void:
+	emit_signal("logged_out")

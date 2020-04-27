@@ -129,6 +129,22 @@ func connect_to_server_async() -> int:
 	return parsed_result
 
 
+# Asynchronous coroutine. Leaves chat and disconnects from the live server.
+# Returns OK or a nakama error number and puts the error message in `Connection.error_message`
+func disconnect_from_server_async() -> int:
+	var result: NakamaAsyncResult = yield(_socket.leave_chat_async(_channel_id), "completed")
+	var parsed_result := _exception_handler.parse_exception(result)
+	if parsed_result == OK:
+		result = yield(_socket.leave_match_async(_world_id), "completed")
+		parsed_result = _exception_handler.parse_exception(result)
+		if parsed_result == OK:
+			_cleanup()
+			_authenticator.cleanup()
+			return OK
+	
+	return parsed_result
+
+
 # Saves the email in the config file.
 func save_email(email: String) -> void:
 	EmailConfigWorker.save_email(email)
@@ -340,6 +356,13 @@ func _clean_up_socket() -> void:
 	_socket.disconnect("received_channel_message", self, "_on_Received_Channel_message")
 
 	_socket = null
+
+
+func _cleanup() -> void:
+	_clean_up_socket()
+	_world_id = ""
+	_channel_id = ""
+	presences.clear()
 
 
 # Raised when the server reports presences have changed.

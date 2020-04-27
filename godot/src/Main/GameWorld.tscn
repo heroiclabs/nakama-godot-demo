@@ -21,4 +21,5 @@ position = Vector2( 1178.21, 551.34 )
 [node name="GameUI" parent="CanvasLayer" instance=ExtResource( 5 )]
 [connection signal="color_changed" from="CanvasLayer/GameUI" to="." method="_on_GameUI_color_changed"]
 [connection signal="editing" from="CanvasLayer/GameUI" to="." method="_on_GameUI_editing"]
+[connection signal="logged_out" from="CanvasLayer/GameUI" to="." method="_on_GameUI_logged_out"]
 [connection signal="text_sent" from="CanvasLayer/GameUI" to="." method="_on_GameUI_text_sent"]

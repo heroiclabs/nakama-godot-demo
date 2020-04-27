@@ -184,3 +184,9 @@ func _on_GameUI_text_sent(text) -> void:
 
 func _on_GameUI_editing(value) -> void:
 	player.input_locked = value
+
+
+func _on_GameUI_logged_out() -> void:
+	var result: int = yield(Connection.disconnect_from_server_async(), "completed")
+	if result == OK:
+		get_tree().change_scene_to(load("res://src/Main/MainMenu.tscn"))

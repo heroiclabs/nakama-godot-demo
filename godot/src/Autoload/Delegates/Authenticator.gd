@@ -60,6 +60,10 @@ func login_async(email: String, password: String) -> int:
 	return parsed_result
 
 
+func cleanup() -> void:
+	session = null
+
+
 func _no_set(_value) -> void:
 	pass
 
