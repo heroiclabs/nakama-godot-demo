@@ -169,8 +169,11 @@ func _on_ServerConnection_initial_state_received(
 func _on_GameUI_color_changed(color) -> void:
 	player.color = color
 	game_ui.setup(color)
+
 	ServerConnection.send_player_color_update(color)
 	ServerConnection.update_player_character_async(color, player.username)
+
+	get_tree().paused = false
 
 
 func _on_GameUI_text_sent(text) -> void:
