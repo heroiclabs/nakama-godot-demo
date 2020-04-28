@@ -80,6 +80,11 @@ var _authenticator := Authenticator.new(_client, _exception_handler)
 var _storage_worker: StorageWorker
 
 
+func _enter_tree() -> void:
+	pause_mode = Node.PAUSE_MODE_PROCESS
+	get_tree().root.get_node("/root/Nakama").pause_mode = Node.PAUSE_MODE_PROCESS
+
+
 # Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes _session.
 # Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`

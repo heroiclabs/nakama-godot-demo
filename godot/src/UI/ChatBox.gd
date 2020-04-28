@@ -36,6 +36,7 @@ func send_chat_message() -> void:
 		output = output.replace("[", "{").replace("]", "}")
 		emit_signal("text_sent", output)
 		line_edit.text = ""
+		line_edit.release_focus()
 
 
 func _on_SendButton_pressed() -> void:
@@ -47,4 +48,4 @@ func _on_LineEdit_focus_entered() -> void:
 
 
 func _on_LineEdit_focus_exited() -> void:
-	emit_signal("editing", true)
+	emit_signal("editing", false)
