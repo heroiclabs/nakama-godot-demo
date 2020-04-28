@@ -38,7 +38,6 @@ func setup(username: String, color: Color, position: Vector2, level_limits: Rect
 	camera_2d.set_limits(level_limits)
 	set_process(true)
 	show()
-	print(level_limits)
 
 
 func spawn() -> void:

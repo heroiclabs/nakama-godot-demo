@@ -10,8 +10,8 @@ enum States { ON_GROUND, IN_AIR }
 const SCALE_BASE := Vector2.ONE
 const SCALE_SQUASHED := SCALE_BASE * Vector2(1.25, 0.5)
 const SCALE_STRETCHED := SCALE_BASE * Vector2(0.8, 1.35)
-const SQUASH_DURATION := 0.1
-const STRETCH_DURATION := 0.25
+const ANIM_IN_DURATION := 0.1
+const ANIM_OUT_DURATION := 0.25
 
 const MAX_SPEED := 600.0
 const JUMP_SPEED := 2000.0
@@ -71,27 +71,27 @@ func jump() -> void:
 
 func stretch() -> void:
 	tween.interpolate_property(
-		sprite, "scale", scale, SCALE_STRETCHED, STRETCH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		sprite, "scale", scale, SCALE_STRETCHED, ANIM_IN_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
 	)
 	tween.interpolate_property(
-		sprite, "scale", SCALE_STRETCHED, SCALE_BASE, STRETCH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT, STRETCH_DURATION
+		sprite, "scale", SCALE_STRETCHED, SCALE_BASE, ANIM_OUT_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT, ANIM_IN_DURATION
 	)
 	tween.start()
 
 
 func squash() -> void:
 	tween.interpolate_property(
-		sprite, "scale", scale, SCALE_SQUASHED, SQUASH_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		sprite, "scale", scale, SCALE_SQUASHED, ANIM_IN_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
 	)
 	tween.interpolate_property(
 		sprite,
 		"scale",
 		SCALE_SQUASHED,
 		SCALE_BASE,
-		SQUASH_DURATION,
+		ANIM_IN_DURATION,
 		Tween.TRANS_LINEAR,
 		Tween.EASE_OUT,
-		SQUASH_DURATION
+		ANIM_IN_DURATION
 	)
 	tween.start()
 
