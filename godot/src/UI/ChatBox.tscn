@@ -3,7 +3,7 @@
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
 [ext_resource path="res://src/UI/ChatBox.gd" type="Script" id=2]
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=1]
 script/source = "extends LineEdit
 
 
@@ -13,11 +13,11 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 "
 
-[sub_resource type="InputEventKey" id=1]
+[sub_resource type="InputEventKey" id=2]
 scancode = 16777221
 
-[sub_resource type="ShortCut" id=2]
-shortcut = SubResource( 1 )
+[sub_resource type="ShortCut" id=3]
+shortcut = SubResource( 2 )
 
 [node name="ChatBox" type="Panel"]
 self_modulate = Color( 1, 1, 1, 0.490196 )
@@ -76,7 +76,7 @@ margin_bottom = 80.0
 size_flags_horizontal = 3
 max_length = 144
 caret_blink = true
-script = SubResource( 3 )
+script = SubResource( 1 )
 
 [node name="SendButton" type="Button" parent="HBoxContainer"]
 margin_left = 648.0
@@ -84,7 +84,7 @@ margin_right = 768.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 120, 80 )
 shortcut_in_tooltip = false
-shortcut = SubResource( 2 )
+shortcut = SubResource( 3 )
 text = "Send"
 [connection signal="focus_entered" from="HBoxContainer/LineEdit" to="." method="_on_LineEdit_focus_entered"]
 [connection signal="focus_exited" from="HBoxContainer/LineEdit" to="." method="_on_LineEdit_focus_exited"]

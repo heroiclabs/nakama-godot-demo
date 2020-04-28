@@ -4,11 +4,11 @@
 class_name Player
 extends Character
 
-
 var input_locked := false
 var accel := Vector2.ZERO
 var last_direction := Vector2.ZERO
 
+var is_active := true setget set_is_active
 
 onready var timer: Timer = $Timer
 onready var camera_2d: Camera2D = $Camera2D
@@ -17,7 +17,6 @@ onready var camera_2d: Camera2D = $Camera2D
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	timer.connect("timeout", self, "_on_Timer_timeout")
-	set_process(false)
 	hide()
 
 
@@ -52,6 +51,13 @@ func jump() -> void:
 	ServerConnection.send_jump()
 
 
+func set_is_active(value: bool) -> void:
+	is_active = value
+	set_process(value)
+	set_process_unhandled_input(value)
+	timer.paused = not value
+
+
 func _get_direction() -> Vector2:
 	if not is_processing_unhandled_input():
 		return Vector2.ZERO
@@ -67,3 +73,16 @@ func _get_direction() -> Vector2:
 
 func _on_Timer_timeout() -> void:
 	ServerConnection.send_position_update(global_position)
+
+
+func _on_GameUI_chat_edit_started() -> void:
+	self.is_active = false
+
+
+func _on_GameUI_chat_edit_ended() -> void:
+	self.is_active = true
+
+
+func _on_GameUI_color_changed(new_color: Color) -> void:
+	self.color = new_color
+	self.is_active = true

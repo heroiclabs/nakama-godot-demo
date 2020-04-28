@@ -144,7 +144,7 @@ func _on_ServerConnection_chat_message_received(sender_id: String, message: Stri
 		color = player.color
 		sender_name = player.username
 
-	game_ui.add_text(message, sender_name, color)
+	game_ui.add_chat_reply(message, sender_name, color)
 
 
 func _on_ServerConnection_character_spawned(id: String, color: Color, name: String) -> void:
@@ -167,21 +167,13 @@ func _on_ServerConnection_initial_state_received(
 
 
 func _on_GameUI_color_changed(color) -> void:
-	player.color = color
 	game_ui.setup(color)
-
 	ServerConnection.send_player_color_update(color)
 	ServerConnection.update_player_character_async(color, player.username)
-
-	get_tree().paused = false
 
 
 func _on_GameUI_text_sent(text) -> void:
 	ServerConnection.send_text_async(text)
-
-
-func _on_GameUI_editing(value) -> void:
-	get_tree().paused = value
 
 
 func _on_GameUI_logged_out() -> void:

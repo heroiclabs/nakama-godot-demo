@@ -2,7 +2,8 @@
 extends Control
 
 signal text_sent(text)
-signal editing(value)
+signal edit_started
+signal edit_ended
 
 # Number of replies stored in the chat history
 const HISTORY_LENGTH := 20
@@ -19,7 +20,7 @@ func _ready() -> void:
 
 
 # Add a new reply to the chat box, taking `HISTORY_LENGTH` into account.
-func add_text(text: String, sender_name: String, color: Color) -> void:
+func add_reply(text: String, sender_name: String, color: Color) -> void:
 	if reply_count == HISTORY_LENGTH:
 		chat_log.bbcode_text = chat_log.bbcode_text.substr(chat_log.bbcode_text.find("\n"))
 	else:
@@ -31,12 +32,11 @@ func add_text(text: String, sender_name: String, color: Color) -> void:
 
 
 func send_chat_message() -> void:
-	var output: String = line_edit.text
-	if output.length() > 0:
-		output = output.replace("[", "{").replace("]", "}")
-		emit_signal("text_sent", output)
-		line_edit.text = ""
-		line_edit.release_focus()
+	if line_edit.text.length() == 0:
+		return
+	var text: String = line_edit.text.replace("[", "{").replace("]", "}")
+	emit_signal("text_sent", text)
+	line_edit.text = ""
 
 
 func _on_SendButton_pressed() -> void:
@@ -44,8 +44,8 @@ func _on_SendButton_pressed() -> void:
 
 
 func _on_LineEdit_focus_entered() -> void:
-	emit_signal("editing", true)
+	emit_signal("edit_started")
 
 
 func _on_LineEdit_focus_exited() -> void:
-	emit_signal("editing", false)
+	emit_signal("edit_ended")

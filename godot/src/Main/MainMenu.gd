@@ -150,7 +150,9 @@ func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> vo
 
 
 func _on_CharacterMenu_character_selected(index: int) -> void:
-	var character: CharacterListing = character_menu.character_selector.character_list.get_child(index)
+	var character: CharacterListing = character_menu.character_selector.character_list.get_child(
+		index
+	)
 	character_menu.is_enabled = false
 	yield(join_game_world(character.get_name(), character.get_character_color()), "completed")
 	character_menu.is_enabled = true

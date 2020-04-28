@@ -71,10 +71,23 @@ func jump() -> void:
 
 func stretch() -> void:
 	tween.interpolate_property(
-		sprite, "scale", scale, SCALE_STRETCHED, ANIM_IN_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT
+		sprite,
+		"scale",
+		scale,
+		SCALE_STRETCHED,
+		ANIM_IN_DURATION,
+		Tween.TRANS_LINEAR,
+		Tween.EASE_OUT
 	)
 	tween.interpolate_property(
-		sprite, "scale", SCALE_STRETCHED, SCALE_BASE, ANIM_OUT_DURATION, Tween.TRANS_LINEAR, Tween.EASE_OUT, ANIM_IN_DURATION
+		sprite,
+		"scale",
+		SCALE_STRETCHED,
+		SCALE_BASE,
+		ANIM_OUT_DURATION,
+		Tween.TRANS_LINEAR,
+		Tween.EASE_OUT,
+		ANIM_IN_DURATION
 	)
 	tween.start()
 

@@ -10,6 +10,7 @@
 [node name="GameUI" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 theme = ExtResource( 5 )
 script = ExtResource( 6 )
 __meta__ = {
@@ -18,23 +19,31 @@ __meta__ = {
 "_edit_vertical_guides_": [ 24.0, 1896.0 ]
 }
 
-[node name="ChangeColorButton" parent="." instance=ExtResource( 2 )]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 24.0
 margin_top = 24.0
 margin_right = 224.0
-margin_bottom = 84.0
+margin_bottom = 160.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChangeColorButton" parent="VBoxContainer" instance=ExtResource( 2 )]
+margin_right = 200.0
+margin_bottom = 60.0
 rect_min_size = Vector2( 200, 60 )
 text = "Change Color"
+flat = true
 
-[node name="LogOutButton" parent="." instance=ExtResource( 2 )]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -248.0
-margin_top = -112.0
-margin_right = -32.0
-margin_bottom = -32.0
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+margin_top = 76.0
+margin_right = 200.0
+margin_bottom = 80.0
+
+[node name="LogOutButton" parent="VBoxContainer" instance=ExtResource( 2 )]
+margin_top = 96.0
+margin_right = 200.0
+margin_bottom = 156.0
 text = "Log out"
 flat = true
 
@@ -49,11 +58,13 @@ margin_left = -424.0
 margin_top = -104.0
 margin_right = -24.0
 margin_bottom = -24.0
+mouse_filter = 2
 
 [node name="CharacterColorEditor" parent="." instance=ExtResource( 4 )]
 visible = false
-[connection signal="pressed" from="ChangeColorButton" to="." method="_on_ChangeColorButton_pressed"]
-[connection signal="pressed" from="LogOutButton" to="." method="_on_LogoutButton_pressed"]
-[connection signal="editing" from="ChatBox" to="." method="_on_ChatBox_editing"]
+[connection signal="pressed" from="VBoxContainer/ChangeColorButton" to="." method="_on_ChangeColorButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/LogOutButton" to="." method="_on_LogoutButton_pressed"]
+[connection signal="edit_ended" from="ChatBox" to="." method="_on_ChatBox_edit_ended"]
+[connection signal="edit_started" from="ChatBox" to="." method="_on_ChatBox_edit_started"]
 [connection signal="text_sent" from="ChatBox" to="." method="_on_ChatBox_text_sent"]
 [connection signal="color_changed" from="CharacterColorEditor" to="." method="_on_CharacterColorEditor_color_changed"]
