@@ -13,6 +13,11 @@ onready var chat_box := $ChatBox
 onready var notifications_ui := $NotificationsUI
 
 
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		chat_box.line_edit.release_focus()
+
+
 func setup(_color: Color) -> void:
 	color_editor.color = _color
 
