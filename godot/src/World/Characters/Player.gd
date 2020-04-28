@@ -17,6 +17,8 @@ onready var camera_2d: Camera2D = $Camera2D
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	timer.connect("timeout", self, "_on_Timer_timeout")
+	set_process(false)
+	hide()
 
 
 func _physics_process(_delta: float) -> void:
@@ -34,6 +36,8 @@ func setup(username: String, color: Color, position: Vector2, level_limits: Rect
 	global_position = position
 	spawn()
 	camera_2d.set_limits(level_limits)
+	set_process(true)
+	show()
 	print(level_limits)
 
 

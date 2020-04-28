@@ -57,13 +57,14 @@ func get_player(index: int) -> Dictionary:
 
 
 # Attempts to connect to the server, then to join the world match.
-func join_game_world() -> int:
+func join_game_world(player_name: String, player_color: Color) -> int:
 	var result: int = yield(ServerConnection.connect_to_server_async(), "completed")
 	if result == OK:
 		result = yield(ServerConnection.join_world_async(), "completed")
 	if result == OK:
 		# warning-ignore:return_value_discarded
 		get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))
+		ServerConnection.send_spawn(player_color, player_name)
 	else:
 		emit_signal(
 			"server_request_failed", "Error code %s: %s" % [result, ServerConnection.error_message]
@@ -148,9 +149,10 @@ func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> vo
 	create_character(name, color)
 
 
-func _on_CharacterMenu_character_selected(_index: int) -> void:
+func _on_CharacterMenu_character_selected(index: int) -> void:
+	var character: CharacterListing = character_menu.character_selector.character_list.get_child(index)
 	character_menu.is_enabled = false
-	yield(join_game_world(), "completed")
+	yield(join_game_world(character.get_name(), character.get_character_color()), "completed")
 	character_menu.is_enabled = true
 
 

@@ -21,22 +21,19 @@ func _ready() -> void:
 	ServerConnection.connect(
 		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
 	)
-	player.setup("Bibi", Color.green, Vector2.ZERO, world.get_limits())
 	game_ui.setup(Color.green)
 
 
 func setup(username: String, color: Color) -> void:
 	last_name = username
 	last_color = color
-	ServerConnection.send_spawn(color, username)
+	#ServerConnection.send_spawn(color, username)
 
 
 # The main entry point. Sets up the client player and the various characters that
 # are already logged into the world, and sets up the signal chain to respond to
 # the server.
 func join_world(
-	username: String,
-	player_color: Color,
 	state_positions: Dictionary,
 	state_inputs: Dictionary,
 	state_colors: Dictionary,
@@ -44,9 +41,11 @@ func join_world(
 ) -> void:
 	var user_id := ServerConnection.get_user_id()
 	assert(state_positions.has(user_id), "Server did not return valid state")
+	var username: String = state_names.get(user_id)
+	var player_color: Color = state_colors.get(user_id)
 
 	var player_position: Vector2 = Vector2(state_positions[user_id].x, state_positions[user_id].y)
-	player.setup(username, player_color, player_position)
+	player.setup(username, player_color, player_position, world.get_limits())
 	game_ui.setup(player_color)
 
 	var presences := ServerConnection.presences
@@ -68,9 +67,6 @@ func join_world(
 	)
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect("character_spawned", self, "_on_ServerConnection_character_spawned")
-
-
-
 
 
 func create_character(
@@ -167,7 +163,7 @@ func _on_ServerConnection_initial_state_received(
 	ServerConnection.disconnect(
 		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
 	)
-	join_world(last_name, last_color, positions, inputs, colors, names)
+	join_world(positions, inputs, colors, names)
 
 
 func _on_GameUI_color_changed(color) -> void:
