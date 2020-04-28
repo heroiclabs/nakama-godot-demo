@@ -15,10 +15,6 @@ onready var login_and_register := $CanvasLayer/LoginAndRegister
 onready var character_menu := $CanvasLayer/CharacterMenu
 
 
-func _ready() -> void:
-	yield(authenticate_user("test4@test.com", "password"), "completed")
-
-
 # Asks the server to create a new character asynchronously.
 # Returns a dictionary with the player's name and color if it worked.
 # Otherwise, returns an empty dictionary.
