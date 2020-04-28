@@ -118,5 +118,7 @@ size_flags_horizontal = 3
 text = "Register"
 
 [node name="StatusPanel" parent="." instance=ExtResource( 3 )]
+[connection signal="text_entered" from="Email/LineEditValidate" to="." method="_on_LineEditValidate_text_entered"]
+[connection signal="text_entered" from="Password/LineEditValidate" to="." method="_on_LineEditValidate_text_entered"]
 [connection signal="pressed" from="HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/RegisterButton" to="." method="_on_RegisterButton_pressed"]

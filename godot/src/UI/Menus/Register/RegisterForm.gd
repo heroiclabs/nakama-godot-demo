@@ -39,7 +39,7 @@ func reset() -> void:
 	email_field.text = ""
 
 
-func _on_RegisterButton_pressed() -> void:
+func attempt_register() -> void:
 	if email_field.text.empty():
 		self.status = "Email cannot be empty"
 		return
@@ -53,6 +53,15 @@ func _on_RegisterButton_pressed() -> void:
 	emit_signal("register_pressed", email_field.text, password_field.text, remember_email.pressed)
 
 
+func _on_RegisterButton_pressed() -> void:
+	attempt_register()
+
+
 func _on_CancelButton_pressed() -> void:
 	emit_signal("cancel_pressed")
 	hide()
+
+
+# Connected to all three LineEditValidate in the scene
+func _on_LineEditValidate_text_entered(_new_text: String) -> void:
+	attempt_register()

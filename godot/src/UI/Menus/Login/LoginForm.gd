@@ -46,7 +46,7 @@ func reset() -> void:
 		email_field.text = ""
 
 
-func _on_LoginButton_pressed() -> void:
+func attempt_login() -> void:
 	if not email_field.is_valid:
 		status_panel.text = "The email address is not valid"
 		return
@@ -61,5 +61,13 @@ func _on_LoginButton_pressed() -> void:
 	status_panel.text = "Authenticating..."
 
 
+func _on_LoginButton_pressed() -> void:
+	attempt_login()
+
+
 func _on_RegisterButton_pressed() -> void:
 	emit_signal("register_pressed")
+
+
+func _on_LineEditValidate_text_entered(_new_text: String) -> void:
+	attempt_login()
