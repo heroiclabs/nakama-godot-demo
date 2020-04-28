@@ -313,7 +313,6 @@ func send_text_async(text: String) -> int:
 	if parsed_result != OK:
 		emit_signal(
 			"chat_message_received",
-			"",
 			"SYSTEM",
 			"Error code %s: %s" % [parsed_result, error_message]
 		)
