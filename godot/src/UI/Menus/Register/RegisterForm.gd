@@ -65,3 +65,7 @@ func _on_CancelButton_pressed() -> void:
 # Connected to all three LineEditValidate in the scene
 func _on_LineEditValidate_text_entered(_new_text: String) -> void:
 	attempt_register()
+
+
+func _on_open() -> void:
+	email_field.grab_focus()

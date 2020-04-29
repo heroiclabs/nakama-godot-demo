@@ -71,3 +71,7 @@ func _on_RegisterButton_pressed() -> void:
 
 func _on_LineEditValidate_text_entered(_new_text: String) -> void:
 	attempt_login()
+
+
+func _on_open() -> void:
+	email_field.grab_focus()

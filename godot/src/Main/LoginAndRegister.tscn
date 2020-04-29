@@ -13,10 +13,12 @@ __meta__ = {
 }
 
 [node name="LoginForm" parent="." instance=ExtResource( 4 )]
+visible = false
 
 [node name="RegisterForm" parent="." instance=ExtResource( 2 )]
-visible = false
 [connection signal="login_pressed" from="LoginForm" to="." method="_on_LoginForm_login_pressed"]
+[connection signal="open" from="LoginForm" to="LoginForm" method="_on_open"]
 [connection signal="register_pressed" from="LoginForm" to="." method="_on_LoginForm_register_pressed"]
 [connection signal="cancel_pressed" from="RegisterForm" to="." method="_on_RegisterForm_cancel_pressed"]
+[connection signal="open" from="RegisterForm" to="RegisterForm" method="_on_open"]
 [connection signal="register_pressed" from="RegisterForm" to="." method="_on_RegisterForm_register_pressed"]
