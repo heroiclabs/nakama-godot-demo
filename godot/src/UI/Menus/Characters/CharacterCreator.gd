@@ -33,5 +33,5 @@ func _on_CreateButton_pressed() -> void:
 	request_character_creation()
 
 
-func _on_LineEdit_text_entered(new_text: String) -> void:
+func _on_LineEdit_text_entered(_new_text: String) -> void:
 	request_character_creation()
