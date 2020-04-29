@@ -54,6 +54,8 @@ func get_player(index: int) -> Dictionary:
 
 # Attempts to connect to the server, then to join the world match.
 func join_game_world(player_name: String, player_color: Color) -> int:
+	character_menu.is_enabled = false
+
 	var result: int = yield(ServerConnection.connect_to_server_async(), "completed")
 	if result == OK:
 		result = yield(ServerConnection.join_world_async(), "completed")
@@ -65,6 +67,8 @@ func join_game_world(player_name: String, player_color: Color) -> int:
 		emit_signal(
 			"server_request_failed", "Error code %s: %s" % [result, ServerConnection.error_message]
 		)
+
+	character_menu.is_enabled = true
 	return result
 
 
@@ -143,15 +147,11 @@ func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
 
 func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
 	create_character(name, color)
+	yield(join_game_world(name, color), "completed")
 
 
-func _on_CharacterMenu_character_selected(index: int) -> void:
-	var character: CharacterListing = character_menu.character_selector.character_list.get_child(
-		index
-	)
-	character_menu.is_enabled = false
-	yield(join_game_world(character.get_name(), character.get_character_color()), "completed")
-	character_menu.is_enabled = true
+func _on_CharacterMenu_character_selected(name: String, color: Color) -> void:
+	yield(join_game_world(name, color), "completed")
 
 
 func _on_CharacterMenu_go_back_requested() -> void:
