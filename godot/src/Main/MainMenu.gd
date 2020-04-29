@@ -146,7 +146,7 @@ func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
 
 
 func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
-	create_character(name, color)
+	yield(create_character(name, color), "completed")
 	yield(join_game_world(name, color), "completed")
 
 
