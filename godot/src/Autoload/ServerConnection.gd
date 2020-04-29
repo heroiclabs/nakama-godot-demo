@@ -317,9 +317,7 @@ func send_text_async(text: String) -> int:
 	var parsed_result := _exception_handler.parse_exception(message_response)
 	if parsed_result != OK:
 		emit_signal(
-			"chat_message_received",
-			"SYSTEM",
-			"Error code %s: %s" % [parsed_result, error_message]
+			"chat_message_received", "SYSTEM", "Error code %s: %s" % [parsed_result, error_message]
 		)
 
 	return parsed_result
