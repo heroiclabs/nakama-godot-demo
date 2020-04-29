@@ -8,6 +8,7 @@ signal option_picked(is_confirmed)
 export var text := "Label" setget set_text
 
 onready var label: Label = $Label
+onready var yes_button: Button = $YesButton
 
 
 func _ready() -> void:
@@ -19,6 +20,11 @@ func set_text(value: String) -> void:
 	if not label:
 		yield(self, "ready")
 	label.text = text
+
+
+func open() -> void:
+	.open()
+	yes_button.grab_focus()
 
 
 func _on_YesButton_pressed() -> void:

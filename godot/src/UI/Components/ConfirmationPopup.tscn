@@ -5,6 +5,7 @@
 [ext_resource path="res://assets/theme/stylebox/panel_popup.tres" type="StyleBox" id=3]
 
 [node name="ConfirmationPopup" type="Panel"]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -50,6 +51,12 @@ margin_top = -7.0
 margin_right = -8.0
 margin_bottom = 53.0
 rect_min_size = Vector2( 120, 60 )
+focus_neighbour_left = NodePath("../NoButton")
+focus_neighbour_top = NodePath("../NoButton")
+focus_neighbour_right = NodePath("../NoButton")
+focus_neighbour_bottom = NodePath("../NoButton")
+focus_next = NodePath("../NoButton")
+focus_previous = NodePath("../NoButton")
 text = "Yes"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -65,6 +72,12 @@ margin_top = -7.0
 margin_right = 128.0
 margin_bottom = 53.0
 rect_min_size = Vector2( 120, 60 )
+focus_neighbour_left = NodePath("../YesButton")
+focus_neighbour_top = NodePath("../YesButton")
+focus_neighbour_right = NodePath("../YesButton")
+focus_neighbour_bottom = NodePath("../YesButton")
+focus_next = NodePath("../YesButton")
+focus_previous = NodePath("../YesButton")
 text = "No"
 __meta__ = {
 "_edit_use_anchors_": false
