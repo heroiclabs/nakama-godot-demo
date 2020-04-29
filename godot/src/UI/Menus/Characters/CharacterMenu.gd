@@ -3,7 +3,7 @@ extends MenuList
 
 signal new_character_requested(name, color)
 signal character_deletion_requested(index)
-signal character_selected(index)
+signal character_selected(name, color)
 signal go_back_requested
 
 onready var character_selector := $CharacterSelector
@@ -37,8 +37,8 @@ func _on_CharacterSelector_create_pressed() -> void:
 
 
 # TODO: need to use name instead for server?
-func _on_CharacterSelector_login_pressed(selected_index: int) -> void:
-	emit_signal("character_selected", selected_index)
+func _on_CharacterSelector_login_pressed(name: String, color: Color) -> void:
+	emit_signal("character_selected", name, color)
 
 
 func _on_CharacterCreator_new_character_requested(name: String, color: Color) -> void:

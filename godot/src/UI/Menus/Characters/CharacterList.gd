@@ -3,7 +3,7 @@
 extends Menu
 
 signal requested_deletion(character_index)
-signal character_selected(index)
+signal character_selected(name, color)
 
 const CharacterListing := preload("res://src/UI/Menus/Characters/CharacterListing.tscn")
 
@@ -57,6 +57,11 @@ func reset() -> void:
 		child.queue_free()
 
 
+func get_character_data(index: int) -> Dictionary:
+	var listing: CharacterListing = get_child(index)
+	return {name = listing.label.text, color = listing.texture.modulate}
+
+
 func _on_CharacterListing_requested_deletion(index: int) -> void:
 	emit_signal("requested_deletion", index)
 
@@ -66,4 +71,5 @@ func _on_CharacterListing_character_selected(index: int) -> void:
 
 
 func _on_CharacterListing_character_accepted(index: int) -> void:
-	emit_signal("character_selected", index)
+	var character := get_character_data(index)
+	emit_signal("character_selected", character.name, character.color)

@@ -27,14 +27,6 @@ func setup(character_name: String, character_color: Color) -> void:
 	texture.modulate = character_color
 
 
-func get_name() -> String:
-	return label.text
-
-
-func get_character_color() -> Color:
-	return texture.modulate
-
-
 func set_is_enabled(value: bool) -> void:
 	is_enabled = value
 	if not delete_button:

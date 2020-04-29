@@ -35,7 +35,8 @@ func set_is_enabled(value: bool) -> void:
 
 
 func _on_LoginButton_pressed() -> void:
-	emit_signal("login_pressed", character_list.selected_index)
+	var character_data: Dictionary = character_list.get_selected_character()
+	emit_signal("login_pressed", character_data.name, character_data.color)
 
 
 func _on_CreateButton_pressed() -> void:
@@ -53,5 +54,5 @@ func _on_CharacterList_requested_deletion(character_index) -> void:
 	self.is_enabled = true
 
 
-func _on_CharacterList_character_selected(index) -> void:
-	emit_signal("login_pressed", index)
+func _on_CharacterList_character_selected(name: String, color: Color) -> void:
+	emit_signal("login_pressed", name, color)
