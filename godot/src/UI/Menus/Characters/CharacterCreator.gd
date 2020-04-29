@@ -22,8 +22,16 @@ func open() -> void:
 	color_selector.focus_first_swatch()
 
 
-func _on_CreateButton_pressed() -> void:
+func request_character_creation() -> void:
 	if name_field.text.length() == 0:
 		return
 	emit_signal("new_character_requested", name_field.text, color_selector.color)
 	close()
+
+
+func _on_CreateButton_pressed() -> void:
+	request_character_creation()
+
+
+func _on_LineEdit_text_entered(new_text: String) -> void:
+	request_character_creation()

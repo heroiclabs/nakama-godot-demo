@@ -122,4 +122,5 @@ rect_min_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Create"
 [connection signal="color_changed" from="VBoxContainer/Color/ColorSelector" to="VBoxContainer/HBoxContainer/CharacterTexture" method="_on_ColorSelector_color_changed"]
+[connection signal="text_entered" from="VBoxContainer/HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]
 [connection signal="pressed" from="VBoxContainer/CreateButton" to="." method="_on_CreateButton_pressed"]
