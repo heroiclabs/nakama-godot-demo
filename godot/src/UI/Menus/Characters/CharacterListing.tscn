@@ -10,6 +10,7 @@
 margin_right = 120.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 480, 80 )
+focus_neighbour_right = NodePath("HBoxContainer/DeleteButton")
 mouse_filter = 1
 size_flags_horizontal = 4
 theme = ExtResource( 5 )
@@ -52,5 +53,6 @@ margin_left = 297.0
 margin_top = 0.0
 margin_right = 347.0
 margin_bottom = 80.0
+focus_neighbour_left = NodePath("../..")
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
 [connection signal="pressed" from="HBoxContainer/DeleteButton" to="." method="_on_DeleteButton_pressed"]
