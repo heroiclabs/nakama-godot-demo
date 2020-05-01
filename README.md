@@ -28,8 +28,6 @@ The character creation screen allows you to pick a color from a predefined color
 
 ## Testing the project
 
-⚠ It is still in development and undergoing changes daily. The code is ready to learn from it, but we are in the process of improving the visuals and may break the master branch.
-
 To test the project, you need first to install the server and get it running, then run two instances of Godot.
 
 To install and start the server:
