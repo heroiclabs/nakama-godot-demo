@@ -1,8 +1,10 @@
 # Nakama Godot Demo
 
+![Nakama Godot demo banner image](./img/godot-nakama-banner.png)
+
 This demo shows how to use [Nakama](https://heroiclabs.com/) with the [Nakama Godot client](https://github.com/heroiclabs/nakama-godot).
 
-It features and showcases:
+It showcases the following Nakama features:
 
 - Authentication, sessions, and disconnection.
 - [Game storage](https://heroiclabs.com/docs/storage-collections/).
@@ -10,7 +12,19 @@ It features and showcases:
 - [Real-time chat](https://heroiclabs.com/docs/social-realtime-chat/).
 - In-app [notifications](https://heroiclabs.com/docs/social-in-app-notifications/) with popups.
 - Character color customization.
-- Platforming mechanics, an area where players can jump and interact with one another.
+- Platforming mechanics and synchronizing players. Multiple players can interact together.
+
+It also shows good practices to design user interface and structure your Godot projects.
+
+## Screenshots
+
+Here is a view of the game world, where players can chat, move around, interact with one-another, or change their color.
+
+![in-game screenshot](./img/in-game-screen.png)
+
+The character creation screen allows you to pick a color from a predefined color palette.
+
+![Character creation screen](./img/character-creation-screen.png)
 
 ## Testing the project
 
