@@ -62,6 +62,11 @@ func get_character_data(index: int) -> Dictionary:
 	return {name = listing.label.text, color = listing.texture.modulate}
 
 
+# Returns the selected characterData. Convenience function for `get_character_data`
+func get_selected_character() -> Dictionary:
+	return get_character_data(selected_index)
+
+
 func _on_CharacterListing_requested_deletion(index: int) -> void:
 	emit_signal("requested_deletion", index)
 
