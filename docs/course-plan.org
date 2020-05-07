@@ -1,0 +1,83 @@
+#+TITLE: Course planning
+
+Plan for the tutorial series based on the demo.
+
+* Requirements
+
+** Audience
+
+*Developers* who use Godot but are not familiar with Nakama, and who have little-to-no experience with networking.
+
+** Difficulty
+
+*Intermediate*. Coding network games requires some solid programming foundation.
+
+** Pre-requisites
+
+- Being comfortable with GDScript code.
+- Being comfortable using the editor.
+- Good programming foundations, being comfortable with the concepts of classes, objects, loops, etc.
+
+** Cover the following Nakama features
+
+1. [[https://heroiclabs.com/docs/godot1.client1.guide/#sessions][Authentication]] and Session tokens
+   + Connecting.
+   + Staying authenticated.
+   + Disconnecting.
+2. Basic [[https://heroiclabs.com/docs/storage1.collections/][game storage]]
+3. Explain the difference between the client object and the socket object
+4. Sockets, and how to manage the connection
+5. Socket API features
+   + Real-time [[https://heroiclabs.com/docs/social-realtime-chat/][chat]]
+   + In-app [[https://heroiclabs.com/docs/social-in-app-notifications/][notifications]]
+
+Cover the features through these parts of the demo:
+
+1. Authentication
+   + Log in screen.
+   + Create account screen.
+   + Entering and leaving the character selection screen.
+2. Game storage
+   + Storing and retrieving data: Creating a character, storing their name, color.
+   + Changing data:
+3. Basic storage: The server remembers the user's selected character, name, and
+  last location.
+4. Notifications indicate when other players join or leave the room.
+5. The users can chat via an on-screen chat box inspired by MMO games.
+
+* Teaching order
+
+[[file:packets.md::Packets and storage data structures][Packets description]]
+
+[[file:../nakama/docker-compose.yml][In the docker file we need to set the unique socket key]]
+
+** 1- Authentication
+
+[[file:../godot/src/Autoload/ServerConnection.gd::func register_async(email: String, password: String) -> int:][Authentication methods]]
+
+[[file:../godot/src/Autoload/Delegates/Authenticator.gd::Delegate class that handles logging in and registering accounts. Holds the][Authenticator]]
+
+UI and front-end: login and register form
+
+** 2- Creating and connecting to a socket using a session (connect to server async)
+
+[[file:../godot/src/Autoload/ServerConnection.gd::func connect_to_server_async() -> int:][Live server connection (connecting to a socket)]]
+Log out button.
+
+Note: closing Godot, nakama cleans up by itself.
+
+** 3- Responding to successful connection
+
+[[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
+
+** 4- Sending/receiving messages, and joining/responding in chat
+
+All the send_ methods and _received signals and their callbacks
+
+[[file:../godot/src/Autoload/ServerConnection.gd::func send_text_async(text: String) -> int:][Send text]]
+
+** 5- Storing stuff from client, storing stuff from server
+
+Stuff that uses the _storage_worker
+
+[[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
