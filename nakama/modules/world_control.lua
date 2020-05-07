@@ -1,4 +1,5 @@
---- Module that controls the main world. Updated every tick rate using match_loop
+-- Module that controls the game world. The world's state is updated every `tickrate` in the
+-- `match_loop()` function.
 
 local world_control = {}
 
@@ -8,7 +9,7 @@ local SPAWN_POSITION = {1800.0, 1280.0}
 local SPAWN_HEIGHT = 463.15
 local WORLD_WIDTH = 1500
 
---- Custom operation codes. Nakama specific codes are <= 0.
+-- Custom operation codes. Nakama specific codes are <= 0.
 local OpCodes = {
     update_position = 1,
     update_input = 2,
@@ -19,10 +20,10 @@ local OpCodes = {
     initial_state = 7
 }
 
---- Command pattern table for boiler plate updates that uses data and state.
+-- Command pattern table for boiler plate updates that uses data and state.
 local commands = {}
 
---- Updates the position in the game state
+-- Updates the position in the game state
 commands[OpCodes.update_position] = function(data, state)
     local id = data.id
     local position = data.pos
@@ -31,7 +32,7 @@ commands[OpCodes.update_position] = function(data, state)
     end
 end
 
---- Updates the horizontal input direction in the game state
+-- Updates the horizontal input direction in the game state
 commands[OpCodes.update_input] = function(data, state)
     local id = data.id
     local input = data.inp
@@ -40,7 +41,7 @@ commands[OpCodes.update_input] = function(data, state)
     end
 end
 
---- Updates whether a character jumped in the game state
+-- Updates whether a character jumped in the game state
 commands[OpCodes.update_jump] = function(data, state)
     local id = data.id
     if state.inputs[id] ~= nil then
@@ -48,7 +49,7 @@ commands[OpCodes.update_jump] = function(data, state)
     end
 end
 
---- Updates the character color in the game state once the player's picked a character
+-- Updates the character color in the game state once the player's picked a character
 commands[OpCodes.do_spawn] = function(data, state)
     local id = data.id
     local color = data.col
@@ -57,7 +58,7 @@ commands[OpCodes.do_spawn] = function(data, state)
     end
 end
 
---- Updates the character color in the game state after a player's changed colors
+-- Updates the character color in the game state after a player's changed colors
 commands[OpCodes.update_color] = function(data, state)
     local id = data.id
     local color = data.col
@@ -66,7 +67,8 @@ commands[OpCodes.update_color] = function(data, state)
     end
 end
 
---- When the match is initialized. Creates empty tables in the game state that will be populated by clients.
+-- When the match is initialized. Creates empty tables in the game state that will be populated by
+-- clients.
 function world_control.match_init(_, _)
     local gamestate = {
         presences = {},
@@ -81,7 +83,8 @@ function world_control.match_init(_, _)
     return gamestate, tickrate, label
 end
 
---- When someone tries to join the match. Checks if someone is already logged in and blocks them from doing so if so.
+-- When someone tries to join the match. Checks if someone is already logged in and blocks them from
+-- doing so if so.
 function world_control.match_join_attempt(_, _, _, state, presence, _)
     if state.presences[presence.user_id] ~= nil then
         return state, false, "User already logged in."
@@ -89,7 +92,8 @@ function world_control.match_join_attempt(_, _, _, state, presence, _)
     return state, true
 end
 
---- When someone does join the match. Initializes their entries in the game state tables with dummy values until they spawn in.
+-- When someone does join the match. Initializes their entries in the game state tables with dummy
+-- values until they spawn in.
 function world_control.match_join(_, dispatcher, _, state, presences)
     for _, presence in ipairs(presences) do
         state.presences[presence.user_id] = presence
@@ -107,13 +111,13 @@ function world_control.match_join(_, dispatcher, _, state, presences)
         state.colors[presence.user_id] = "1,1,1,1"
 
         state.names[presence.user_id] = "User"
-
     end
 
     return state
 end
 
---- When someone leaves the match. Clears their entries in the game state tables, but saves their position to storage for next time.
+-- When someone leaves the match. Clears their entries in the game state tables, but saves their
+-- position to storage for next time.
 function world_control.match_leave(_, _, _, state, presences)
     for _, presence in ipairs(presences) do
         local new_objects = {
@@ -136,11 +140,10 @@ function world_control.match_leave(_, _, _, state, presences)
     return state
 end
 
---- Called tick rate times per second. Handles client messages and sends game state updates.
--- Uses boiler plate commands from the command pattern except when specialization is required.
+-- Called `tickrate` times per second. Handles client messages and sends game state updates. Uses
+-- boiler plate commands from the command pattern except when specialization is required.
 function world_control.match_loop(_, dispatcher, _, state, messages)
     for _, message in ipairs(messages) do
-
         local op_code = message.op_code
 
         local decoded = nk.json_decode(message.data)
@@ -213,16 +216,19 @@ function world_control.match_loop(_, dispatcher, _, state, messages)
     return state
 end
 
---- Server is shutting down. Save positions of all existing characters to storage.
+-- Server is shutting down. Save positions of all existing characters to storage.
 function world_control.match_terminate(_, _, _, state, _)
     local new_objects = {}
     for k, position in pairs(state.positions) do
-        table.insert(new_objects, {
-            collection = "player_data",
-            key = "position_" .. state.names[k],
-            user_id = k,
-            value = position
-        })
+        table.insert(
+            new_objects,
+            {
+                collection = "player_data",
+                key = "position_" .. state.names[k],
+                user_id = k,
+                value = position
+            }
+        )
     end
 
     nk.storage_write(new_objects)
