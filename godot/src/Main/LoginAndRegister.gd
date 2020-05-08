@@ -25,6 +25,7 @@ func reset() -> void:
 	for child in get_children():
 		child.reset()
 	self.menu_current = login_form
+	is_enabled = true
 
 
 func _on_LoginForm_register_pressed() -> void:

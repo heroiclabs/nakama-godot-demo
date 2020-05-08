@@ -15,6 +15,30 @@ onready var login_and_register := $CanvasLayer/LoginAndRegister
 onready var character_menu := $CanvasLayer/CharacterMenu
 
 
+# Requests the server to authenticate the player using their credentials.
+# Attempts authentication up to `MAX_REQUEST_ATTEMPTS` times.
+func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
+	var result := -1
+
+	login_and_register.is_enabled = false
+	while result != OK:
+		if _server_request_attempts == MAX_REQUEST_ATTEMPTS:
+			break
+		_server_request_attempts += 1
+		result = yield(ServerConnection.login_async(email, password), "completed")
+
+	if result == OK:
+		if do_remember_email:
+			ServerConnection.save_email(email)
+		open_character_menu()
+	else:
+		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
+		login_and_register.is_enabled = true
+
+	_server_request_attempts = 0
+	return result
+
+
 # Asks the server to create a new character asynchronously.
 # Returns a dictionary with the player's name and color if it worked.
 # Otherwise, returns an empty dictionary.
@@ -37,6 +61,7 @@ func create_character(name: String, color: Color) -> void:
 	return data
 
 
+# Asks the server to delete a character asynchronously.
 func delete_character(index: int) -> void:
 	character_menu.is_enabled = false
 	var result: int = yield(ServerConnection.delete_player_character_async(index), "completed")
@@ -44,12 +69,6 @@ func delete_character(index: int) -> void:
 	if result == OK:
 		character_menu.delete_character(index)
 	character_menu.is_enabled = true
-
-
-# Gets a player's data asynchronously by `index` from the server.
-func get_player(index: int) -> Dictionary:
-	var characters: Array = yield(ServerConnection.get_player_characters_async(), "completed")
-	return characters[index]
 
 
 # Attempts to connect to the server, then to join the world match.
@@ -72,27 +91,6 @@ func join_game_world(player_name: String, player_color: Color) -> int:
 	return result
 
 
-# Requests the server to authenticate the player using their credentials.
-# Attempts authentication up to `MAX_REQUEST_ATTEMPTS` times.
-func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
-	var result := -1
-
-	while result != OK:
-		if _server_request_attempts < MAX_REQUEST_ATTEMPTS:
-			_server_request_attempts += 1
-			result = yield(_request_authentication(email, password, do_remember_email), "completed")
-		else:
-			break
-
-	if result == OK:
-		open_character_menu()
-	else:
-		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
-
-	_server_request_attempts = 0
-	return result
-
-
 func open_character_menu() -> void:
 	var characters: Array = yield(ServerConnection.get_player_characters_async(), "completed")
 	var last_played_character: Dictionary = yield(
@@ -101,18 +99,6 @@ func open_character_menu() -> void:
 	character_menu.setup(characters, last_played_character)
 	login_and_register.hide()
 	character_menu.show()
-
-
-# Requests the server to authenticate the player using their credentials.
-func _request_authentication(email: String, password: String, do_remember_email := false) -> int:
-	login_and_register.is_enabled = false
-
-	var result: int = yield(ServerConnection.login_async(email, password), "completed")
-	if result == OK and do_remember_email:
-		ServerConnection.save_email(email)
-
-	login_and_register.is_enabled = true
-	return result
 
 
 # Deactivates the user interface and authenticates the user.

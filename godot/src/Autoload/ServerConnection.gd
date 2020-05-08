@@ -471,7 +471,7 @@ class EmailConfigWorker:
 
 # Helper class to convert values from the server into Godot values.
 class Converter:
-	# Turns a string in the format `"r,g,b,a"` to a Color. Alpha is skipped.
-	static func color_string_to_color(color_string: String) -> Color:
-		var color_values := color_string.replace('"', '').split(",")
-		return Color(float(color_values[0]), float(color_values[1]), float(color_values[2]))
+	# Converts a string in the format `"r,g,b,a"` to a Color. Alpha is skipped.
+	static func color_string_to_color(string: String) -> Color:
+		var values := string.replace('"', '').split(",")
+		return Color(float(values[0]), float(values[1]), float(values[2]))
