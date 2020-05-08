@@ -45,13 +45,53 @@ Cover the features through these parts of the demo:
 4. Notifications indicate when other players join or leave the room.
 5. The users can chat via an on-screen chat box inspired by MMO games.
 
+* Teaching style
+
+Each tutorial first covers the basics of a feature, then, it shows how the works in the context of the complete game demo.
+
+The learners can also access all presented code snippets in the documentation.
+
+We use optional type hints in the code for better error reporting.
+
+** The basics
+
+The first part shows the simplest code to use the feature, step-by-step, in a dedicated file. The user doesn't have to download any starting project and can type along.
+
+For example, here would be the first step for authentication: starting with the bare minimum, without handling errors.
+
+#+BEGIN_SRC gdscript
+var session: NakamaSession
+
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+
+
+func authenticate_async(email: String, password: String) -> int:
+	session = yield(
+		_client.authenticate_email_async(email, password, email, true), "completed"
+	)
+#+END_SRC
+
+For the other steps, see [[*Authentication][Authentication]]
+
+** In context.
+
 * Teaching order
 
 [[file:packets.md::Packets and storage data structures][Packets description]]
 
 [[file:../nakama/docker-compose.yml][In the docker file we need to set the unique socket key]]
 
-** 1- Authentication
+** Installing and setting up Nakama with Godot
+
+Installing docker and docker-compose
+Installing Nakama through docker
+Creating a Godot project with the Nakama client API
+
+Deleting a docker container (e.g. to re-create it fresh)
+
+** Authentication
+
+*** Resources
 
 [[file:../godot/src/Autoload/ServerConnection.gd::func register_async(email: String, password: String) -> int:][Authentication methods]]
 
@@ -59,25 +99,178 @@ Cover the features through these parts of the demo:
 
 UI and front-end: login and register form
 
-** 2- Creating and connecting to a socket using a session (connect to server async)
+*** The basics
+
+First step, minimal example
+
+#+BEGIN_SRC gdscript
+var session: NakamaSession
+
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+
+
+func authenticate_async(email: String, password: String) -> int:
+	session = yield(
+		_client.authenticate_email_async(email, password, email, true), "completed"
+	)
+#+END_SRC
+
+*** Authenticating and creating new accounts automatically
+
+Second step, handling errors with the ~ExceptionHandler~.
+
+#+BEGIN_SRC gdscript
+var session: NakamaSession
+
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _exception_handler := ExceptionHandler.new()
+
+
+func authenticate_async(email: String, password: String) -> int:
+	var new_session: NakamaSession = yield(
+		_client.authenticate_email_async(email, password, email, true), "completed"
+	)
+
+    var result := _exception_handler.parse_exception(new_session)
+    if result == OK:
+        session = new_session
+        SessionFileWorker.write_auth_token(email, session.token, password)
+    else:
+        _exception_handler.error_message = _exception_handler.error_message.replace(
+            "Username", "Email"
+        )
+    return result
+#+END_SRC
+
+Show the example of the Register interface.
+
+*** Separating login and register
+
+Third step, avoiding creating a new account in the user's credentials don't exist, e.g. when using a "login" button:
+
+#+BEGIN_SRC gdscript
+func login_async(email: String, password: String) -> int:
+	var token := SessionFileWorker.recover_session_token(email, password)
+	if token != "":
+		var new_session: NakamaSession = _client.restore_session(token)
+		if new_session.valid and not new_session.expired:
+			session = new_session
+			yield(Engine.get_main_loop(), "idle_frame")
+			return OK
+
+	# If previous session is unavailable, invalid or expired
+	var new_session: NakamaSession = yield(
+		_client.authenticate_email_async(email, password, null, false), "completed"
+	)
+	var parsed_result := _exception_handler.parse_exception(new_session)
+	if parsed_result == OK:
+		session = new_session
+		SessionFileWorker.write_auth_token(email, session.token, password)
+
+	return parsed_result
+#+END_SRC
+
+*** In context
+
+Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The interface only emits signals to which ~MainMenu~ connects.
+
+Below is the authentication logic.  adds a loop that attempts to authenticate up to three times
+
+#+BEGIN_SRC gdscript
+# MainMenu.gd
+const MAX_REQUEST_ATTEMPTS := 3
+var _server_request_attempts := 0
+
+
+func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
+	var result := -1
+
+	login_and_register.is_enabled = false
+	while result != OK:
+		if _server_request_attempts == MAX_REQUEST_ATTEMPTS:
+			break
+		_server_request_attempts += 1
+		result = yield(ServerConnection.login_async(email, password), "completed")
+
+	if result == OK:
+		if do_remember_email:
+			ServerConnection.save_email(email)
+		open_character_menu()
+	else:
+		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
+		login_and_register.is_enabled = true
+
+	_server_request_attempts = 0
+	return result
+#+END_SRC
+
+Here's the code to remember the user's email in ~ServerConnection~. It's stored locally in a ~.ini~ file.
+
+#+BEGIN_SRC gdscript
+# ServerConnection
+func save_email(email: String) -> void:
+	EmailConfigWorker.save_email(email)
+
+
+class EmailConfigWorker:
+	const CONFIG := "user://config.ini"
+
+	# Saves the email to the config file.
+	static func save_email(email: String) -> void:
+		var file := ConfigFile.new()
+		file.load(CONFIG)
+		file.set_value("connection", "last_email", email)
+		file.save(CONFIG)
+#+END_SRC
+
+** Creating and connecting to a socket using a session (connect to server async)
 
 [[file:../godot/src/Autoload/ServerConnection.gd::func connect_to_server_async() -> int:][Live server connection (connecting to a socket)]]
 Log out button.
 
 Note: closing Godot, nakama cleans up by itself.
 
-** 3- Responding to successful connection
+** Responding to successful connection
 
 [[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
 
-** 4- Sending/receiving messages, and joining/responding in chat
+** Sending/receiving messages, and joining/responding in chat
 
 All the send_ methods and _received signals and their callbacks
 
 [[file:../godot/src/Autoload/ServerConnection.gd::func send_text_async(text: String) -> int:][Send text]]
 
-** 5- Storing stuff from client, storing stuff from server
+** Storing data from client, storing data from server
 
-Stuff that uses the _storage_worker
+Functions that use the _storage_worker, for example: [[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
+** Brief overview of the server's admin dashboard
 
-[[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
+How to access the backend, monitor, and clear data.
+
+* To cover
+
+** Remote Procedure Calls
+
+Remote Procedure Calls: procedures called remotely to make the server do things that may not have anything to do with a game loop, at least not directly.
+
+** Difference between NakamaClient and the NakamaSocket objects
+
+The NakamaClient is the interface from which clients communicate with the server in a more indirect way. It allows to call to a user's storage, contact RPC functions, etc. That's why it can just be created even when you're not connected. From the client, you create an authentication session, and a socket.
+
+The NakamaSocket, on the other hand, is the live connection, the pulsing direct channel between a game's server and the game client's code.
+
+For more info: [[https://heroiclabs.com/docs/unity-client-guide/][Unity tutorial]]
+
+** Authoritative server
+
+When creating multiplayer games, unless played on a local network, the server should always have the last word on what is happening in the game.
+
+We need to do that so all players stay synchronized and can play together. Another important reason is to prevent players from cheating or exploiting the game's code. In commercial online games, there is a lot of code engineered to prevent cheating as much as possible, a difficult task.
+
+In our example game, the server updates the game's state only 10 times per second. This limits the server's load and the bandwidth consumption. On each tick, the server calculates where each character should be and sends the information to each client. The clients receive the updates with delays and at different times, depending on their location or the quality of their internet connection, for example.
+
+On the client's side, you can end up with a few frames without any new information coming. In our demo, we project each player's motion linearly projection to keep the game moving until server updates come in. Godot's Tween node smoothly interpolates between each character's last known position and their projected motion for us.
+
+*** Skips in the characters' motion
+
+If you test the project with two instances of the game, you will notice some hiccups in the non-player-controlled characters' motion.
