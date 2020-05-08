@@ -107,7 +107,7 @@ func login_async(email: String, password: String) -> int:
 	return result
 
 
-# Asynchronous coroutine. Connects the socket to the live server.
+# Asynchronous coroutine. Creates a new socket and connects it to the live server.
 # Returns OK or a nakama error number. Error messages are stored in `ServerConnection.error_message`
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
@@ -119,17 +119,17 @@ func connect_to_server_async() -> int:
 
 	if parsed_result == OK:
 		#warning-ignore: return_value_discarded
-		_socket.connect("connected", self, "_on_socket_connected")
+		_socket.connect("connected", self, "_on_NakamaSocket_connected")
 		#warning-ignore: return_value_discarded
-		_socket.connect("closed", self, "_on_socket_closed")
+		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_error", self, "_on_socket_error")
+		_socket.connect("received_error", self, "_on_NakamaSocket_received_error")
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_match_presence", self, "_on_new_match_presence")
+		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_match_state", self, "_on_Received_Match_State")
+		_socket.connect("received_match_state", self, "_on_NakamaSocket_received_match_state")
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_channel_message", self, "_on_Received_Channel_message")
+		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
 
 	return parsed_result
 
@@ -143,7 +143,7 @@ func disconnect_from_server_async() -> int:
 		result = yield(_socket.leave_match_async(_world_id), "completed")
 		parsed_result = _exception_handler.parse_exception(result)
 		if parsed_result == OK:
-			_cleanup()
+			_reset_data()
 			_authenticator.cleanup()
 			return OK
 
@@ -323,52 +323,36 @@ func send_text_async(text: String) -> int:
 	return parsed_result
 
 
-func _no_set(_value) -> void:
-	pass
-
-
 func _get_error_message() -> String:
 	return _exception_handler.error_message
 
 
-# Raised when the socket is closed.
-func _on_socket_closed() -> void:
-	_clean_up_socket()
-
-
-# Raised when the socket reports something's gone wrong.
-func _on_socket_error(error: String) -> void:
-	error_message = error
-	_clean_up_socket()
-
-
-# Helper function to disconnect socket signals.
-func _clean_up_socket() -> void:
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("connected", self, "_on_socket_connected")
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("closed", self, "_on_socket_closed")
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("received_error", self, "_on_socket_error")
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("received_match_presence", self, "_on_new_match_presence")
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("received_match_state", self, "_on_Received_Match_State")
-	#warning-ignore: return_value_discarded
-	_socket.disconnect("received_channel_message", self, "_on_Received_Channel_message")
-
+# Clears the socket, world id, channel id, and presences
+func _reset_data() -> void:
 	_socket = null
-
-
-func _cleanup() -> void:
-	_clean_up_socket()
 	_world_id = ""
 	_channel_id = ""
 	presences.clear()
 
 
-# Raised when the server reports presences have changed.
-func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
+# Called when the socket was connected.
+func _on_NakamaSocket_connected() -> void:
+	return
+
+
+# Called when the socket was closed.
+func _on_NakamaSocket_closed() -> void:
+	_socket = null
+
+
+# Called when the socket reported an error.
+func _on_NakamaSocket_received_error(error: String) -> void:
+	error_message = error
+	_socket = null
+
+
+# Called when the server reported presences have changed.
+func _on_NakamaSocket_received_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
 	for leave in new_presences.leaves:
 		#warning-ignore: return_value_discarded
 		presences.erase(leave.user_id)
@@ -380,8 +364,8 @@ func _on_new_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> vo
 	emit_signal("presences_changed")
 
 
-# Raised when the server receives a custom message from the server.
-func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
+# Called when the server received a custom message from the server.
+func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 	var code := match_state.op_code
 	var raw := match_state.data
 
@@ -410,8 +394,8 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			var colors: Dictionary = decoded.col
 			var names: Dictionary = decoded.nms
 
-			for k in colors.keys():
-				colors[k] = Converter.color_string_to_color(colors[k])
+			for key in colors:
+				colors[key] = Converter.color_string_to_color(colors[key])
 
 			emit_signal("initial_state_received", positions, inputs, colors, names)
 
@@ -425,13 +409,18 @@ func _on_Received_Match_State(match_state: NakamaRTAPI.MatchData) -> void:
 			emit_signal("character_spawned", id, color, name)
 
 
-# Raised when the server receives a new chat message.
-func _on_Received_Channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
+# Called when the server received a new chat message.
+func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
 	if message.code == 0:
 		var sender_id: String = message.sender_id
 		var content: Dictionary = JSON.parse(message.content).result
 
 		emit_signal("chat_message_received", sender_id, content.msg)
+
+
+# Used as a setter function for read-only variables.
+func _no_set(_value) -> void:
+	pass
 
 
 # Helper class to manage functions that relate to local files that have to do with
