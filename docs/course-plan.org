@@ -101,7 +101,9 @@ UI and front-end: login and register form
 
 *** The basics
 
-First step, minimal example
+**** Minimal example
+
+Authenticates a user with an email and a password. If the credentials don't exist, creates an account for the player. Uses the player's email address as their username.
 
 #+BEGIN_SRC gdscript
 var session: NakamaSession
@@ -115,9 +117,13 @@ func authenticate_async(email: String, password: String) -> int:
 	)
 #+END_SRC
 
-*** Authenticating and creating new accounts automatically
+**** Authenticating and creating new accounts automatically
 
 Second step, handling errors with the ~ExceptionHandler~.
+
+This example builds upon the basic one. We create an ~ExceptionHandler~ object to parse and convert a ~NakamaAsyncResult~ into a number. Godot uses integer stored in constants to represent error codes, like ~ERR_CONNECTION_ERROR~.
+
+The ~ExceptionHandler.parse_exception()~ method returns the value of the ~OK~ constant if the request worked. Otherwise, it stores an error message in its ~error_message~ property. You can use it to display an error to the user.
 
 #+BEGIN_SRC gdscript
 var session: NakamaSession
@@ -131,22 +137,55 @@ func authenticate_async(email: String, password: String) -> int:
 		_client.authenticate_email_async(email, password, email, true), "completed"
 	)
 
-    var result := _exception_handler.parse_exception(new_session)
-    if result == OK:
-        session = new_session
-        SessionFileWorker.write_auth_token(email, session.token, password)
-    else:
-        _exception_handler.error_message = _exception_handler.error_message.replace(
-            "Username", "Email"
-        )
-    return result
+	var result := _exception_handler.parse_exception(new_session)
+	if result == OK:
+		session = new_session
+	return result
 #+END_SRC
 
 Show the example of the Register interface.
 
-*** Separating login and register
+*** In context
 
-Third step, avoiding creating a new account in the user's credentials don't exist, e.g. when using a "login" button:
+**** Storing and reusing the user's auth token
+
+Storing the auth token on the user's computer to restore session.
+
+[[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/Authenticator.gd::class SessionFileWorker:][Authenticator.SessionFileWorker]]
+
+#+BEGIN_SRC gdscript
+class SessionFileWorker:
+	const AUTH := "user://auth"
+
+	static func write_auth_token(email: String, token: String, password: String) -> void:
+		var file := File.new()
+
+		#warning-ignore: return_value_discarded
+		file.open_encrypted_with_pass(AUTH, File.WRITE, password)
+
+		file.store_line(email)
+		file.store_line(token)
+
+		file.close()
+
+	static func recover_session_token(email: String, password: String) -> String:
+		var file := File.new()
+		var error := file.open_encrypted_with_pass(AUTH, File.READ, password)
+
+		if error == OK:
+			var auth_email := file.get_line()
+			var auth_token := file.get_line()
+			file.close()
+
+			if auth_email == email:
+				return auth_token
+
+		return ""
+#+END_SRC
+
+Using the ~SessionFileWorker~ to store and recover the auth token.
+
+[[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/Authenticator.gd::func login_async(email: String, password: String) -> int:][Authenticator.login_async()]]
 
 #+BEGIN_SRC gdscript
 func login_async(email: String, password: String) -> int:
@@ -170,7 +209,7 @@ func login_async(email: String, password: String) -> int:
 	return parsed_result
 #+END_SRC
 
-*** In context
+**** Overview of LoginAndRegister in the demo
 
 Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The interface only emits signals to which ~MainMenu~ connects.
 

@@ -51,7 +51,6 @@ func login_async(email: String, password: String) -> int:
 	var new_session: NakamaSession = yield(
 		_client.authenticate_email_async(email, password, null, false), "completed"
 	)
-
 	var parsed_result := _exception_handler.parse_exception(new_session)
 	if parsed_result == OK:
 		session = new_session
