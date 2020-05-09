@@ -35,7 +35,7 @@ To install and start the server:
 1. Install Docker.
    - [On Windows](https://docs.docker.com/docker-for-windows/install/).
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
-   - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker docker-compose`.
+   - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
 1. Run the command `docker-compose -f docker-compose.yml up` or run `boot.bat` in Windows.
 
