@@ -39,8 +39,13 @@ To install and start the server:
          - Run the Docker Quickstart Terminal shortcut
          - Run the Command "docker-machine ip" and change the IP in ServerConnection.gd
          - Settings if not running project from C drive
-            - [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
-            - Run the Command "docker-machine restart"
+            1. [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
+            
+            2. Edit in the `docker-compose.yml` change the volumes path under nakama services to
+            
+            `- /"Folder Name" define in the VBox shared folder settings in step (1a)"/"path to docker-compose.yml file":/nakama/data`
+            
+            3. Run the Command "docker-machine restart"
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
    - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
