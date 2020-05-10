@@ -33,7 +33,14 @@ To test the project, you need first to install the server and get it running, th
 To install and start the server:
 
 1. Install Docker.
-   - [On Windows](https://docs.docker.com/docker-for-windows/install/).
+   - [On Windows 10 Pro](https://docs.docker.com/docker-for-windows/install/).
+   - [On Windows 10 Home and below](https://github.com/docker/toolbox/releases).
+      - Addition steps for Docker Toolbox(Windows 10 Home and below)
+         - Run the Docker Quickstart Terminal shortcut
+         - Run the Command "docker-machine ip" and change the IP in ServerConnection.gd
+         - Settings if not running project from C drive
+            - [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
+            - Run the Command "docker-machine restart"
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
    - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
@@ -60,6 +67,7 @@ Nakama's server provides a web admin interface to see, modify, or purge users an
 
 1. Start the Nakama server.
 1. Navigate to http://127.0.0.1:7351/ in your web browser.
+   - Run "docker-machine ip" to get the IP if Windows 10 Home and below
 1. Log into the platform. The default admin user's login is `admin` and its password is `password`.
 
 ## Licenses
