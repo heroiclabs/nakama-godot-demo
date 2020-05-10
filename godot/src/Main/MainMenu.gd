@@ -82,10 +82,6 @@ func join_game_world(player_name: String, player_color: Color) -> int:
 		# warning-ignore:return_value_discarded
 		get_tree().change_scene_to(load("res://src/Main/GameWorld.tscn"))
 		ServerConnection.send_spawn(player_color, player_name)
-	else:
-		emit_signal(
-			"server_request_failed", "Error code %s: %s" % [result, ServerConnection.error_message]
-		)
 
 	character_menu.is_enabled = true
 	return result
