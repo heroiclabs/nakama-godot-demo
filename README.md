@@ -34,7 +34,7 @@ To install and start the server:
 
 1. Install Docker.
    - [On Windows 10 Pro](https://docs.docker.com/docker-for-windows/install/).
-   - [On Windows 10 Home (and below)](https://github.com/tanjunior/nakama-godot-demo#setting-up-docker-on-windows-10-home-and-below).
+   - [On Windows 10 Home (and below)](https://github.com/heroiclabs/nakama-godot-demo#setting-up-docker-on-windows-10-home-and-below).
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
    - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
@@ -52,7 +52,7 @@ Then, to test the project in Godot, you need to open or run the project in two s
    1. [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
    2. Edit in the `docker-compose.yml` change the volumes path under nakama services to
    
-   "/**Folder Name define in the VBox settings(step 1a)**/**path to docker-compose.yml file**:/nakama/data"
+   "/**Folder Name define in the VBox settings(step 4i)**/**path to docker-compose.yml file**:/nakama/data"
             
    3. Run the Command "docker-machine restart"
    
