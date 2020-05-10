@@ -46,7 +46,7 @@ Then, to test the project in Godot, you need to open or run the project in two s
 
 ### Setting up docker on Windows 10 Home and below)
 1. [Install Docker Toolbox](https://github.com/docker/toolbox/releases).
-2. Run the Docker Quickstart Terminal shortcut on Desktop
+2. Double-click on the Docker Quickstart Terminal shortcut created by the docker toolbox installer.
 3. Run the Command `docker-machine ip` to get your IP and save it for future use.
 4. Extra settings if not running project from C drive
    1. [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
