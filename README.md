@@ -34,18 +34,7 @@ To install and start the server:
 
 1. Install Docker.
    - [On Windows 10 Pro](https://docs.docker.com/docker-for-windows/install/).
-   - [On Windows 10 Home and below](https://github.com/docker/toolbox/releases).
-      - Addition steps for Docker Toolbox(Windows 10 Home and below)
-         - Run the Docker Quickstart Terminal shortcut
-         - Run the Command `"docker-machine ip"` and change the IP in ServerConnection.gd
-         - Settings if not running project from C drive
-            1. [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
-            
-            2. Edit in the `docker-compose.yml` change the volumes path under nakama services to
-            
-            "/**Folder Name define in the VBox settings(step 1a)**/**path to docker-compose.yml file**:/nakama/data"
-            
-            3. Run the Command "docker-machine restart"
+   - [On Windows 10 Home and below](https://github.com/heroiclabs/nakama-godot-demo#registering-and-logging-in)
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
    - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
@@ -55,6 +44,18 @@ Docker should automatically download, then install Nakama and CockroachDB for yo
 
 Then, to test the project in Godot, you need to open or run the project in two separate instances.
 
+### Setting up docker on Windows 10 Home (and below)
+1. [Install Docker Toolbox](https://github.com/docker/toolbox/releases).
+2. Run the Docker Quickstart Terminal shortcut on Desktop
+3. Run the Command `docker-machine ip` to get your IP and save it for future use.
+4. Extra settings if not running project from C drive
+   1. [Create shared folder](https://docs.docker.com/toolbox/toolbox_install_windows/#optional-add-shared-directories)
+   2. Edit in the `docker-compose.yml` change the volumes path under nakama services to
+   
+   "/**Folder Name define in the VBox settings(step 1a)**/**path to docker-compose.yml file**:/nakama/data"
+            
+   3. Run the Command "docker-machine restart"
+   
 ### Registering and logging in
 
 To log into the game, you need first to register a dummy local account. To do so, on the initial game screen:
@@ -72,7 +73,7 @@ Nakama's server provides a web admin interface to see, modify, or purge users an
 
 1. Start the Nakama server.
 1. Navigate to http://127.0.0.1:7351/ in your web browser.
-   - Run "docker-machine ip" to get the IP if Windows 10 Home and below
+   - Run `docker-machine ip` to get the IP if Windows 10 Home and below
 1. Log into the platform. The default admin user's login is `admin` and its password is `password`.
 
 ## Licenses
