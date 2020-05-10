@@ -34,7 +34,7 @@ To install and start the server:
 
 1. Install Docker.
    - [On Windows 10 Pro](https://docs.docker.com/docker-for-windows/install/).
-   - [On Windows 10 Home and below](https://github.com/heroiclabs/nakama-godot-demo#registering-and-logging-in)
+   - [On Windows 10 Home (and below)](https://github.com/tanjunior/nakama-godot-demo#setting-up-docker-on-windows-10-home-and-below).
    - [On Mac](https://docs.docker.com/docker-for-mac/install/).
    - [On Ubuntu](https://docs.docker.com/engine/install/ubuntu/): `sudo apt install docker.io docker-compose`.
 1. Open your terminal and navigate to the `nakama/` directory.
@@ -44,7 +44,7 @@ Docker should automatically download, then install Nakama and CockroachDB for yo
 
 Then, to test the project in Godot, you need to open or run the project in two separate instances.
 
-### Setting up docker on Windows 10 Home (and below)
+### Setting up docker on Windows 10 Home and below)
 1. [Install Docker Toolbox](https://github.com/docker/toolbox/releases).
 2. Run the Docker Quickstart Terminal shortcut on Desktop
 3. Run the Command `docker-machine ip` to get your IP and save it for future use.
