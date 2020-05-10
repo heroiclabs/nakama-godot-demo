@@ -9,8 +9,6 @@ const MAX_REQUEST_ATTEMPTS := 3
 # Path to the scene to load after selecting a character.
 export (String, FILE) var next_scene_path := ""
 
-signal server_request_failed
-
 var _server_request_attempts := 0
 
 onready var login_and_register := $CanvasLayer/LoginAndRegister
