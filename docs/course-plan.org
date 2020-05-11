@@ -313,10 +313,85 @@ class EmailConfigWorker:
 
 ** Creating and connecting to a socket using a session (connect to server async)
 
-[[file:../godot/src/Autoload/ServerConnection.gd::func connect_to_server_async() -> int:][Live server connection (connecting to a socket)]]
-Log out button.
+*** Resources
 
-Note: closing Godot, nakama cleans up by itself.
+[[file:../godot/src/Autoload/ServerConnection.gd::func connect_to_server_async() -> int:][Live server connection (connecting to a socket)]]
+
+*** The basics
+
+The snippets below and following examples build upon previous ones.
+
+To connect to the server, we have to first request Nakama to create a socket. A socket is a communication link between the client and the server. It's an end-point that allows the server and the client to communicate with one-another.
+
+We create the socket from our previously-created client object. Then, we connect to the server using the socket.
+
+As with any client-server communication, the sockets' methods are coroutines, and they return a result from the request. We can parse that result using ~ExceptionHandler.parse_exception()~ to convert it to a Godot error number.
+
+#+BEGIN_SRC gdscript
+var session: NakamaSession
+
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _exception_handler := ExceptionHandler.new()
+
+var _socket: NakamaSocket
+
+
+func connect_to_server_async() -> int:
+	# Create and store a socket from the client object.
+	_socket = Nakama.create_socket_from(_client)
+
+	# Try to connect to the running Nakama server through the socket.
+	var result: NakamaAsyncResult = yield(
+		_socket.connect_async(_authenticator.session), "completed"
+	)
+	# Convert the result to an integer error code.
+	var parsed_result: int = _exception_handler.parse_exception(result)
+    return parsed_result
+#+END_SRC
+
+The ~NakamaSocket~ has some signals to which you can connect. They allow you to receive messages, new connections, and to handle errors:
+
+#+BEGIN_SRC gdscript
+func connect_to_server_async() -> int:
+	_socket = Nakama.create_socket_from(_client)
+
+	var result: NakamaAsyncResult = yield(
+		_socket.connect_async(_authenticator.session), "completed"
+	)
+	var parsed_result := _exception_handler.parse_exception(result)
+
+	if parsed_result == OK:
+		_socket.connect("connected", self, "_on_NakamaSocket_connected")
+		_socket.connect("closed", self, "_on_NakamaSocket_closed")
+		_socket.connect("received_error", self, "_on_NakamaSocket_received_error")
+		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
+		_socket.connect("received_match_state", self, "_on_NakamaSocket_received_match_state")
+		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
+
+	return parsed_result
+#+END_SRC
+
+For example, when the socket closed, you can free the object:
+
+#+BEGIN_SRC gdscript
+func connect_to_server_async() -> int:
+# ...
+	if parsed_result == OK:
+		_socket.connect("closed", self, "_on_NakamaSocket_closed")
+# ...
+
+
+func _on_NakamaSocket_closed() -> void:
+	_socket = null
+#+END_SRC
+
+*** In context
+
+Show the log out button, but also socket callbacks in ~ServerConnection~.
+
+Use breakpoints and the debugger to step through the code and break down some of the code's flow.
+
+Note: when you close Godot, the Nakama client data cleans up by itself.
 
 ** Responding to successful connection
 
