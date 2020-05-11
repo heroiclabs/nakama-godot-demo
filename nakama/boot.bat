@@ -1,2 +1,2 @@
 @ECHO off
-docker-compose -f %~dp0docker-compose.yml up
+docker-compose -f "%~dp0docker-compose.yml" up
