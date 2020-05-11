@@ -83,11 +83,60 @@ For the other steps, see [[*Authentication][Authentication]]
 
 ** Installing and setting up Nakama with Godot
 
-Installing docker and docker-compose
-Installing Nakama through docker
-Creating a Godot project with the Nakama client API
+Text instructions are here: https://heroiclabs.com/docs/godot-client-guide/
 
-Deleting a docker container (e.g. to re-create it fresh)
+This lesson is a guide to get you started using Nakama as soon as possible using [[https://www.docker.com/][docker]] and docker-compose.
+
+For in-depth instructions to install and run Nakama in different scenarios, head over to the [[https://heroiclabs.com/docs/install-docker-quickstart/][Nakama documentation]].
+
+What is docker? From the Nakama documentation:
+
+#+begin_quote
+Docker is an open source containerization tool that lets you create multiple distinct Linux environments, each separate from the other.
+
+In a Docker container you run a suite of tools to do a particular job; in this case we’ll have one container running Nakama and another running CockroachDB. You can think of Docker containers as lightweight virtual machines.
+#+end_quote
+
+*** Installing docker and docker-compose
+
+On Ubuntu:
+
+#+BEGIN_SRC sh
+sudo apt install docker.io docker-compose
+#+END_SRC
+
+For Windows 10 Pro and Mac, you can install docker desktop: https://www.docker.com/get-started
+
+*** Setting up Nakama with docker
+
+ https://heroiclabs.com/docs/install-docker-quickstart/
+
+
+Create a directory named ~nakama/~ and add a ~docker-compose.yml~ file in it: https://heroiclabs.com/docs/install-docker-quickstart/#running-nakama-with-docker-compose
+
+Run ~docker-compose up~ in the directory containing the ~docker-compose.yml~ file. The first time you do so, docker will download images for the database cockroachdb, the nakama server, and boot them both.
+
+Once you read a message looking like this, the nakama server is up:
+
+#+begin_src sh
+nakama         | {"level":"info","ts":"2020-05-11T20:45:53.793Z","msg":"Startup done"}
+#+end_src
+
+You should now be able to access the Nakama admin interface:
+
+- Open a web browser.
+- In the address bar, enter ~http://127.0.0.1:7351/~, the default address of the interface when running the server locally.
+- Enter the default credentials to log in:
+  + username: ~admin~
+  + password: ~password~
+
+*** Getting started with Godot
+
+Create a new Godot project.
+
+Download the Nakama client from the [[https://github.com/heroiclabs/nakama-godot/releases][GitHub releases]] or the asset library.
+
+Register Nakama.gd as an autoload.
 
 ** Authentication
 
