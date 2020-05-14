@@ -154,6 +154,8 @@ Register Nakama.gd as an autoload.
 
 **** Minimal example
 
+Create a new script ~ServerConnection.gd~ and register it as an /Autoload/ in the /Project Settings -> Autoload/ tab.
+
 Authenticates a user with an email and a password. If the credentials don't exist, creates an account for the player. Uses the player's email address as their username.
 
 Note the KEY constant here: it must match the key you wrote in your docker-compose.yml file.
@@ -405,7 +407,7 @@ Use breakpoints and the debugger to step through the code and break down some of
 
 Note: when you close Godot, the Nakama client data cleans up by itself.
 
-** Responding to successful connection, joining the world
+** Responding to successful connection: joining a game match
 
 This tutorial builds upon the previous two.
 
@@ -530,6 +532,63 @@ Joining the chat happens in ~ServerConnection.join_world_async()~ in our game.
 All the send_ methods and _received signals and their callbacks
 
 [[file:../godot/src/Autoload/ServerConnection.gd::func send_text_async(text: String) -> int:][Send text]]
+
+*** The basics
+
+To join a chat room you can call ~NakamaSocket.join_chat_async()~. It takes the id of the socket as a string as its first argument, followed by a channel type from the ~NakamaSocket.ChannelType~ enum.
+
+The last two arguments are optional. In the call below, they respectively tell the server to not store messages and to not hide the user.
+
+#+begin_example gdscript
+var chat_join_result: NakamaRTAPI.Channel = yield(
+	_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false),
+	"completed"
+)
+#+end_example
+
+If the request succeeds, ~chat_join_result.id~ gives you the joined chat channel's unique id, which you need to send chat messages. You can store it somewhere.
+
+To write a message to the chat, call ~NakamaSocket.write_chat_message_async()~. The chat message should be in a dictionary with a ~"msg"~ key. The ~write_chat_message_async()~ method converts it to JSON.
+
+#+begin_example gdscript
+func send_text_async(text: String) -> void:
+    var data := {"msg": text}
+    var message_response: NakamaRTAPI.ChannelMessageAck = yield(
+        _socket.write_chat_message_async(_channel_id, data), "completed"
+    )
+#+end_example
+
+Other clients need to listen to new messages. You can do so by listening to the ~NakamaSocket.received_channel_message~ signal.
+
+#+begin_example gdscript
+signal chat_message_received(sender_id, message)
+
+
+func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
+	var content: Dictionary = JSON.parse(message.content).result
+	emit_signal("chat_message_received", message.sender_id, content.msg)
+#+end_example
+
+*** In context
+
+#+begin_example gdscript
+var _channel_id: String setget _no_set
+
+
+func join_world_async() -> int:
+    # ...
+	if parsed_result == OK:
+        # ...
+		var chat_join_result: NakamaRTAPI.Channel = yield(
+			_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false),
+			"completed"
+		)
+		parsed_result = _exception_handler.parse_exception(chat_join_result)
+		_channel_id = chat_join_result.id
+
+	return parsed_result
+#+end_example
+
 
 ** Storing data from client, storing data from server
 

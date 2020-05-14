@@ -411,11 +411,11 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 
 # Called when the server received a new chat message.
 func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
-	if message.code == 0:
-		var sender_id: String = message.sender_id
-		var content: Dictionary = JSON.parse(message.content).result
+	if message.code != 0:
+		return
 
-		emit_signal("chat_message_received", sender_id, content.msg)
+	var content: Dictionary = JSON.parse(message.content).result
+	emit_signal("chat_message_received", message.sender_id, content.msg)
 
 
 # Used as a setter function for read-only variables.
