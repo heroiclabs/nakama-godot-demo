@@ -36,7 +36,7 @@ enum OpCodes {
 }
 
 # Server key. Must be unique and match the server it will try to connect to.
-const KEY := "wondrous_hippos"
+const KEY := "nakama_godot_demo"
 
 # Emitted when the `presences` Dictionary has changed by joining or leaving clients
 signal presences_changed

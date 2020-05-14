@@ -10,7 +10,7 @@ enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 enum WritePermissions { NO_WRITE, OWNER_WRITE }
 
 # Server key. Must be unique.
-const KEY := "wondrous_hippos"
+const KEY := "nakama_godot_demo"
 
 # Collection in the storage for data that pertains to player's info
 const COLLECTION := "player_data"
