@@ -2,23 +2,27 @@
 
 Plan for the tutorial series based on the demo.
 
-* Requirements
+* The project
 
-** Audience
+This section covers basic information about the project.
+
+** Requirements
+
+*** Audience
 
 *Developers* who use Godot but are not familiar with Nakama, and who have little-to-no experience with networking.
 
-** Difficulty
+*** Difficulty
 
 *Intermediate*. Coding network games requires some solid programming foundation.
 
-** Pre-requisites
+*** Pre-requisites
 
 - Being comfortable with GDScript code.
 - Being comfortable using the editor.
 - Good programming foundations, being comfortable with the concepts of classes, objects, loops, etc.
 
-** Cover the following Nakama features
+*** Cover the following Nakama features
 
 1. [[https://heroiclabs.com/docs/godot1.client1.guide/#sessions][Authentication]] and Session tokens
    + Connecting.
@@ -45,7 +49,7 @@ Cover the features through these parts of the demo:
 4. Notifications indicate when other players join or leave the room.
 5. The users can chat via an on-screen chat box inspired by MMO games.
 
-* Teaching style
+** Teaching style
 
 Each tutorial first covers the basics of a feature, then, it shows how the works in the context of the complete game demo.
 
@@ -53,7 +57,7 @@ The learners can also access all presented code snippets in the documentation.
 
 We use optional type hints in the code for better error reporting.
 
-** The basics
+*** The basics
 
 The first part shows the simplest code to use the feature, step-by-step, in a dedicated file. The user doesn't have to download any starting project and can type along.
 
@@ -73,13 +77,11 @@ func authenticate_async(email: String, password: String) -> int:
 
 For the other steps, see [[*Authentication][Authentication]]
 
-** In context.
+*** In context.
 
-* Teaching order
+* Topics
 
-[[file:packets.md::Packets and storage data structures][Packets description]]
-
-[[file:../nakama/docker-compose.yml][In the docker file we need to set the unique socket key]]
+[[file:packets.md::Packets and storage data structures][Packets reference]]
 
 ** Installing and setting up Nakama with Godot
 
@@ -114,6 +116,8 @@ For Windows 10 Pro and Mac, you can install docker desktop: https://www.docker.c
 
 Create a directory named ~nakama/~ and add a ~docker-compose.yml~ file in it: https://heroiclabs.com/docs/install-docker-quickstart/#running-nakama-with-docker-compose
 
+Set the unique server key in Nakama: [[file:../nakama/docker-compose.yml::exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --socket.server_key "nakama_godot_demo"][docker-compose.yml: server_key]]
+
 Run ~docker-compose up~ in the directory containing the ~docker-compose.yml~ file. The first time you do so, docker will download images for the database cockroachdb, the nakama server, and boot them both.
 
 Once you read a message looking like this, the nakama server is up:
@@ -142,11 +146,9 @@ Register Nakama.gd as an autoload.
 
 *** Resources
 
-[[file:../godot/src/Autoload/ServerConnection.gd::func register_async(email: String, password: String) -> int:][Authentication methods]]
-
-[[file:../godot/src/Autoload/Delegates/Authenticator.gd::Delegate class that handles logging in and registering accounts. Holds the][Authenticator]]
-
-UI and front-end: login and register form
+- [[file:../godot/src/Autoload/ServerConnection.gd::func register_async(email: String, password: String) -> int:][Authentication methods]]
+- [[file:../godot/src/Autoload/Delegates/Authenticator.gd::Delegate class that handles logging in and registering accounts. Holds the][Authenticator]]
+- For UI and front-end: see the login and register forms
 
 *** The basics
 
@@ -154,7 +156,11 @@ UI and front-end: login and register form
 
 Authenticates a user with an email and a password. If the credentials don't exist, creates an account for the player. Uses the player's email address as their username.
 
+Note the KEY constant here: it must match the key you wrote in your docker-compose.yml file.
+
 #+BEGIN_SRC gdscript
+const KEY := "nakama_godot_demo"
+
 var session: NakamaSession
 
 var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
@@ -200,7 +206,7 @@ Show the example of the Register interface.
 
 Storing the auth token on the user's computer to restore session.
 
-[[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/Authenticator.gd::class SessionFileWorker:][Authenticator.SessionFileWorker]]
+[[file:../godot/src/Autoload/Delegates/Authenticator.gd::class SessionFileWorker:][Authenticator.SessionFileWorker]]
 
 #+BEGIN_SRC gdscript
 class SessionFileWorker:
@@ -234,7 +240,7 @@ class SessionFileWorker:
 
 Using the ~SessionFileWorker~ to store and recover the auth token.
 
-[[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/Authenticator.gd::func login_async(email: String, password: String) -> int:][Authenticator.login_async()]]
+[[file:../godot/src/Autoload/Delegates/Authenticator.gd::func login_async(email: String, password: String) -> int:][Authenticator.login_async()]]
 
 #+BEGIN_SRC gdscript
 func login_async(email: String, password: String) -> int:
@@ -387,17 +393,114 @@ func _on_NakamaSocket_closed() -> void:
 
 *** In context
 
-Show the log out button, but also socket callbacks in ~ServerConnection~.
+Show the log out button in [[../godot/src/UI/Menus/Characters/CharacterMenu.tscn][CharacterMenu]] and socket callbacks in ~ServerConnection~. See [[file:../godot/src/Autoload/ServerConnection.gd::func _on_NakamaSocket_connected() -> void:][ServerConnection's socket callbacks]].
 
 Use breakpoints and the debugger to step through the code and break down some of the code's flow.
 
 Note: when you close Godot, the Nakama client data cleans up by itself.
 
-** Responding to successful connection
+** Responding to successful connection, joining the world
 
-[[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
+This tutorial builds upon the previous two.
+
+*** Resources
+
+- [[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
+- [[file:../nakama/modules/world_rpc.lua::local function get_world_id(_, _)][Nakama server's get_world_id() RPC]]
+
+*** The basics
+
+Joining a game world involves code both on the client and on the server through a Remote Procedure Call (RPC).
+
+Remote Procedure Calls are procedures (functions) exposed from the server to the client, and that the client can call remotely. They are generally requests for the server to do something specific or to provide the client with some information, outside of the game loop.
+
+The exact code you need in your game depends on the way you implement your server's game logic. Our example only contains one world or level created on the server that players can join. But even so, our server code builds the foundation for having a list of worlds, each world being any place, big or small, where players can interact. For example, a world could be a dungeon instance in an MMORPG, a large open world with hundreds of players, a team match in a First-Person Shooter, or a lobby where players wait together.
+
+Creating and joining worlds, or matches in Nakama's terminology, is done through the realtime-multiplayer API: https://heroiclabs.com/docs/gameplay-multiplayer-realtime/
+
+To join a world, we first ask the server to give us a world's ID through an RPC:
+
+#+BEGIN_SRC gdscript
+# The properties come from previous tutorials.
+var session: NakamaSession
+
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _exception_handler := ExceptionHandler.new()
+var _socket: NakamaSocket
+
+
+func join_world_async() -> int:
+    var world: NakamaAPI.ApiRpc = yield(
+        _client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
+    )
+#+END_SRC
+
+The ~rpc_async()~ method of the ~NakamaClient~ called a registered function on the server, here named ~get_world_id~ and that doesn't take any parameter.
+
+We define that function in one of our server's module. You can do so in go or lua, we chose lua. See [[../nakama/modules/world_rpc.lua]]
+
+#+BEGIN_SRC lua
+local nakama = require("nakama")
+
+-- Returns the first existing match in namaka's match list or creates one if there is none.
+local function get_world_id(_, _)
+    local matches = nakama.match_list()
+    local current_match = matches[1]
+
+    if current_match == nil then
+        return nakama.match_create("world_control", {})
+    else
+        return current_match.match_id
+    end
+end
+
+nakama.register_rpc(get_world_id, "get_world_id")
+#+END_SRC
+
+Handling errors.
+
+#+BEGIN_SRC gdscript
+var _world_id: String setget _no_set
+# Lists other clients present in the game world we connect to.
+var presences := {} setget _no_set
+
+
+func join_world_async() -> int:
+    var world: NakamaAPI.ApiRpc = yield(
+        _client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
+    )
+
+    var parsed_result := _exception_handler.parse_exception(world)
+    if parsed_result != OK:
+        return parsed_result
+
+    _world_id = world.payload
+#+END_SRC
+
+Joining the world created by the server.
+
+#+BEGIN_SRC gdscript
+func join_world_async() -> int:
+# ...
+	var match_join_result: NakamaRTAPI.Match = yield(
+		_socket.join_match_async(_world_id), "completed"
+	)
+	var parsed_result := _exception_handler.parse_exception(match_join_result)
+
+	if parsed_result == OK:
+		for presence in match_join_result.presences:
+			presences[presence.user_id] = presence
+
+	return parsed_result
+#+END_SRC
+
+*** In context
+
+See the transition from the CharacterMenu to MainMenu. For each presence in the ~presences~ dictionary, we create a character and use signals to update it when we get new information from the server.
 
 ** Sending/receiving messages, and joining/responding in chat
+
+Joining the chat happens in ~ServerConnection.join_world_async()~ in our game.
 
 All the send_ methods and _received signals and their callbacks
 
@@ -411,10 +514,6 @@ Functions that use the _storage_worker, for example: [[file:../godot/src/Autoloa
 How to access the backend, monitor, and clear data.
 
 * To cover
-
-** Remote Procedure Calls
-
-Remote Procedure Calls: procedures called remotely to make the server do things that may not have anything to do with a game loop, at least not directly.
 
 ** Difference between NakamaClient and the NakamaSocket objects
 

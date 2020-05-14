@@ -187,7 +187,7 @@ func join_world_async() -> int:
 		)
 
 		var parsed_result := _exception_handler.parse_exception(world)
-		if not parsed_result == OK:
+		if parsed_result != OK:
 			return parsed_result
 
 		_world_id = world.payload
