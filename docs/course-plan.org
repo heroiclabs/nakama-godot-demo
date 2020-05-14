@@ -531,7 +531,6 @@ Joining the chat happens in ~ServerConnection.join_world_async()~ in our game.
 
 All the send_ methods and _received signals and their callbacks
 
-[[file:../godot/src/Autoload/ServerConnection.gd::func send_text_async(text: String) -> int:][Send text]]
 
 *** The basics
 
@@ -558,7 +557,7 @@ func send_text_async(text: String) -> void:
     )
 #+end_example
 
-Other clients need to listen to new messages. You can do so by listening to the ~NakamaSocket.received_channel_message~ signal.
+Other clients need to listen to new messages. You can do so by connecting to the ~NakamaSocket.received_channel_message~ signal.
 
 #+begin_example gdscript
 signal chat_message_received(sender_id, message)
@@ -570,6 +569,12 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 #+end_example
 
 *** In context
+
+- [[file:../godot/src/Autoload/ServerConnection.gd::func send_text_async(text: String) -> int:][ServerConnection.send_text_async()]]
+- [[file:../godot/src/Autoload/ServerConnection.gd::func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMessage) -> void:][ServerConnection._on_NamakaSocket_received_channel_message()]]
+- [[file:~/Repositories/nakama-godot-demo/godot/src/Main/GameWorld.gd::func _on_ServerConnection_chat_message_received(sender_id: String, message: String) -> void:][GameWorld._on_ServerConnection_chat_message_received()]]
+
+As the chat is in the only game world in our demo, we join the chat in ~ServerConnection.join_world_async()~.
 
 #+begin_example gdscript
 var _channel_id: String setget _no_set
