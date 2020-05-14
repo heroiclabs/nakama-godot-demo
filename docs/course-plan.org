@@ -403,6 +403,10 @@ Note: when you close Godot, the Nakama client data cleans up by itself.
 
 This tutorial builds upon the previous two.
 
+It shows how to create a match on the game server and let players join it. You can also allow clients to create a new match and to host it, allowing other clients to join it. This is the example shown in the documentation. We chose to show you how to do it with an authoritative server.
+
+https://heroiclabs.com/docs/gameplay-multiplayer-realtime/
+
 *** Resources
 
 - [[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
@@ -416,7 +420,7 @@ Remote Procedure Calls are procedures (functions) exposed from the server to the
 
 The exact code you need in your game depends on the way you implement your server's game logic. Our example only contains one world or level created on the server that players can join. But even so, our server code builds the foundation for having a list of worlds, each world being any place, big or small, where players can interact. For example, a world could be a dungeon instance in an MMORPG, a large open world with hundreds of players, a team match in a First-Person Shooter, or a lobby where players wait together.
 
-Creating and joining worlds, or matches in Nakama's terminology, is done through the realtime-multiplayer API: https://heroiclabs.com/docs/gameplay-multiplayer-realtime/
+Creating and joining worlds, or matches in Nakama's terminology, is done through the [[https://heroiclabs.com/docs/gameplay-multiplayer-realtime/][realtime-multiplayer API]].
 
 To join a world, we first ask the server to give us a world's ID through an RPC:
 
@@ -457,6 +461,10 @@ end
 nakama.register_rpc(get_world_id, "get_world_id")
 #+END_SRC
 
+The function gets the current match list from nakama and extracts the first one. If it is ~nil~ we create a new match, otherwise, we return the existing match ID. So in this example, you can only create and join one match. To have multiple matches in parallel, you would work with the match list.
+
+For more information on running code on the server, see the runtime code documentation: https://heroiclabs.com/docs/runtime-code-basics/
+
 Handling errors.
 
 #+BEGIN_SRC gdscript
@@ -482,11 +490,15 @@ Joining the world created by the server.
 #+BEGIN_SRC gdscript
 func join_world_async() -> int:
 # ...
+
+	# Requesting to join the match through the NakamaSocket API
 	var match_join_result: NakamaRTAPI.Match = yield(
 		_socket.join_match_async(_world_id), "completed"
 	)
 	var parsed_result := _exception_handler.parse_exception(match_join_result)
 
+	# If the request worked, we get a list of presences, that is to say, a list of clients in that
+	# match.
 	if parsed_result == OK:
 		for presence in match_join_result.presences:
 			presences[presence.user_id] = presence
