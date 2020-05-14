@@ -103,9 +103,9 @@ In a Docker container you run a suite of tools to do a particular job; in this c
 
 On Ubuntu:
 
-#+BEGIN_SRC sh
+#+BEGIN_EXAMPLE sh
 sudo apt install docker.io docker-compose
-#+END_SRC
+#+END_EXAMPLE
 
 For Windows 10 Pro and Mac, you can install docker desktop: https://www.docker.com/get-started
 
@@ -122,9 +122,9 @@ Run ~docker-compose up~ in the directory containing the ~docker-compose.yml~ fil
 
 Once you read a message looking like this, the nakama server is up:
 
-#+begin_src sh
+#+begin_example sh
 nakama         | {"level":"info","ts":"2020-05-11T20:45:53.793Z","msg":"Startup done"}
-#+end_src
+#+end_example
 
 You should now be able to access the Nakama admin interface:
 
@@ -158,7 +158,7 @@ Authenticates a user with an email and a password. If the credentials don't exis
 
 Note the KEY constant here: it must match the key you wrote in your docker-compose.yml file.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 const KEY := "nakama_godot_demo"
 
 var session: NakamaSession
@@ -170,7 +170,17 @@ func authenticate_async(email: String, password: String) -> int:
 	session = yield(
 		_client.authenticate_email_async(email, password, email, true), "completed"
 	)
-#+END_SRC
+#+END_EXAMPLE
+
+*** About coroutines
+
+All functions named ~*_async~ are coroutines in our project. Coroutines are routines (functions) that can co-operate, passing control to one another. In other words, coroutines allow you to pause functions in the middle of their execution and wait for others to return control to them.
+
+We don’t have a keyword like ~await~ or promises yet in GDScript. In case you've never used these features in other languages, promises allow you to have a proxy object to keep moving forward with your code even if you didn't get the resulting value from a long computation or while you’re waiting for data from a server.
+
+In GDScript, using the yield keyword returns a ~GDScriptFunctionState~ object that stores information about the executed function. It provides a method to resume the function’s execution and a ~completed~ signal that tells you when the function returned. This is why we can ~yield~ on a function call and wait for the ~completed~ signal to be emitted. It is the completed signal of the newly created ~GDScriptFunctionState~ object.
+
+For more information, read [[https://docs.godotengine.org/en/stable/getting_started/scripting/gdscript/gdscript_basics.html#coroutines-with-yield][Coroutines with yield]] in the Godot documentation.
 
 **** Authenticating and creating new accounts automatically
 
@@ -180,7 +190,7 @@ This example builds upon the basic one. We create an ~ExceptionHandler~ object t
 
 The ~ExceptionHandler.parse_exception()~ method returns the value of the ~OK~ constant if the request worked. Otherwise, it stores an error message in its ~error_message~ property. You can use it to display an error to the user.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 var session: NakamaSession
 
 var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
@@ -196,7 +206,7 @@ func authenticate_async(email: String, password: String) -> int:
 	if result == OK:
 		session = new_session
 	return result
-#+END_SRC
+#+END_EXAMPLE
 
 Show the example of the Register interface.
 
@@ -206,7 +216,7 @@ Show the example of the Register interface.
 
 Storing the auth token on the user's computer to restore session. For more information, see: [[file:../godot/src/Autoload/Delegates/Authenticator.gd][Authenticator.SessionFileWorker]]
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 class SessionFileWorker:
 	const AUTH := "user://auth"
 
@@ -234,11 +244,11 @@ class SessionFileWorker:
 				return auth_token
 
 		return ""
-#+END_SRC
+#+END_EXAMPLE
 
 Using the ~SessionFileWorker~ to store and recover the auth token.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 func login_async(email: String, password: String) -> int:
 	var token := SessionFileWorker.recover_session_token(email, password)
 	if token != "":
@@ -258,7 +268,7 @@ func login_async(email: String, password: String) -> int:
 		SessionFileWorker.write_auth_token(email, session.token, password)
 
 	return parsed_result
-#+END_SRC
+#+END_EXAMPLE
 
 **** Overview of LoginAndRegister in the demo
 
@@ -266,7 +276,7 @@ Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The int
 
 Below is the authentication logic.  adds a loop that attempts to authenticate up to three times
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 # MainMenu.gd
 const MAX_REQUEST_ATTEMPTS := 3
 var _server_request_attempts := 0
@@ -292,11 +302,11 @@ func authenticate_user(email: String, password: String, do_remember_email := fal
 
 	_server_request_attempts = 0
 	return result
-#+END_SRC
+#+END_EXAMPLE
 
 Here's the code to remember the user's email in ~ServerConnection~. It's stored locally in a ~.ini~ file.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 # ServerConnection
 func save_email(email: String) -> void:
 	EmailConfigWorker.save_email(email)
@@ -311,7 +321,7 @@ class EmailConfigWorker:
 		file.load(CONFIG)
 		file.set_value("connection", "last_email", email)
 		file.save(CONFIG)
-#+END_SRC
+#+END_EXAMPLE
 
 ** Creating and connecting to a socket using a session (connect to server async)
 
@@ -329,7 +339,7 @@ We create the socket from our previously-created client object. Then, we connect
 
 As with any client-server communication, the sockets' methods are coroutines, and they return a result from the request. We can parse that result using ~ExceptionHandler.parse_exception()~ to convert it to a Godot error number.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 var session: NakamaSession
 
 var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
@@ -349,11 +359,11 @@ func connect_to_server_async() -> int:
 	# Convert the result to an integer error code.
 	var parsed_result: int = _exception_handler.parse_exception(result)
     return parsed_result
-#+END_SRC
+#+END_EXAMPLE
 
 The ~NakamaSocket~ has some signals to which you can connect. They allow you to receive messages, new connections, and to handle errors:
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
 
@@ -371,11 +381,11 @@ func connect_to_server_async() -> int:
 		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
 
 	return parsed_result
-#+END_SRC
+#+END_EXAMPLE
 
 For example, when the socket closed, you can free the object:
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 func connect_to_server_async() -> int:
 # ...
 	if parsed_result == OK:
@@ -385,7 +395,7 @@ func connect_to_server_async() -> int:
 
 func _on_NakamaSocket_closed() -> void:
 	_socket = null
-#+END_SRC
+#+END_EXAMPLE
 
 *** In context
 
@@ -420,7 +430,7 @@ Creating and joining worlds, or matches in Nakama's terminology, is done through
 
 To join a world, we first ask the server to give us a world's ID through an RPC:
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 # The properties come from previous tutorials.
 var session: NakamaSession
 
@@ -433,13 +443,15 @@ func join_world_async() -> int:
     var world: NakamaAPI.ApiRpc = yield(
         _client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
     )
-#+END_SRC
+#+END_EXAMPLE
 
 The ~rpc_async()~ method of the ~NakamaClient~ called a registered function on the server, here named ~get_world_id~ and that doesn't take any parameter.
 
 We define that function in one of our server's module. You can do so in go or lua, we chose lua. See [[../nakama/modules/world_rpc.lua]]
 
-#+BEGIN_SRC lua
+The first argument of the ~nakama.match_create~ below refers to a lua module the server uses to manage the match. In this case, it's ~world_control~, from the file [[file:../nakama/modules/world_control.lua::-- Module that controls the game world. The world's state is updated every `tickrate` in the][world_control.lua]].
+
+#+BEGIN_EXAMPLE lua
 local nakama = require("nakama")
 
 -- Returns the first existing match in namaka's match list or creates one if there is none.
@@ -455,7 +467,7 @@ local function get_world_id(_, _)
 end
 
 nakama.register_rpc(get_world_id, "get_world_id")
-#+END_SRC
+#+END_EXAMPLE
 
 The function gets the current match list from nakama and extracts the first one. If it is ~nil~ we create a new match, otherwise, we return the existing match ID. So in this example, you can only create and join one match. To have multiple matches in parallel, you would work with the match list.
 
@@ -463,7 +475,7 @@ For more information on running code on the server, see the runtime code documen
 
 Handling errors.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 var _world_id: String setget _no_set
 # Lists other clients present in the game world we connect to.
 var presences := {} setget _no_set
@@ -479,11 +491,11 @@ func join_world_async() -> int:
         return parsed_result
 
     _world_id = world.payload
-#+END_SRC
+#+END_EXAMPLE
 
 Joining the world created by the server.
 
-#+BEGIN_SRC gdscript
+#+BEGIN_EXAMPLE gdscript
 func join_world_async() -> int:
 # ...
 
@@ -500,7 +512,7 @@ func join_world_async() -> int:
 			presences[presence.user_id] = presence
 
 	return parsed_result
-#+END_SRC
+#+END_EXAMPLE
 
 *** In context
 
