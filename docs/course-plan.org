@@ -204,9 +204,7 @@ Show the example of the Register interface.
 
 **** Storing and reusing the user's auth token
 
-Storing the auth token on the user's computer to restore session.
-
-[[file:../godot/src/Autoload/Delegates/Authenticator.gd::class SessionFileWorker:][Authenticator.SessionFileWorker]]
+Storing the auth token on the user's computer to restore session. For more information, see: [[file:../godot/src/Autoload/Delegates/Authenticator.gd][Authenticator.SessionFileWorker]]
 
 #+BEGIN_SRC gdscript
 class SessionFileWorker:
@@ -239,8 +237,6 @@ class SessionFileWorker:
 #+END_SRC
 
 Using the ~SessionFileWorker~ to store and recover the auth token.
-
-[[file:../godot/src/Autoload/Delegates/Authenticator.gd::func login_async(email: String, password: String) -> int:][Authenticator.login_async()]]
 
 #+BEGIN_SRC gdscript
 func login_async(email: String, password: String) -> int:
@@ -508,7 +504,12 @@ func join_world_async() -> int:
 
 *** In context
 
-See the transition from the CharacterMenu to MainMenu. For each presence in the ~presences~ dictionary, we create a character and use signals to update it when we get new information from the server.
+See the transition from the CharacterMenu to MainMenu. For each presence in the ~presences~ dictionary, we create a character and use signals to update it when we get new information from the server:
+
+- [[file:../godot/src/Autoload/ServerConnection.gd::func _on_NakamaSocket_received_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:][ServerConnection._on_NakamaSocket_presences_changed]]
+- [[file:../godot/src/Main/GameWorld.gd::func join_world(][Joining the game world in GameWorld.gd]]
+- [[file:../godot/src/Main/GameWorld.gd::func _on_ServerConnection_presences_changed() -> void:][GameWorld._on_ServerConnection_presences_changed]]
+
 
 ** Sending/receiving messages, and joining/responding in chat
 
@@ -521,6 +522,7 @@ All the send_ methods and _received signals and their callbacks
 ** Storing data from client, storing data from server
 
 Functions that use the _storage_worker, for example: [[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
+
 ** Brief overview of the server's admin dashboard
 
 How to access the backend, monitor, and clear data.
