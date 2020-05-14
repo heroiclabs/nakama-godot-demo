@@ -36,7 +36,6 @@ func _on_CharacterSelector_create_pressed() -> void:
 	self.menu_current = character_creator
 
 
-# TODO: need to use name instead for server?
 func _on_CharacterSelector_login_pressed(name: String, color: Color) -> void:
 	emit_signal("character_selected", name, color)
 

@@ -15,7 +15,6 @@ onready var player: Node = $Player
 onready var game_ui := $CanvasLayer/GameUI
 
 
-# TODO: Separate the UI and the level
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect(
@@ -132,7 +131,6 @@ func _on_ServerConnection_color_updated(id: String, color: Color) -> void:
 		characters[id].color = color
 
 
-# TODO: Needs to be testable without the server running
 func _on_ServerConnection_chat_message_received(sender_id: String, message: String) -> void:
 	var color := Color.gray
 	var sender_name := "User"
