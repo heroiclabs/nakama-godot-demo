@@ -164,7 +164,18 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Intro to Nakama"
+config/name="Nakama Multiplayer Demo"
+config/description="This demo shows how to use Nakama with the Nakama Godot client.
+
+It showcases the following Nakama features:
+
+1. Authentication, sessions, and disconnection.
+2. Game storage.
+3. Sockets and managing connections.
+4. Real-time chat.
+5. In-app notifications with popups.
+6. Character color customization.
+7. Platforming mechanics and synchronizing players. Multiple players can interact together."
 run/main_scene="res://src/Main/MainMenu.tscn"
 config/icon="res://icon.png"
 
