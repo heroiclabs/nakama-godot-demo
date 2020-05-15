@@ -45,22 +45,17 @@ func get_player_characters_async() -> Array:
 	)
 
 	var parsed_result := _exception_handler.parse_exception(storage_objects)
-
 	if parsed_result != OK:
 		return []
 
 	var characters := []
-
 	if storage_objects.objects.size() > 0:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
-
 		for character in decoded:
 			var name: String = character.name
-
 			characters.append(
 				{name = name, color = Converter.color_string_to_color(character.color)}
 			)
-
 	return characters
 
 
@@ -75,19 +70,14 @@ func create_player_character_async(color: Color, name: String) -> int:
 	)
 
 	var parsed_result := _exception_handler.parse_exception(availability_response)
-
 	if parsed_result != OK:
 		return parsed_result
 
 	var is_available := availability_response.payload == "1"
-
 	if is_available:
 		var characters: Array = yield(get_player_characters_async(), "completed")
-
 		characters.append({name = name, color = JSON.print(color)})
-
 		var result: int = yield(_write_player_characters_async(characters), "completed")
-
 		return result
 	else:
 		return ERR_UNAVAILABLE
@@ -102,9 +92,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 	for i in range(characters.size()):
 		if characters[i].name == name:
 			characters[i].color = JSON.print(color)
-
 			do_update = true
-
 			break
 
 	if do_update:
@@ -146,12 +134,10 @@ func get_last_player_character_async() -> Dictionary:
 
 	var parsed_result := _exception_handler.parse_exception(storage_objects)
 	var character := {}
-
 	if parsed_result != OK or storage_objects.objects.size() == 0:
 		return character
 
 	var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
-
 	character["name"] = decoded.name
 	character["color"] = Converter.color_string_to_color(decoded.color)
 
@@ -159,7 +145,6 @@ func get_last_player_character_async() -> Dictionary:
 	for c in characters:
 		if c.name == character["name"]:
 			return character
-
 	return {}
 
 
@@ -167,7 +152,6 @@ func get_last_player_character_async() -> Dictionary:
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
 	var character := {name = name, color = JSON.print(color)}
-
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		_client.write_storage_objects_async(
 			_session,
@@ -184,7 +168,6 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 		),
 		"completed"
 	)
-
 	var parsed_result := _exception_handler.parse_exception(result)
 	return parsed_result
 
@@ -208,7 +191,6 @@ func _write_player_characters_async(characters: Array) -> int:
 		),
 		"completed"
 	)
-
 	var parsed_result := _exception_handler.parse_exception(result)
 	return parsed_result
 
