@@ -39,8 +39,7 @@ func _init(session: NakamaSession, client: NakamaClient, exception_handler: Exce
 func get_player_characters_async() -> Array:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		_client.read_storage_objects_async(
-			_session,
-			DataReadIdBuilder.make().with_request(COLLECTION, CHARACTERS_KEY, _session.user_id).build()
+			_session, [NakamaStorageObjectId.new(COLLECTION, CHARACTERS_KEY, _session.user_id)]
 		),
 		"completed"
 	)
@@ -118,7 +117,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 
 
 # Asynchronous coroutine. Delete the character at the specified index in the array from
-# player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR 
+# player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
 	var characters: Array = yield(get_player_characters_async(), "completed")
@@ -140,8 +139,7 @@ func delete_player_character_async(idx: int) -> int:
 func get_last_player_character_async() -> Dictionary:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		_client.read_storage_objects_async(
-			_session,
-			DataReadIdBuilder.make().with_request(COLLECTION, LAST_CHARACTER_KEY, _session.user_id).build()
+			_session, [NakamaStorageObjectId.new(COLLECTION, LAST_CHARACTER_KEY, _session.user_id)]
 		),
 		"completed"
 	)
@@ -173,7 +171,16 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		_client.write_storage_objects_async(
 			_session,
-			DataWriteIdBuilder.make().with_request(COLLECTION, LAST_CHARACTER_KEY, ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print(character)).build()
+			[
+				NakamaWriteStorageObject.new(
+					COLLECTION,
+					LAST_CHARACTER_KEY,
+					ReadPermissions.OWNER_READ,
+					WritePermissions.OWNER_WRITE,
+					JSON.print(character),
+					""
+				)
+			]
 		),
 		"completed"
 	)
@@ -188,65 +195,22 @@ func _write_player_characters_async(characters: Array) -> int:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		_client.write_storage_objects_async(
 			_session,
-			DataWriteIdBuilder.make().with_request(COLLECTION, CHARACTERS_KEY, ReadPermissions.OWNER_READ, WritePermissions.OWNER_WRITE, JSON.print({characters = characters})).build()
+			[
+				NakamaWriteStorageObject.new(
+					COLLECTION,
+					CHARACTERS_KEY,
+					ReadPermissions.OWNER_READ,
+					WritePermissions.OWNER_WRITE,
+					JSON.print({characters = characters}),
+					""
+				)
+			]
 		),
 		"completed"
 	)
 
 	var parsed_result := _exception_handler.parse_exception(result)
 	return parsed_result
-
-
-# Helper class to build NakamaStorageObjectId for reading from server storage.
-# Uses the builder pattern.
-class DataReadIdBuilder:
-	extends Reference
-
-	var _ids := []
-
-	# Makes a new builder
-	static func make() -> DataReadIdBuilder:
-		return DataReadIdBuilder.new()
-
-	# Adds a request to the builder.
-	func with_request(collection: String, key: String, id: String) -> DataReadIdBuilder:
-		_ids.append(NakamaStorageObjectId.new(collection, key, id))
-		return self
-
-	# Returns the finished read ids.
-	func build() -> Array:
-		return _ids
-
-
-# Helper class to build NakamaWriteStorageObject for writing to server storage
-class DataWriteIdBuilder:
-	extends Reference
-
-	var _ids := []
-
-	# Makes a new builder
-	static func make() -> DataWriteIdBuilder:
-		return DataWriteIdBuilder.new()
-
-	# Adds a write request to the builder.
-	func with_request(
-		collection: String,
-		key: String,
-		permission_read: int,
-		permission_write: int,
-		value: String,
-		version: String = ""
-	) -> DataWriteIdBuilder:
-		_ids.append(
-			NakamaWriteStorageObject.new(
-				collection, key, permission_read, permission_write, value, version
-			)
-		)
-		return self
-
-	# Returns the finished write ids.
-	func build() -> Array:
-		return _ids
 
 
 # Helper class to convert values from the server into Godot values.
