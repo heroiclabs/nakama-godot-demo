@@ -46,7 +46,7 @@ func get_player_characters_async() -> Array:
 
 	var parsed_result := _exception_handler.parse_exception(storage_objects)
 
-	if not parsed_result == OK:
+	if parsed_result != OK:
 		return []
 
 	var characters := []
@@ -76,7 +76,7 @@ func create_player_character_async(color: Color, name: String) -> int:
 
 	var parsed_result := _exception_handler.parse_exception(availability_response)
 
-	if not parsed_result == OK:
+	if parsed_result != OK:
 		return parsed_result
 
 	var is_available := availability_response.payload == "1"
@@ -147,7 +147,7 @@ func get_last_player_character_async() -> Dictionary:
 	var parsed_result := _exception_handler.parse_exception(storage_objects)
 	var character := {}
 
-	if not parsed_result == OK or storage_objects.objects.size() == 0:
+	if parsed_result != OK or storage_objects.objects.size() == 0:
 		return character
 
 	var decoded: Dictionary = JSON.parse(storage_objects.objects[0].value).result
