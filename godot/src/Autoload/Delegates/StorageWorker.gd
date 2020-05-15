@@ -16,10 +16,10 @@ const KEY := "nakama_godot_demo"
 const COLLECTION := "player_data"
 
 # Key within the storage collection for where the character list is stored
-const CHARACTERS_KEY := "characters"
+const KEY_CHARACTERS := "characters"
 
 # Key within the storage collection for hwere the last logged in character was
-const LAST_CHARACTER_KEY := "last_character"
+const KEY_LAST_CHARACTER := "last_character"
 
 var _session: NakamaSession
 var _client: NakamaClient
@@ -39,7 +39,7 @@ func _init(session: NakamaSession, client: NakamaClient, exception_handler: Exce
 func get_player_characters_async() -> Array:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		_client.read_storage_objects_async(
-			_session, [NakamaStorageObjectId.new(COLLECTION, CHARACTERS_KEY, _session.user_id)]
+			_session, [NakamaStorageObjectId.new(COLLECTION, KEY_CHARACTERS, _session.user_id)]
 		),
 		"completed"
 	)
@@ -127,7 +127,7 @@ func delete_player_character_async(idx: int) -> int:
 func get_last_player_character_async() -> Dictionary:
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
 		_client.read_storage_objects_async(
-			_session, [NakamaStorageObjectId.new(COLLECTION, LAST_CHARACTER_KEY, _session.user_id)]
+			_session, [NakamaStorageObjectId.new(COLLECTION, KEY_LAST_CHARACTER, _session.user_id)]
 		),
 		"completed"
 	)
@@ -158,7 +158,7 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 			[
 				NakamaWriteStorageObject.new(
 					COLLECTION,
-					LAST_CHARACTER_KEY,
+					KEY_LAST_CHARACTER,
 					ReadPermissions.OWNER_READ,
 					WritePermissions.OWNER_WRITE,
 					JSON.print(character),
@@ -181,7 +181,7 @@ func _write_player_characters_async(characters: Array) -> int:
 			[
 				NakamaWriteStorageObject.new(
 					COLLECTION,
-					CHARACTERS_KEY,
+					KEY_CHARACTERS,
 					ReadPermissions.OWNER_READ,
 					WritePermissions.OWNER_WRITE,
 					JSON.print({characters = characters}),
