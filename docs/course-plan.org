@@ -451,7 +451,7 @@ The ~rpc_async()~ method of the ~NakamaClient~ called a registered function on t
 
 We define that function in one of our server's module. You can do so in go or lua, we chose lua. See [[../nakama/modules/world_rpc.lua]]
 
-The first argument of the ~nakama.match_create~ below refers to a lua module the server uses to manage the match. In this case, it's ~world_control~, from the file [[file:../nakama/modules/world_control.lua::-- Module that controls the game world. The world's state is updated every `tickrate` in the][world_control.lua]].
+The first argument of the ~nakama.match_create~ below refers to a lua module the server uses to manage the match. In this case, it's ~world_control~, from the file [[file:../nakama/modules/world_control.lua::-- Module that controls the game world. The world's state is updated every `tickrate` in the][world_control.lua]]. That module has special functions that define our game's main loop. Nakama recognizes them automatically from their name and hooks onto them. They're like the ~_ready()~, ~_process()~, etc. of Godot.
 
 #+BEGIN_EXAMPLE lua
 local nakama = require("nakama")
@@ -525,6 +525,127 @@ See the transition from the CharacterMenu to MainMenu. For each presence in the 
 - [[file:../godot/src/Main/GameWorld.gd::func _on_ServerConnection_presences_changed() -> void:][GameWorld._on_ServerConnection_presences_changed]]
 
 
+** Storing data from client, storing data from server
+
+- See functions that use the ~_storage_worker~ delegate class in ~ServerConnection~, for example: [[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
+- Also see [[file:../godot/src/Autoload/Delegates/StorageWorker.gd::Class that ServerConnection delegates work to. Stores and fetches data in and out][StorageWorker]]
+
+*** The basics
+
+To read or write data to the Nakama storage, you need to use the ~NakamaClient~ API. ~write_storage_objects_async()~ takes your session and a list of ~NakamaWriteStorageObject~ objects. Each object is part of a collection and writes to a given key, each a string identifier. You can specify read and write permissions, and finally pass the data as a serialized JSON string, and an optional version number.
+
+#+BEGIN_EXAMPLE gdscript
+const GAME_VERSION = "0.1.0"
+const KEY := "nakama_godot_demo"
+const COLLECTION := "player_data"
+# Key
+const KEY_CHARACTERS := "characters"
+
+var result: NakamaAPI.ApiStorageObjectAcks = yield(
+    _client.write_storage_objects_async(
+        _session,
+        [
+            NakamaWriteStorageObject.new(
+                COLLECTION,
+                KEY_CHARACTERS,
+                ReadPermissions.OWNER_READ,
+                WritePermissions.OWNER_WRITE,
+                JSON.print({characters = characters}),
+                GAME_VERSION
+            )
+        ]
+    ),
+    "completed"
+)
+#+END_EXAMPLE
+
+You can use the version number to update a player's data in new game releases and ensure backwards compatibility.
+
+To read data, there's a method named ~read_storage_objects_async~ that takes your session and an array of ~NakamaStorageObjectId~ objects as arguments. It returns ~ApiStorageObjects~ , a container for data serialized as JSON, results over which you can loop and extract data.
+
+#+BEGIN_EXAMPLE gdscript
+const KEY := "nakama_godot_demo"
+const COLLECTION := "player_data"
+# Key
+const KEY_CHARACTERS := "characters"
+
+var storage_objects: NakamaAPI.ApiStorageObjects = yield(
+    _client.read_storage_objects_async(
+        _session, [NakamaStorageObjectId.new(COLLECTION, KEY_CHARACTERS, _session.user_id)]
+    ),
+    "completed"
+)
+#+END_EXAMPLE
+
+Here's how to decode storage objects. The ~storage_objects.objects~ below is an array of JSON strings. We use ~JSON.parse~ to parse them.
+
+As we define the data stored on the server ourselves, the way you will parse or process it depends entirely on your game.
+
+#+BEGIN_EXAMPLE gdscript
+if storage_objects.objects.size() > 0:
+    var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
+    for character in decoded:
+        var name: String = character.name
+        characters.append(
+            {name = name, color = Converter.color_string_to_color(character.color)}
+        )
+#+END_EXAMPLE
+
+*** In context
+
+In the demo, we use a delegate class, [[file:../godot/src/Autoload/Delegates/StorageWorker.gd::Class that ServerConnection delegates work to. Stores and fetches data in and out][StorageWorker]]. This is to keep the storage-related code grouped together in a single file. In the demo, it's still a small class, but it's one that's bound to grow a lot in a complete game project. It also has a clear responsibility: work with the server's storage, requesting read and write operations.
+
+Writing example.
+
+#+BEGIN_EXAMPLE gdscript
+func _write_player_characters_async(characters: Array) -> int:
+	var result: NakamaAPI.ApiStorageObjectAcks = yield(
+		_client.write_storage_objects_async(
+			_session,
+			[
+				NakamaWriteStorageObject.new(
+					COLLECTION,
+					KEY_CHARACTERS,
+					ReadPermissions.OWNER_READ,
+					WritePermissions.OWNER_WRITE,
+					JSON.print({characters = characters}),
+					""
+				)
+			]
+		),
+		"completed"
+	)
+	var parsed_result := _exception_handler.parse_exception(result)
+	return parsed_result
+#+END_EXAMPLE
+
+Reading example.
+
+#+BEGIN_EXAMPLE gdscript
+func get_player_characters_async() -> Array:
+	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
+		_client.read_storage_objects_async(
+			_session, [NakamaStorageObjectId.new(COLLECTION, KEY_CHARACTERS, _session.user_id)]
+		),
+		"completed"
+	)
+
+	var parsed_result := _exception_handler.parse_exception(storage_objects)
+	if parsed_result != OK:
+		return []
+
+	var characters := []
+	if storage_objects.objects.size() > 0:
+		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
+		for character in decoded:
+			var name: String = character.name
+			characters.append(
+				{name = name, color = Converter.color_string_to_color(character.color)}
+			)
+	return characters
+#+END_EXAMPLE
+
+
 ** Sending/receiving messages, and joining/responding in chat
 
 Joining the chat happens in ~ServerConnection.join_world_async()~ in our game.
@@ -594,14 +715,9 @@ func join_world_async() -> int:
 	return parsed_result
 #+end_example
 
+** TODO Notifications
 
-** Storing data from client, storing data from server
 
-Functions that use the _storage_worker, for example: [[file:../godot/src/Autoload/ServerConnection.gd::func store_last_player_character_async(name: String, color: Color) -> int:][Store last player character]]
-
-** Brief overview of the server's admin dashboard
-
-How to access the backend, monitor, and clear data.
 
 * To cover
 
