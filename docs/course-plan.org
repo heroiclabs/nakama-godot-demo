@@ -715,10 +715,6 @@ func join_world_async() -> int:
 	return parsed_result
 #+end_example
 
-** TODO Notifications
-
-
-
 * To cover
 
 ** Difference between NakamaClient and the NakamaSocket objects
