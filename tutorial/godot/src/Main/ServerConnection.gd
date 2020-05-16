@@ -1,5 +1,10 @@
 extends Node
 
+# Nakama read permissions
+enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
+# Nakama write permissions
+enum WritePermissions { NO_WRITE, OWNER_WRITE }
+
 const GAME_VERSION = "0.1.0"
 # Unique server key, as written in docker-compose.yml.
 const KEY_SERVER := "nakama_godot_demo"
@@ -29,9 +34,7 @@ func authenticate_async(email: String, password: String) -> int:
 # Creates and store a socket from the client object, then requests a connection from the server.
 func connect_to_server_async() -> void:
 	_socket = Nakama.create_socket_from(_client)
-	var result: NakamaAsyncResult = yield(
-		_socket.connect_async(_authenticator.session), "completed"
-	)
+	var result: NakamaAsyncResult = yield(_socket.connect_async(_session), "completed")
 	if not result.is_exception():
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 
@@ -53,7 +56,7 @@ func join_world_async() -> void:
 	# match.
 	if not match_join_result.is_exception():
 		for presence in match_join_result.presences:
-			presences[presence.user_id] = presence
+			_presences[presence.user_id] = presence
 
 
 # Requests the server to save the `characters` array.
@@ -76,7 +79,8 @@ func write_characters_async(characters := []) -> void:
 	)
 
 
-# Requests a list of characters from the server and
+# Requests a list of characters from the server and converts the JSON response to an array of
+# dictionaries with the form { name, color }.
 func get_characters_async() -> Array:
 	var characters := []
 	var storage_objects: NakamaAPI.ApiStorageObjects = yield(
@@ -89,10 +93,7 @@ func get_characters_async() -> Array:
 	if storage_objects.objects:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
 		for character in decoded:
-			var name: String = character.name
-			characters.append(
-				{ name = name, color = Converter.color_string_to_color(character.color) }
-			)
+			characters.append({name = character.name, color = character.color})
 	return characters
 
 
