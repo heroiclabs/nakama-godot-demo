@@ -3,7 +3,8 @@
 # Anything that has to do with communicating with the server is first sent here, then this class
 # delegates work to sub-classes. See [Authenticator], [ExceptionHandler], and [StorageWorker].
 #
-# As in Nakama, asynchronous methods are named `*_async` and you must use yield to get their return value.
+# As in Nakama, asynchronous methods are named `*_async` and you must use yield to get their return
+# value.
 #
 # For example:
 #
@@ -24,7 +25,8 @@
 # Messages sent in and out of the server are described in /docs/packets.md
 extends Node
 
-# Custom operational codes for state messages. Nakama built-in codes are values lower or equal to `0`.
+# Custom operational codes for state messages. Nakama built-in codes are values lower or equal to
+# `0`.
 enum OpCodes {
 	UPDATE_POSITION = 1,
 	UPDATE_INPUT,
@@ -53,7 +55,8 @@ signal chat_message_received(sender_id, message)
 # Emitted when the server has received the game state dump for all connected characters
 signal initial_state_received(positions, inputs, colors, names)
 
-# Emitted when the server has been informed of a new character having been selected and is ready to spawn in
+# Emitted when the server has been informed of a new character having been selected and is ready to
+# spawn.
 signal character_spawned(id, color, name)
 
 # String that contains the error message whenever any of the functions that yield return != OK
@@ -63,7 +66,8 @@ var error_message := "" setget _no_set, _get_error_message
 var presences := {} setget _no_set
 
 # Nakama client through which sessions are created, sockets connected, and storage accessed.
-# For development purposes, it's set to the default localhost, as listed in the /nakama/docker-compose.yml
+# For development purposes, it's set to the default localhost, as listed in the
+# /nakama/docker-compose.yml
 var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
 
 # Nakama socket through which the live game world is interacted with.
