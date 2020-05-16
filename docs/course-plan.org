@@ -223,6 +223,7 @@ func request_authentication() -> void:
 
 
 *** In context
+
 **** Resources
 
 Show the RegisterForm, LoginForm, and their callbacks in MainMenu:
@@ -237,6 +238,7 @@ Show the [[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/Ex
 Any request to the server may fail, so you want to handle errors. In the final demo project, we creates an ~ExceptionHandler~ helper class to process exceptions in server requests. The class converts the exception into an integer that represents an error codes, like the global constant ~ERR_CONNECTION_ERROR~.
 
 The ~ExceptionHandler.parse_exception()~ method returns the value of the ~OK~ constant if the request worked. Otherwise, it stores an error message in its ~error_message~ property. You can use it to display an error to the user.
+
 **** Overview of LoginAndRegister in the demo
 
 Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The interface only emits signals to which ~MainMenu~ connects.
@@ -372,18 +374,13 @@ To connect to the server, we have to first request Nakama to create a socket. A 
 
 We create the socket from our previously-created client object. Then, we connect to the server using the socket.
 
-As with any client-server communication, the sockets' methods are coroutines, and they return a result from the request. We can parse that result using ~ExceptionHandler.parse_exception()~ to convert it to a Godot error number.
+As with any client-server communication, the sockets' methods are coroutines, and they return a result from the request.
 
 #+BEGIN_EXAMPLE gdscript
-var session: NakamaSession
-
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
-var _exception_handler := ExceptionHandler.new()
-
 var _socket: NakamaSocket
 
 
-func connect_to_server_async() -> int:
+func connect_to_server_async() -> void:
 	# Create and store a socket from the client object.
 	_socket = Nakama.create_socket_from(_client)
 
@@ -391,39 +388,32 @@ func connect_to_server_async() -> int:
 	var result: NakamaAsyncResult = yield(
 		_socket.connect_async(_authenticator.session), "completed"
 	)
-	# Convert the result to an integer error code.
-	var parsed_result: int = _exception_handler.parse_exception(result)
-    return parsed_result
 #+END_EXAMPLE
 
 The ~NakamaSocket~ has some signals to which you can connect. They allow you to receive messages, new connections, and to handle errors:
 
 #+BEGIN_EXAMPLE gdscript
-func connect_to_server_async() -> int:
+func connect_to_server_async() -> void:
 	_socket = Nakama.create_socket_from(_client)
 
 	var result: NakamaAsyncResult = yield(
 		_socket.connect_async(_authenticator.session), "completed"
 	)
-	var parsed_result := _exception_handler.parse_exception(result)
-
-	if parsed_result == OK:
+	if not result.is_exception():
 		_socket.connect("connected", self, "_on_NakamaSocket_connected")
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 		_socket.connect("received_error", self, "_on_NakamaSocket_received_error")
 		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
 		_socket.connect("received_match_state", self, "_on_NakamaSocket_received_match_state")
 		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
-
-	return parsed_result
 #+END_EXAMPLE
 
-For example, when the socket closed, you can free the object:
+For example, when the socket closed, you can free the object. The ~NakamaSocket~ class extends ~Reference~. Instances of this class are automatically freed when there's no reference to them:
 
 #+BEGIN_EXAMPLE gdscript
 func connect_to_server_async() -> int:
 # ...
-	if parsed_result == OK:
+	if not result.is_exception():
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 # ...
 
@@ -434,11 +424,9 @@ func _on_NakamaSocket_closed() -> void:
 
 *** In context
 
-Show the log out button in [[../godot/src/UI/Menus/Characters/CharacterMenu.tscn][CharacterMenu]] and socket callbacks in ~ServerConnection~. See [[file:../godot/src/Autoload/ServerConnection.gd::func _on_NakamaSocket_connected() -> void:][ServerConnection's socket callbacks]].
+See the log out button in [[../godot/src/UI/Menus/Characters/CharacterMenu.tscn][CharacterMenu]] and socket callbacks in ~ServerConnection~. See [[file:../godot/src/Autoload/ServerConnection.gd::func _on_NakamaSocket_connected() -> void:][ServerConnection's socket callbacks]].
 
-Use breakpoints and the debugger to step through the code and break down some of the code's flow.
-
-Note: when you close Godot, the Nakama client data cleans up by itself.
+Note: when you close Godot, the Nakama client data cleans up by itself, closing the connection with the server.
 
 ** Responding to successful connection: joining a game match
 
@@ -450,7 +438,7 @@ https://heroiclabs.com/docs/gameplay-multiplayer-realtime/
 
 *** Resources
 
-- [[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> int:][Joining the world]]
+- [[file:../godot/src/Autoload/ServerConnection.gd::func join_world_async() -> void:][Joining the world]]
 - [[file:../nakama/modules/world_rpc.lua::local function get_world_id(_, _)][Nakama server's get_world_id() RPC]]
 
 *** The basics
@@ -469,12 +457,11 @@ To join a world, we first ask the server to give us a world's ID through an RPC:
 # The properties come from previous tutorials.
 var session: NakamaSession
 
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
-var _exception_handler := ExceptionHandler.new()
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 var _socket: NakamaSocket
 
 
-func join_world_async() -> int:
+func join_world_async() -> void:
     var world: NakamaAPI.ApiRpc = yield(
         _client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
     )
@@ -516,37 +503,30 @@ var _world_id: String setget _no_set
 var presences := {} setget _no_set
 
 
-func join_world_async() -> int:
-    var world: NakamaAPI.ApiRpc = yield(
-        _client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
-    )
+func join_world_async() -> void:
+	var world: NakamaAPI.ApiRpc = yield(
+		_client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
+	)
 
-    var parsed_result := _exception_handler.parse_exception(world)
-    if parsed_result != OK:
-        return parsed_result
-
-    _world_id = world.payload
+	if not world.is_exception():
+		_world_id = world.payload
 #+END_EXAMPLE
 
 Joining the world created by the server.
 
 #+BEGIN_EXAMPLE gdscript
-func join_world_async() -> int:
+func join_world_async() -> void:
 # ...
 
 	# Requesting to join the match through the NakamaSocket API
 	var match_join_result: NakamaRTAPI.Match = yield(
 		_socket.join_match_async(_world_id), "completed"
 	)
-	var parsed_result := _exception_handler.parse_exception(match_join_result)
-
 	# If the request worked, we get a list of presences, that is to say, a list of clients in that
 	# match.
-	if parsed_result == OK:
+	if not match_join_result.is_exception():
 		for presence in match_join_result.presences:
 			presences[presence.user_id] = presence
-
-	return parsed_result
 #+END_EXAMPLE
 
 *** In context
@@ -620,7 +600,7 @@ if storage_objects.objects.size() > 0:
     for character in decoded:
         var name: String = character.name
         characters.append(
-            {name = name, color = Converter.color_string_to_color(character.color)}
+            { name = name, color = Converter.color_string_to_color(character.color) }
         )
 #+END_EXAMPLE
 
@@ -631,7 +611,7 @@ In the demo, we use a delegate class, [[file:../godot/src/Autoload/Delegates/Sto
 Writing example.
 
 #+BEGIN_EXAMPLE gdscript
-func _write_player_characters_async(characters: Array) -> int:
+func _write_player_characters_async(characters: Array) -> void:
 	var result: NakamaAPI.ApiStorageObjectAcks = yield(
 		_client.write_storage_objects_async(
 			_session,
@@ -648,8 +628,6 @@ func _write_player_characters_async(characters: Array) -> int:
 		),
 		"completed"
 	)
-	var parsed_result := _exception_handler.parse_exception(result)
-	return parsed_result
 #+END_EXAMPLE
 
 Reading example.
@@ -663,8 +641,7 @@ func get_player_characters_async() -> Array:
 		"completed"
 	)
 
-	var parsed_result := _exception_handler.parse_exception(storage_objects)
-	if parsed_result != OK:
+	if storage_objects.is_exception():
 		return []
 
 	var characters := []
@@ -731,21 +708,18 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 As the chat is in the only game world in our demo, we join the chat in ~ServerConnection.join_world_async()~.
 
 #+begin_example gdscript
-var _channel_id: String setget _no_set
+var _channel_id: String 
 
 
-func join_world_async() -> int:
+func join_world_async() -> void:
     # ...
-	if parsed_result == OK:
+	if not result.is_exception():
         # ...
 		var chat_join_result: NakamaRTAPI.Channel = yield(
 			_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false),
 			"completed"
 		)
-		parsed_result = _exception_handler.parse_exception(chat_join_result)
 		_channel_id = chat_join_result.id
-
-	return parsed_result
 #+end_example
 
 * To cover
