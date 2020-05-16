@@ -13,7 +13,7 @@ var _session: NakamaSession
 var _client := Nakama.create_client(KEY_SERVER, "127.0.0.1", 7350, "http")
 var _socket: NakamaSocket
 var _world_id: String
-#
+
 # Lists other clients present in the game world we connect to.
 var _presences := {}
 
@@ -41,7 +41,7 @@ func connect_to_server_async() -> void:
 
 # Gets the id of a match being played or lets the server create it, joins the match, and stores the
 # players in the match in a dictionary.
-func join_world_async() -> void:
+func join_world_async() -> Dictionary:
 	var world: NakamaAPI.ApiRpc = yield(
 		_client.rpc_async(_session, "get_world_id", ""), "completed"
 	)
@@ -57,6 +57,7 @@ func join_world_async() -> void:
 	if not match_join_result.is_exception():
 		for presence in match_join_result.presences:
 			_presences[presence.user_id] = presence
+	return _presences
 
 
 # Requests the server to save the `characters` array.
