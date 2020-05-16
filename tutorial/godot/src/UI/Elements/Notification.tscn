@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+[ext_resource path="res://src/UI/Elements/Notification.gd" type="Script" id=2]
+
+[node name="Panel" type="Panel"]
+margin_right = 400.0
+margin_bottom = 120.0
+grow_horizontal = 2
+rect_min_size = Vector2( 400, 120 )
+rect_pivot_offset = Vector2( 400, 120 )
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 390.0
+margin_bottom = 90.0
+bbcode_enabled = true
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="."]
