@@ -66,7 +66,7 @@ For example, here would be the first step for authentication: starting with the 
 #+BEGIN_SRC gdscript
 var session: NakamaSession
 
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 
 
 func authenticate_async(email: String, password: String) -> int:
@@ -82,6 +82,14 @@ For the other steps, see [[*Authentication][Authentication]]
 * Topics
 
 [[file:packets.md::Packets and storage data structures][Packets reference]]
+
+** Resources
+
+Head to the [[https://heroiclabs.com/docs/][Nakama Documentation]] for detailed examples on how to use Nakama. As a Godot user, you want to look at the [[https://heroiclabs.com/docs/godot-client-guide/][Godot Client Guide]], and at all pages starting from [[https://heroiclabs.com/docs/authentication/][Authentication]]. All the code examples have a /Godot/ tab to see them in GDScript.
+
+The [[https://heroiclabs.com/docs/runtime-code-basics/][Runtime Code]] section of the documentation focuses on server-side code, written in either lua or go.
+
+The full Nakama Godot client code is commented. You can *Ctrl* *Click* any method from Nakama in the Godot script editor to jump to its source code and read its documentation.
 
 ** Installing and setting up Nakama with Godot
 
@@ -165,7 +173,7 @@ const KEY := "nakama_godot_demo"
 
 var session: NakamaSession
 
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 
 
 func authenticate_async(email: String, password: String) -> int:
@@ -174,45 +182,113 @@ func authenticate_async(email: String, password: String) -> int:
 	)
 #+END_EXAMPLE
 
-*** About coroutines
+*** Authenticating and creating new accounts automatically
 
-All functions named ~*_async~ are coroutines in our project. Coroutines are routines (functions) that can co-operate, passing control to one another. In other words, coroutines allow you to pause functions in the middle of their execution and wait for others to return control to them.
-
-We don’t have a keyword like ~await~ or promises yet in GDScript. In case you've never used these features in other languages, promises allow you to have a proxy object to keep moving forward with your code even if you didn't get the resulting value from a long computation or while you’re waiting for data from a server.
-
-In GDScript, using the yield keyword returns a ~GDScriptFunctionState~ object that stores information about the executed function. It provides a method to resume the function’s execution and a ~completed~ signal that tells you when the function returned. This is why we can ~yield~ on a function call and wait for the ~completed~ signal to be emitted. It is the completed signal of the newly created ~GDScriptFunctionState~ object.
-
-For more information, read [[https://docs.godotengine.org/en/stable/getting_started/scripting/gdscript/gdscript_basics.html#coroutines-with-yield][Coroutines with yield]] in the Godot documentation.
-
-**** Authenticating and creating new accounts automatically
-
-Second step, handling errors with the ~ExceptionHandler~.
-
-This example builds upon the basic one. We create an ~ExceptionHandler~ object to parse and convert a ~NakamaAsyncResult~ into a number. Godot uses integer stored in constants to represent error codes, like ~ERR_CONNECTION_ERROR~.
-
-The ~ExceptionHandler.parse_exception()~ method returns the value of the ~OK~ constant if the request worked. Otherwise, it stores an error message in its ~error_message~ property. You can use it to display an error to the user.
+We can expand on the same code to check for errors. If the authenticate request worked, we can assign the ~new_session~ to the ~_session~.
 
 #+BEGIN_EXAMPLE gdscript
-var session: NakamaSession
+const KEY := "nakama_godot_demo"
 
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
-var _exception_handler := ExceptionHandler.new()
+var _session: NakamaSession
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http")
 
 
 func authenticate_async(email: String, password: String) -> int:
+	var result := OK
 	var new_session: NakamaSession = yield(
 		_client.authenticate_email_async(email, password, email, true), "completed"
 	)
-
-	var result := _exception_handler.parse_exception(new_session)
-	if result == OK:
-		session = new_session
+	if not new_session.is_exception():
+		_session = new_session
+	else:
+		result = new_session.get_exception().status_code
 	return result
 #+END_EXAMPLE
 
-Show the example of the Register interface.
+You can test that code like so:
+
+#+BEGIN_EXAMPLE gdscript
+func request_authentication() -> void:
+	var email := "test@test.com"
+	var password := "password"
+
+	print_debug("Authenticating user %s." % email)
+	var result: int = yield(server_connection.authenticate_async(email, password), "completed")
+
+	if result == OK:
+		print_debug("Authenticated user %s successfully." % email)
+	else:
+		print_debug("Could not authenticate user %s." % email)
+#+END_EXAMPLE
+
 
 *** In context
+**** Resources
+
+Show the RegisterForm, LoginForm, and their callbacks in MainMenu:
+
+- [[file:~/Repositories/nakama-godot-demo/godot/src/Main/MainMenu.gd::func _on_LoginAndRegister_login_pressed(email: String, password: String, do_remember_email: bool) -> void:][_on_LoginAndRegister_login_pressed()]]
+- [[file:~/Repositories/nakama-godot-demo/godot/src/Main/MainMenu.gd::func authenticate_user_async(email: String, password: String, do_remember_email := false) -> int:][MainMenu.authenticate_user_async()]]
+
+**** Using a helper class to handle errors
+
+Show the [[file:~/Repositories/nakama-godot-demo/godot/src/Autoload/Delegates/ExceptionHandler.gd::class_name ExceptionHandler][ExceptionHandler]].
+
+Any request to the server may fail, so you want to handle errors. In the final demo project, we creates an ~ExceptionHandler~ helper class to process exceptions in server requests. The class converts the exception into an integer that represents an error codes, like the global constant ~ERR_CONNECTION_ERROR~.
+
+The ~ExceptionHandler.parse_exception()~ method returns the value of the ~OK~ constant if the request worked. Otherwise, it stores an error message in its ~error_message~ property. You can use it to display an error to the user.
+**** Overview of LoginAndRegister in the demo
+
+Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The interface only emits signals to which ~MainMenu~ connects.
+
+Below is the authentication logic.  adds a loop that attempts to authenticate up to three times
+
+#+BEGIN_EXAMPLE gdscript
+# MainMenu.gd
+const MAX_REQUEST_ATTEMPTS := 3
+var _server_request_attempts := 0
+
+
+func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
+	var result := -1
+
+	login_and_register.is_enabled = false
+	while result != OK:
+		if _server_request_attempts == MAX_REQUEST_ATTEMPTS:
+			break
+		_server_request_attempts += 1
+		result = yield(ServerConnection.login_async(email, password), "completed")
+
+	if result == OK:
+		if do_remember_email:
+			ServerConnection.save_email(email)
+		open_character_menu()
+	else:
+		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
+		login_and_register.is_enabled = true
+
+	_server_request_attempts = 0
+	return result
+#+END_EXAMPLE
+
+Here's the code to remember the user's email in ~ServerConnection~. It's stored locally in a ~.ini~ file.
+
+#+BEGIN_EXAMPLE gdscript
+# ServerConnection
+func save_email(email: String) -> void:
+	EmailConfigWorker.save_email(email)
+
+
+class EmailConfigWorker:
+	const CONFIG := "user://config.ini"
+
+	# Saves the email to the config file.
+	static func save_email(email: String) -> void:
+		var file := ConfigFile.new()
+		file.load(CONFIG)
+		file.set_value("connection", "last_email", email)
+		file.save(CONFIG)
+#+END_EXAMPLE
 
 **** Storing and reusing the user's auth token
 
@@ -272,58 +348,15 @@ func login_async(email: String, password: String) -> int:
 	return parsed_result
 #+END_EXAMPLE
 
-**** Overview of LoginAndRegister in the demo
+**** About coroutines
 
-Run through how the ~MainMenu~'s code structure with ~LoginAndRegister~. The interface only emits signals to which ~MainMenu~ connects.
+All functions named ~*_async~ are coroutines in our project. Coroutines are routines (functions) that can co-operate, passing control to one another. In other words, coroutines allow you to pause functions in the middle of their execution and wait for others to return control to them.
 
-Below is the authentication logic.  adds a loop that attempts to authenticate up to three times
+We don’t have a keyword like ~await~ or promises yet in GDScript. In case you've never used these features in other languages, promises allow you to have a proxy object to keep moving forward with your code even if you didn't get the resulting value from a long computation or while you’re waiting for data from a server.
 
-#+BEGIN_EXAMPLE gdscript
-# MainMenu.gd
-const MAX_REQUEST_ATTEMPTS := 3
-var _server_request_attempts := 0
+In GDScript, using the yield keyword returns a ~GDScriptFunctionState~ object that stores information about the executed function. It provides a method to resume the function’s execution and a ~completed~ signal that tells you when the function returned. This is why we can ~yield~ on a function call and wait for the ~completed~ signal to be emitted. It is the completed signal of the newly created ~GDScriptFunctionState~ object.
 
-
-func authenticate_user(email: String, password: String, do_remember_email := false) -> int:
-	var result := -1
-
-	login_and_register.is_enabled = false
-	while result != OK:
-		if _server_request_attempts == MAX_REQUEST_ATTEMPTS:
-			break
-		_server_request_attempts += 1
-		result = yield(ServerConnection.login_async(email, password), "completed")
-
-	if result == OK:
-		if do_remember_email:
-			ServerConnection.save_email(email)
-		open_character_menu()
-	else:
-		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
-		login_and_register.is_enabled = true
-
-	_server_request_attempts = 0
-	return result
-#+END_EXAMPLE
-
-Here's the code to remember the user's email in ~ServerConnection~. It's stored locally in a ~.ini~ file.
-
-#+BEGIN_EXAMPLE gdscript
-# ServerConnection
-func save_email(email: String) -> void:
-	EmailConfigWorker.save_email(email)
-
-
-class EmailConfigWorker:
-	const CONFIG := "user://config.ini"
-
-	# Saves the email to the config file.
-	static func save_email(email: String) -> void:
-		var file := ConfigFile.new()
-		file.load(CONFIG)
-		file.set_value("connection", "last_email", email)
-		file.save(CONFIG)
-#+END_EXAMPLE
+For more information, read [[https://docs.godotengine.org/en/stable/getting_started/scripting/gdscript/gdscript_basics.html#coroutines-with-yield][Coroutines with yield]] in the Godot documentation.
 
 ** Creating and connecting to a socket using a session (connect to server async)
 
