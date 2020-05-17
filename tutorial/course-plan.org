@@ -81,7 +81,7 @@ For the other steps, see [[*Authentication][Authentication]]
 
 * Topics
 
-[[file:packets.md::Packets and storage data structures][Packets reference]]
+[[file:../docs/packets.md::Packets and storage data structures][Packets reference]]
 
 ** Resources
 
@@ -665,7 +665,6 @@ Joining the chat happens in ~ServerConnection.join_world_async()~ in our game.
 
 All the send_ methods and _received signals and their callbacks
 
-
 *** The basics
 
 To join a chat room you can call ~NakamaSocket.join_chat_async()~. It takes the id of the socket as a string as its first argument, followed by a channel type from the ~NakamaSocket.ChannelType~ enum.
@@ -679,7 +678,7 @@ var chat_join_result: NakamaRTAPI.Channel = yield(
 )
 #+end_example
 
-If the request succeeds, ~chat_join_result.id~ gives you the joined chat channel's unique id, which you need to send chat messages. You can store it somewhere.
+If the request succeeds, ~chat_join_result.id~ gives you the joined chat channel's unique id, which you need to send chat messages. You can store it in a variable.
 
 To write a message to the chat, call ~NakamaSocket.write_chat_message_async()~. The chat message should be in a dictionary with a ~"msg"~ key. The ~write_chat_message_async()~ method converts it to JSON.
 
