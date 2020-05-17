@@ -49,4 +49,4 @@ func connect_to_server() -> void:
 func join_world() -> void:
 	var presences: Dictionary = yield(server_connection.join_world_async(), "completed")
 	debug_panel.write_message("Joined world.")
-	debug_panel.write_message("Other connected players: %s" % presences)
+	debug_panel.write_message("Other connected players: %s" % presences.size())

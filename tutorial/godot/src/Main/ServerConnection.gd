@@ -12,9 +12,9 @@ var _session: NakamaSession
 var _client := Nakama.create_client(KEY_SERVER, "127.0.0.1", 7350, "http")
 var _socket: NakamaSocket
 var _world_id: String
-
 # Lists other clients present in the game world we connect to.
 var _presences := {}
+var _channel_id := ""
 
 
 # Authenticates a user, creating an account if necessary.
@@ -96,6 +96,24 @@ func get_characters_async() -> Array:
 		for character in decoded:
 			characters.append({name = character.name, color = character.color})
 	return characters
+
+
+# Joins the "world" discussion channel and stored its id in `_channel_id`
+func join_chat_async() -> void:
+	var chat_join_result: NakamaRTAPI.Channel = yield(
+		_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false), "completed"
+	)
+	if not chat_join_result.is_exception():
+		_channel_id = chat_join_result.id
+
+
+# Sends a text message
+func send_text_async(text: String) -> void:
+	if _channel_id == "":
+		printerr("Can't sent text message to the chat: variable `_channel_id` is not set.")
+		return
+
+	yield(_socket.write_chat_message_async(_channel_id, {"msg": text}), "completed")
 
 
 # Free the socket when the connection was closed.
