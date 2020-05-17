@@ -5,7 +5,6 @@ enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 # Nakama write permissions
 enum WritePermissions { NO_WRITE, OWNER_WRITE }
 
-const GAME_VERSION = "0.1.0"
 # Unique server key, as written in docker-compose.yml.
 const KEY_SERVER := "nakama_godot_demo"
 
@@ -36,6 +35,7 @@ func connect_to_server_async() -> void:
 	_socket = Nakama.create_socket_from(_client)
 	var result: NakamaAsyncResult = yield(_socket.connect_async(_session), "completed")
 	if not result.is_exception():
+		# warning-ignore:return_value_discarded
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 
 
@@ -62,7 +62,7 @@ func join_world_async() -> Dictionary:
 
 # Requests the server to save the `characters` array.
 func write_characters_async(characters := []) -> void:
-	var result: NakamaAPI.ApiStorageObjectAcks = yield(
+	yield(
 		_client.write_storage_objects_async(
 			_session,
 			[
@@ -72,7 +72,7 @@ func write_characters_async(characters := []) -> void:
 					ReadPermissions.OWNER_READ,
 					WritePermissions.OWNER_WRITE,
 					JSON.print({characters = characters}),
-					GAME_VERSION
+					""
 				)
 			]
 		),
