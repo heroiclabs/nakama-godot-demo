@@ -5,7 +5,10 @@ onready var debug_panel := $CanvasLayer/DebugPanel
 
 
 func _ready() -> void:
-	var result: int = yield(request_authentication(), "completed")
+	var email := "test99@test.com"
+	var password := "password"
+
+	var result: int = yield(request_authentication(email, password), "completed")
 	if result != OK:
 		return
 	yield(connect_to_server(), "completed")
@@ -16,6 +19,7 @@ func _ready() -> void:
 		{name = "Jack", color = Color.blue.to_html(false)},
 		{name = "Lisa", color = Color.red.to_html(false)}
 	]
+
 	yield(server_connection.write_characters_async(characters), "completed")
 	var characters_data = yield(server_connection.get_characters_async(), "completed")
 
@@ -25,10 +29,8 @@ func _ready() -> void:
 	debug_panel.write_message("Got %s from the server storage." % string)
 
 
-func request_authentication() -> int:
-	var email := "test99@test.com"
-	var password := "password"
-
+# Authenticates the user with the email and password below
+func request_authentication(email: String, password: String) -> int:
 	debug_panel.write_message("Authenticating user %s." % email)
 	var result: int = yield(server_connection.authenticate_async(email, password), "completed")
 
