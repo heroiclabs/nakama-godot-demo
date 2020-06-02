@@ -19,6 +19,7 @@ func _ready() -> void:
 		{name = "Jack", color = Color.blue.to_html(false)},
 		{name = "Lisa", color = Color.red.to_html(false)}
 	]
+	return
 
 	yield(server_connection.write_characters_async(characters), "completed")
 	var characters_data = yield(server_connection.get_characters_async(), "completed")
@@ -42,8 +43,11 @@ func request_authentication(email: String, password: String) -> int:
 
 
 func connect_to_server() -> void:
-	yield(server_connection.connect_to_server_async(), "completed")
-	debug_panel.write_message("Connected to server.")
+	var result: int = yield(server_connection.connect_to_server_async(), "completed")
+	if result == OK:
+		debug_panel.write_message("Connected to server.")
+	else:
+		debug_panel.write_message("Could not connect.")
 
 
 func join_world() -> void:

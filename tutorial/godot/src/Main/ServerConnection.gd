@@ -31,12 +31,14 @@ func authenticate_async(email: String, password: String) -> int:
 
 
 # Creates and store a socket from the client object, then requests a connection from the server.
-func connect_to_server_async() -> void:
+func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
 	var result: NakamaAsyncResult = yield(_socket.connect_async(_session), "completed")
 	if not result.is_exception():
 		# warning-ignore:return_value_discarded
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
+		return OK
+	return ERR_CANT_CONNECT
 
 
 # Gets the id of a match being played or lets the server create it, joins the match, and stores the
