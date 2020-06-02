@@ -89,15 +89,13 @@ Head to the [[https://heroiclabs.com/docs/][Nakama Documentation]] for detailed 
 
 The [[https://heroiclabs.com/docs/runtime-code-basics/][Runtime Code]] section of the documentation focuses on server-side code, written in either lua or go.
 
-The full Nakama Godot client code is commented. You can *Ctrl* *Click* any method from Nakama in the Godot script editor to jump to its source code and read its documentation.
+The full Nakama Godot client code has docstring or doc-comments. You can *Ctrl* *Click* any method from Nakama in the Godot script editor to jump to its source code and read its documentation.
 
 ** Installing and setting up Nakama with Godot
 
-Text instructions are here: https://heroiclabs.com/docs/godot-client-guide/
+Text instructions are here: https://heroiclabs.com/docs/install-docker-quickstart/
 
 This lesson is a guide to get you started using Nakama as soon as possible using [[https://www.docker.com/][docker]] and docker-compose.
-
-For in-depth instructions to install and run Nakama in different scenarios, head over to the [[https://heroiclabs.com/docs/install-docker-quickstart/][Nakama documentation]].
 
 What is docker? From the Nakama documentation:
 
@@ -494,6 +492,8 @@ nakama.register_rpc(get_world_id, "get_world_id")
 The function gets the current match list from nakama and extracts the first one. If it is ~nil~ we create a new match, otherwise, we return the existing match ID. So in this example, you can only create and join one match. To have multiple matches in parallel, you would work with the match list.
 
 For more information on running code on the server, see the runtime code documentation: https://heroiclabs.com/docs/runtime-code-basics/
+
+To have an authoritative server managing matches, you need to implement specific functions defined in the Match Handler API: https://heroiclabs.com/docs/gameplay-multiplayer-server-multiplayer/#match-handler-api
 
 Handling errors.
 
