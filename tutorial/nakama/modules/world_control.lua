@@ -6,7 +6,9 @@ local world_control = {}
 local nk = require("nakama")
 
 function world_control.match_init(context, params)
-    local state = {}
+    local state = {
+        presences = {}
+    }
     local tick_rate = 10
     local label = "Game world"
 
