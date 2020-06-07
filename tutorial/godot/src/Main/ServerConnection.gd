@@ -54,11 +54,15 @@ func join_world_async() -> Dictionary:
 	var match_join_result: NakamaRTAPI.Match = yield(
 		_socket.join_match_async(_world_id), "completed"
 	)
+
+	if match_join_result.is_exception():
+		var exception: NakamaException = match_join_result.get_exception()
+		printerr("Error joining the match: code %s - %s" % [exception.status_code, exception.message])
+
 	# If the request worked, we get a list of presences, that is to say, a list of clients in that
 	# match.
-	if not match_join_result.is_exception():
-		for presence in match_join_result.presences:
-			_presences[presence.user_id] = presence
+	for presence in match_join_result.presences:
+		_presences[presence.user_id] = presence
 	return _presences
 
 
