@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
+[ext_resource path="res://src/UI/ChatBox.gd" type="Script" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends LineEdit
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"ui_cancel\"):
+		release_focus()
+		accept_event()
+"
+
+[node name="ChatBox" type="Panel"]
+self_modulate = Color( 1, 1, 1, 0.490196 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -400.0
+margin_top = -200.0
+margin_right = 400.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 800, 400 )
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = -112.0
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChatLog" type="RichTextLabel" parent="ScrollContainer"]
+margin_right = 768.0
+margin_bottom = 272.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+bbcode_text = "[color=#ff9b00]Player1[/color]: This is [b]some[/b] placeholder text
+[color=#1e95e4]Player2[/color]: With another player"
+text = "Player1: This is some placeholder text
+Player2: With another player"
+scroll_following = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = -96.0
+margin_right = -16.0
+margin_bottom = -16.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer"]
+margin_right = 632.0
+margin_bottom = 80.0
+size_flags_horizontal = 3
+max_length = 144
+caret_blink = true
+script = SubResource( 1 )
+
+[node name="SendButton" type="Button" parent="HBoxContainer"]
+margin_left = 648.0
+margin_right = 768.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 120, 80 )
+shortcut_in_tooltip = false
+text = "Send"
+[connection signal="focus_entered" from="HBoxContainer/LineEdit" to="." method="_on_LineEdit_focus_entered"]
+[connection signal="focus_exited" from="HBoxContainer/LineEdit" to="." method="_on_LineEdit_focus_exited"]
+[connection signal="text_entered" from="HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="pressed" from="HBoxContainer/SendButton" to="." method="_on_SendButton_pressed"]

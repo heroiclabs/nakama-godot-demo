@@ -1,5 +1,7 @@
 extends Node
 
+signal chat_message_received(sender_id, text)
+
 # Nakama read permissions
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
 # Nakama write permissions
@@ -37,6 +39,8 @@ func connect_to_server_async() -> int:
 	if not result.is_exception():
 		# warning-ignore:return_value_discarded
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
+		# warning-ignore:return_value_discarded
+		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
 		return OK
 	return ERR_CANT_CONNECT
 
@@ -104,23 +108,40 @@ func get_characters_async() -> Array:
 
 
 # Joins the "world" discussion channel and stored its id in `_channel_id`
-func join_chat_async() -> void:
+func join_chat_async() -> int:
 	var chat_join_result: NakamaRTAPI.Channel = yield(
 		_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false), "completed"
 	)
 	if not chat_join_result.is_exception():
 		_channel_id = chat_join_result.id
+		return OK
+	else:
+		return ERR_CONNECTION_ERROR
 
 
 # Sends a text message
-func send_text_async(text: String) -> void:
+func send_text_async(text: String) -> int:
+	if not _socket:
+		return ERR_UNAVAILABLE
+
 	if _channel_id == "":
 		printerr("Can't sent text message to the chat: variable `_channel_id` is not set.")
 		return
 
-	yield(_socket.write_chat_message_async(_channel_id, {"msg": text}), "completed")
+	var result: NakamaRTAPI.ChannelMessageAck = yield(
+		_socket.write_chat_message_async(_channel_id, {"msg": text}), "completed"
+	)
+	return ERR_CONNECTION_ERROR if result.is_exception() else OK
 
 
 # Free the socket when the connection was closed.
 func _on_NakamaSocket_closed() -> void:
 	_socket = null
+
+
+func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMessage) -> void:
+	if message.code != 0:
+		return
+
+	var content: Dictionary = JSON.parse(message.content).result
+	emit_signal("chat_message_received", message.sender_id, content.msg)

@@ -1,7 +1,10 @@
 extends Node
 
+export var user_color := Color.lime
+
 onready var server_connection := $ServerConnection
 onready var debug_panel := $CanvasLayer/DebugPanel
+onready var chat_box := $CanvasLayer/ChatBox
 
 
 func _ready() -> void:
@@ -19,7 +22,6 @@ func _ready() -> void:
 		{name = "Jack", color = Color.blue.to_html(false)},
 		{name = "Lisa", color = Color.red.to_html(false)}
 	]
-	return
 
 	yield(server_connection.write_characters_async(characters), "completed")
 	var characters_data = yield(server_connection.get_characters_async(), "completed")
@@ -28,6 +30,8 @@ func _ready() -> void:
 	for character in characters_data:
 		string += "%s: %s\n" % [character.name, character.color]
 	debug_panel.write_message("Got %s from the server storage." % string)
+	
+	yield(server_connection.join_chat_async(), "completed")
 
 
 # Authenticates the user with the email and password below
@@ -54,3 +58,11 @@ func join_world() -> void:
 	var presences: Dictionary = yield(server_connection.join_world_async(), "completed")
 	debug_panel.write_message("Joined world.")
 	debug_panel.write_message("Other connected players: %s" % presences.size())
+
+
+func _on_ChatBox_text_sent(text) -> void:
+	yield(server_connection.send_text_async(text), "completed")
+
+
+func _on_ServerConnection_chat_message_received(sender_id, text) -> void:
+	chat_box.add_reply(text, "User", user_color)

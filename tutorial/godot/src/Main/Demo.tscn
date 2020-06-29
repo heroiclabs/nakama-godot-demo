@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/Main/Demo.gd" type="Script" id=1]
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://src/UI/ParallaxBackground.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/UI/MouseCamera2D.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/UI/Elements/DebugPanel.gd" type="Script" id=6]
+[ext_resource path="res://src/UI/ChatBox.tscn" type="PackedScene" id=7]
 
 [node name="Demo" type="Node"]
 script = ExtResource( 1 )
@@ -21,6 +22,7 @@ script = ExtResource( 3 )
 layer = 100
 
 [node name="DebugPanel" type="Panel" parent="CanvasLayer"]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -46,3 +48,7 @@ alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ChatBox" parent="CanvasLayer" instance=ExtResource( 7 )]
+[connection signal="chat_message_received" from="ServerConnection" to="." method="_on_ServerConnection_chat_message_received"]
+[connection signal="text_sent" from="CanvasLayer/ChatBox" to="." method="_on_ChatBox_text_sent"]
