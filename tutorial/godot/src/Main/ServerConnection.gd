@@ -1,6 +1,8 @@
 extends Node
 
 signal chat_message_received(sender_id, text)
+signal user_joined(user)
+signal user_left(user)
 
 # Nakama read permissions
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
@@ -41,6 +43,8 @@ func connect_to_server_async() -> int:
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 		# warning-ignore:return_value_discarded
 		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
+		#warning-ignore: return_value_discarded
+		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
 		return OK
 	return ERR_CANT_CONNECT
 
@@ -145,3 +149,15 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 
 	var content: Dictionary = JSON.parse(message.content).result
 	emit_signal("chat_message_received", message.sender_id, content.msg)
+
+
+func _on_NakamaSocket_received_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
+	for user in new_presences.leaves:
+		#warning-ignore: return_value_discarded
+		_presences.erase(user.user_id)
+		emit_signal("user_left", user)
+
+	for user in new_presences.joins:
+		_presences[user.user_id] = user
+		emit_signal("user_joined", user)
+

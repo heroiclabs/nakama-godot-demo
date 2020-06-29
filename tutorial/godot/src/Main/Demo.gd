@@ -5,6 +5,7 @@ export var user_color := Color.lime
 onready var server_connection := $ServerConnection
 onready var debug_panel := $CanvasLayer/DebugPanel
 onready var chat_box := $CanvasLayer/ChatBox
+onready var notification_list := $CanvasLayer/NotificationList
 
 
 func _ready() -> void:
@@ -66,3 +67,11 @@ func _on_ChatBox_text_sent(text) -> void:
 
 func _on_ServerConnection_chat_message_received(sender_id, text) -> void:
 	chat_box.add_reply(text, "User", user_color)
+
+
+func _on_ServerConnection_user_joined(user) -> void:
+	notification_list.add_notification(user.username, Color.white, false)
+
+
+func _on_ServerConnection_user_left(user) -> void:
+	notification_list.add_notification(user.username, Color.white, true)
