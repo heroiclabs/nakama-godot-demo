@@ -99,8 +99,7 @@ func get_characters_async() -> Array:
 
 	if storage_objects.objects:
 		var decoded: Array = JSON.parse(storage_objects.objects[0].value).result.characters
-		for character in decoded:
-			characters.append({name = character.name, color = character.color})
+		characters = decoded
 	return characters
 
 
