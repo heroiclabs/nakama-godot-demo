@@ -1,8 +1,8 @@
 extends Node
 
-signal chat_message_received(sender_id, text)
-signal user_joined(user)
-signal user_left(user)
+signal chat_message_received(username, text)
+signal user_joined(username)
+signal user_left(username)
 
 # Nakama read permissions
 enum ReadPermissions { NO_READ, OWNER_READ, PUBLIC_READ }
@@ -148,16 +148,16 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 		return
 
 	var content: Dictionary = JSON.parse(message.content).result
-	emit_signal("chat_message_received", message.sender_id, content.msg)
+	emit_signal("chat_message_received", message.username, content.msg)
 
 
 func _on_NakamaSocket_received_match_presence(new_presences: NakamaRTAPI.MatchPresenceEvent) -> void:
 	for user in new_presences.leaves:
 		#warning-ignore: return_value_discarded
 		_presences.erase(user.user_id)
-		emit_signal("user_left", user)
+		emit_signal("user_left", user.username)
 
 	for user in new_presences.joins:
 		_presences[user.user_id] = user
-		emit_signal("user_joined", user)
+		emit_signal("user_joined", user.username)
 

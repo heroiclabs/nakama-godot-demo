@@ -7,10 +7,11 @@ onready var debug_panel := $CanvasLayer/DebugPanel
 onready var chat_box := $CanvasLayer/ChatBox
 onready var notification_list := $CanvasLayer/NotificationList
 
+var email := "hello@test.com"
+var password := "password"
+
 
 func _ready() -> void:
-	var email := "test99@test.com"
-	var password := "password"
 
 	var result: int = yield(request_authentication(email, password), "completed")
 	if result != OK:
@@ -65,13 +66,17 @@ func _on_ChatBox_text_sent(text) -> void:
 	yield(server_connection.send_text_async(text), "completed")
 
 
-func _on_ServerConnection_chat_message_received(sender_id, text) -> void:
-	chat_box.add_reply(text, "User", user_color)
+func _on_ServerConnection_chat_message_received(username, text) -> void:
+	chat_box.add_reply(text, username, user_color)
 
 
-func _on_ServerConnection_user_joined(user) -> void:
-	notification_list.add_notification(user.username, Color.white, false)
+func _on_ServerConnection_user_joined(username) -> void:
+	if email == username:
+		return
+	notification_list.add_notification(username, Color.white, false)
 
 
-func _on_ServerConnection_user_left(user) -> void:
-	notification_list.add_notification(user.username, Color.white, true)
+func _on_ServerConnection_user_left(username) -> void:
+	if email == username:
+		return
+	notification_list.add_notification(username, Color.white, true)

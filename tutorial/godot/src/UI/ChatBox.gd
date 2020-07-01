@@ -57,4 +57,3 @@ func _on_LineEdit_focus_exited() -> void:
 
 func _on_ToggleChatButton_toggled(button_pressed: bool) -> void:
 	visible = button_pressed
-
