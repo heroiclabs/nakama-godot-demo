@@ -54,5 +54,6 @@ margin_top = 0.0
 margin_right = 347.0
 margin_bottom = 80.0
 focus_neighbour_left = NodePath("../..")
+
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
 [connection signal="pressed" from="HBoxContainer/DeleteButton" to="." method="_on_DeleteButton_pressed"]

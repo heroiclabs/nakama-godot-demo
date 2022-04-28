@@ -39,14 +39,22 @@ static func serialize(p_obj : Object) -> Dictionary:
 				var dict = {}
 				if content == TYPE_OBJECT: # Map of objects
 					for l in val:
-						if val_type != TYPE_OBJECT:
+						if typeof(val[l]) != TYPE_OBJECT:
 							continue
-						dict[l] = serialize(val)
+						dict[l] = serialize(val[l])
 				else: # Map of simple types
 					for l in val:
-						if val_type != content:
+						var e = val[l]
+						if content == TYPE_REAL:
+							e = float(e)
+						elif content == TYPE_INT:
+							e = int(e)
+						elif content == TYPE_BOOL:
+							e = bool(e)
+						if typeof(e) != content:
 							continue
-						dict[l] = val
+						dict[l] = e
+				out[k] = dict
 			_:
 				out[k] = val
 	return out
@@ -76,8 +84,9 @@ static func deserialize(p_ns : GDScript, p_cls_name : String, p_dict : Dictionar
 		var val = p_dict.get(k, null)
 
 		# Ints might and up being recognized as floats. Change that if needed
-		if typeof(val) == TYPE_REAL and type_cmp == TYPE_INT:
-			val = int(val)
+		if type_cmp == TYPE_INT:
+			if typeof(val) == TYPE_REAL or (typeof(val) == TYPE_STRING and val.is_valid_integer()):
+				val = int(val)
 
 		if typeof(val) == type_cmp:
 			if typeof(type) == TYPE_STRING:
@@ -87,6 +96,8 @@ static func deserialize(p_ns : GDScript, p_cls_name : String, p_dict : Dictionar
 				for l in val:
 					if typeof(content) == TYPE_STRING:
 						v[l] = deserialize(p_ns, content, val[l])
+					elif content == TYPE_REAL:
+						v[l] = float(val[l])
 					elif content == TYPE_INT:
 						v[l] = int(val[l])
 					elif content == TYPE_BOOL:
@@ -103,6 +114,8 @@ static func deserialize(p_ns : GDScript, p_cls_name : String, p_dict : Dictionar
 				for e in val:
 					if typeof(content) == TYPE_STRING:
 						v.append(deserialize(p_ns, content, e))
+					elif content == TYPE_REAL:
+						v.append(float(e))
 					elif content == TYPE_INT:
 						v.append(int(e))
 					elif content == TYPE_BOOL:

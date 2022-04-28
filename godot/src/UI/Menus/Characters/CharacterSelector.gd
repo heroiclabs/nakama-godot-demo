@@ -36,6 +36,8 @@ func set_is_enabled(value: bool) -> void:
 
 func _on_LoginButton_pressed() -> void:
 	var character_data: Dictionary = character_list.get_selected_character()
+	if character_data.size() == 0:
+		return
 	emit_signal("login_pressed", character_data.name, character_data.color)
 
 

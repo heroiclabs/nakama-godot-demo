@@ -29,6 +29,7 @@ margin_right = -32.0
 margin_bottom = -32.0
 text = "Log out"
 flat = true
+
 [connection signal="character_deletion_requested" from="CharacterSelector" to="." method="_on_CharacterSelector_character_deletion_requested"]
 [connection signal="create_pressed" from="CharacterSelector" to="." method="_on_CharacterSelector_create_pressed"]
 [connection signal="login_pressed" from="CharacterSelector" to="." method="_on_CharacterSelector_login_pressed"]

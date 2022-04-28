@@ -59,6 +59,8 @@ func reset() -> void:
 
 func get_character_data(index: int) -> Dictionary:
 	var listing: CharacterListing = get_child(index)
+	if listing == null:
+		return {}
 	return {name = listing.label.text, color = listing.texture.modulate}
 
 

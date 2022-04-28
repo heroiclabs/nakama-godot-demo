@@ -53,6 +53,7 @@ __meta__ = {
 [node name="ChatBox" parent="CanvasLayer" instance=ExtResource( 7 )]
 
 [node name="NotificationList" parent="CanvasLayer" instance=ExtResource( 8 )]
+
 [connection signal="chat_message_received" from="ServerConnection" to="." method="_on_ServerConnection_chat_message_received"]
 [connection signal="user_joined" from="ServerConnection" to="." method="_on_ServerConnection_user_joined"]
 [connection signal="user_left" from="ServerConnection" to="." method="_on_ServerConnection_user_left"]
