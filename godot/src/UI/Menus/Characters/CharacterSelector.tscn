@@ -17,9 +17,6 @@ margin_right = 256.0
 margin_bottom = 204.0
 theme = ExtResource( 2 )
 script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 margin_right = 512.0
@@ -72,7 +69,6 @@ size_flags_horizontal = 4
 text = "Create new"
 
 [node name="ConfirmationPopup" parent="." instance=ExtResource( 5 )]
-visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -81,6 +77,7 @@ margin_left = 63.0
 margin_top = 103.0
 margin_right = 447.0
 margin_bottom = 303.0
+
 [connection signal="character_selected" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_character_selected"]
 [connection signal="requested_deletion" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_requested_deletion"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]

@@ -127,6 +127,8 @@ func connect_to_server_async() -> int:
 		#warning-ignore: return_value_discarded
 		_socket.connect("closed", self, "_on_NakamaSocket_closed")
 		#warning-ignore: return_value_discarded
+		_socket.connect("connection_error", self, "_on_NakamaSocket_connection_error")
+		#warning-ignore: return_value_discarded
 		_socket.connect("received_error", self, "_on_NakamaSocket_received_error")
 		#warning-ignore: return_value_discarded
 		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
@@ -349,9 +351,15 @@ func _on_NakamaSocket_closed() -> void:
 	_socket = null
 
 
+# Called when the socket was unable to connect.
+func _on_NakamaSocket_connection_error(error: int) -> void:
+	error_message = "Unable to connect with code %s" % error
+	_socket = null
+
+
 # Called when the socket reported an error.
-func _on_NakamaSocket_received_error(error: String) -> void:
-	error_message = error
+func _on_NakamaSocket_received_error(error: NakamaRTAPI.Error) -> void:
+	error_message = str(error)
 	_socket = null
 
 

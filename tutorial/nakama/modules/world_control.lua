@@ -37,6 +37,10 @@ function world_control.match_terminate(context, dispatcher, tick, state, grace_s
     return state
 end
 
+function world_control.match_signal(context, dispatcher, tick, state, data)
+	return state, data
+end
+
 function world_control.match_join_attempt(context, dispatcher, tick, state, presence, metadata)
     if state.presences ~= nil and state.presences[presence.user_id] ~= nil then
         return state, false, "User already logged in."

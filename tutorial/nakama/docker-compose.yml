@@ -1,9 +1,8 @@
 version: '3'
 services:
   cockroachdb:
-    container_name: cockroachdb
-    image: cockroachdb/cockroach:v19.2.5
-    command: start --insecure --store=attrs=ssd,path=/var/lib/cockroach/
+    image: cockroachdb/cockroach:latest-v20.2
+    command: start-single-node --insecure --store=attrs=ssd,path=/var/lib/cockroach/
     restart: "no"
     volumes:
       - data:/var/lib/cockroach
@@ -14,25 +13,26 @@ services:
       - "26257:26257"
       - "8080:8080"
   nakama:
-    container_name: nakama
-    image: heroiclabs/nakama:2.11.1
+    image: heroiclabs/nakama:3.10.0
     entrypoint:
       - "/bin/sh"
       - "-ecx"
       - >
-          /nakama/nakama migrate up --database.address root@cockroachdb:26257 &&
-          exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --socket.server_key "nakama_godot_demo"
+        /nakama/nakama migrate up --database.address root@cockroachdb:26257 &&
+        exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --socket.server_key "nakama_godot_demo" --session.token_expiry_sec 7200 --metrics.prometheus_port 9100
     restart: "no"
     links:
       - "cockroachdb:db"
     depends_on:
       - cockroachdb
+      - prometheus
     volumes:
       - ./:/nakama/data
     expose:
       - "7349"
       - "7350"
       - "7351"
+      - "9100"
     ports:
       - "7349:7349"
       - "7350:7350"
@@ -42,6 +42,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    tty: true
+  prometheus:
+    image: prom/prometheus
+    entrypoint: /bin/sh -c
+    command: |
+      'sh -s <<EOF
+        cat > ./prometheus.yml <<EON
+      global:
+        scrape_interval:     15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: prometheus
+          static_configs:
+          - targets: ['localhost:9090']
+        - job_name: nakama
+          metrics_path: /
+          static_configs:
+          - targets: ['nakama:9100']
+      EON
+      prometheus --config.file=./prometheus.yml
+      EOF'
+    ports:
+      - '9090:9090'
 volumes:
   data:
+
