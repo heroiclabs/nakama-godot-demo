@@ -25,7 +25,7 @@ func authenticate_user_async(email: String, password: String, do_remember_email 
 		if _server_request_attempts == MAX_REQUEST_ATTEMPTS:
 			break
 		_server_request_attempts += 1
-		result = await ServerConnection.login_async(email, password).completed
+		result = await ServerConnection.login_async(email, password)
 
 	if result == OK:
 		if do_remember_email:
@@ -42,12 +42,10 @@ func authenticate_user_async(email: String, password: String, do_remember_email 
 # Asks the server to create a new character asynchronously.
 # Returns a dictionary with the player's name and color if it worked.
 # Otherwise, returns an empty dictionary.
-func create_character_async(name: String, color: Color) -> void:
+func create_character_async(name: String, color: Color) -> Dictionary:
 	character_menu.is_enabled = false
 
-	var result: int = yield(
-		ServerConnection.create_player_character_async(color, name), "completed"
-	)
+	var result: int = await ServerConnection.create_player_character_async(color, name)
 
 	var data := {}
 	if result == OK:
@@ -64,7 +62,7 @@ func create_character_async(name: String, color: Color) -> void:
 # Asks the server to delete a character asynchronously.
 func delete_character_async(index: int) -> void:
 	character_menu.is_enabled = false
-	var result: int = await ServerConnection.delete_player_character_async(index).completed
+	var result: int = await ServerConnection.delete_player_character_async(index)
 
 	if result == OK:
 		character_menu.delete_character(index)
@@ -75,9 +73,9 @@ func delete_character_async(index: int) -> void:
 func join_game_world_async(player_name: String, player_color: Color) -> int:
 	character_menu.is_enabled = false
 
-	var result: int = await ServerConnection.connect_to_server_async().completed
+	var result: int = await ServerConnection.connect_to_server_async()
 	if result == OK:
-		result = await ServerConnection.join_world_async().completed
+		result = await ServerConnection.join_world_async()
 	if result == OK:
 		# warning-ignore:return_value_discarded
 		get_tree().change_scene_to_packed(load("res://src/Main/GameWorld.tscn"))
@@ -88,10 +86,8 @@ func join_game_world_async(player_name: String, player_color: Color) -> int:
 
 
 func open_character_menu_async() -> void:
-	var characters: Array = await ServerConnection.get_player_characters_async().completed
-	var last_played_character: Dictionary = yield(
-		ServerConnection.get_last_player_character_async(), "completed"
-	)
+	var characters: Array = await ServerConnection.get_player_characters_async()
+	var last_played_character: Dictionary = await ServerConnection.get_last_player_character_async()
 	character_menu.setup(characters, last_played_character)
 	login_and_register.hide()
 	character_menu.show()
@@ -103,7 +99,7 @@ func _on_LoginAndRegister_login_pressed(email: String, password: String, do_reme
 	login_and_register.status = "Authenticating..."
 	login_and_register.is_enabled = false
 
-	await authenticate_user_async(email, password, do_remember_email).completed
+	await authenticate_user_async(email, password, do_remember_email)
 
 	login_and_register.is_enabled = true
 
@@ -114,9 +110,9 @@ func _on_LoginAndRegister_register_pressed(email: String, password: String, do_r
 	login_and_register.status = "Authenticating..."
 	login_and_register.is_enabled = false
 
-	var result: int = await ServerConnection.register_async(email, password).completed
+	var result: int = await ServerConnection.register_async(email, password)
 	if result == OK:
-		await authenticate_user_async(email, password, do_remember_email).completed
+		await authenticate_user_async(email, password, do_remember_email)
 	else:
 		login_and_register.status = "Error code %s: %s" % [result, ServerConnection.error_message]
 
@@ -128,13 +124,12 @@ func _on_CharacterMenu_character_deletion_requested(index: int) -> void:
 
 
 func _on_CharacterMenu_new_character_requested(name: String, color: Color) -> void:
-	await create_character_async(name, color).completed
-	await join_game_world_async(name, color).completed
+	await create_character_async(name, color)
+	await join_game_world_async(name, color)
 
 
 func _on_CharacterMenu_character_selected(name: String, color: Color) -> void:
-	await join_game_world_async(name, color).completed
-
+	await join_game_world_async(name, color)
 
 func _on_CharacterMenu_go_back_requested() -> void:
 	login_and_register.reset()

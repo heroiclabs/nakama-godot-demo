@@ -16,7 +16,7 @@ func _ready() -> void:
 
 func setup(characters: Array, last_played_character: Dictionary) -> void:
 	character_selector.setup(characters, last_played_character)
-	if not characters:
+	if characters.is_empty():
 		self.menu_current = character_creator
 
 

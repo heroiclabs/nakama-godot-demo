@@ -1,58 +1,41 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://cx0g7hq6asu2t"]
 
-[ext_resource path="res://src/UI/Elements/DeleteButton.tscn" type="PackedScene" id=1]
-[ext_resource path="res://assets/world/character.svg" type="Texture2D" id=4]
-[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=5]
-[ext_resource path="res://src/UI/Menus/Characters/CharacterListing.gd" type="Script" id=6]
-[ext_resource path="res://assets/theme/stylebox/button_disabled.tres" type="StyleBox" id=7]
+[ext_resource type="PackedScene" path="res://src/UI/Elements/DeleteButton.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://nwui7rg4ymv7" path="res://assets/world/character.svg" id="4"]
+[ext_resource type="Theme" path="res://assets/theme/gdquest.theme" id="5"]
+[ext_resource type="Script" path="res://src/UI/Menus/Characters/CharacterListing.gd" id="6"]
+[ext_resource type="StyleBox" path="res://assets/theme/stylebox/button_disabled.tres" id="7"]
 
 [node name="CharacterListing" type="Button"]
+custom_minimum_size = Vector2(480, 80)
 offset_right = 120.0
 offset_bottom = 80.0
-custom_minimum_size = Vector2( 480, 80 )
+size_flags_horizontal = 4
 focus_neighbor_right = NodePath("HBoxContainer/DeleteButton")
 mouse_filter = 1
-size_flags_horizontal = 4
-theme = ExtResource( 5 )
-theme_override_styles/normal = ExtResource( 7 )
-script = ExtResource( 6 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme = ExtResource("5")
+theme_override_styles/normal = ExtResource("7")
+script = ExtResource("6")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
-offset_left = 132.0
-offset_right = 192.0
-offset_bottom = 80.0
-custom_minimum_size = Vector2( 60, 60 )
-texture = ExtResource( 4 )
-expand = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+texture = ExtResource("4")
+expand_mode = 1
 stretch_mode = 6
 
 [node name="Label" type="Label" parent="HBoxContainer"]
-offset_left = 208.0
-offset_top = 24.0
-offset_right = 281.0
-offset_bottom = 55.0
+layout_mode = 2
 text = "Name"
 
-[node name="DeleteButton" parent="HBoxContainer" instance=ExtResource( 1 )]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 297.0
-offset_top = 0.0
-offset_right = 347.0
-offset_bottom = 80.0
+[node name="DeleteButton" parent="HBoxContainer" instance=ExtResource("1")]
+layout_mode = 2
 focus_neighbor_left = NodePath("../..")
 
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]

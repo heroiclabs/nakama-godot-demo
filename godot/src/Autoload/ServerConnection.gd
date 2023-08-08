@@ -93,7 +93,7 @@ func _enter_tree() -> void:
 # creates a new account when it did not previously exist, then initializes _session.
 # Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func register_async(email: String, password: String) -> int:
-	var result: int = await _authenticator.register_async(email, password).completed
+	var result: int = await _authenticator.register_async(email, password)
 	if result == OK:
 		_storage_worker = StorageWorker.new(_authenticator.session, _client, _exception_handler)
 	return result
@@ -105,7 +105,7 @@ func register_async(email: String, password: String) -> int:
 # recover it without needing the authentication server. 
 # Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func login_async(email: String, password: String) -> int:
-	var result: int = await _authenticator.login_async(email, password).completed
+	var result: int = await _authenticator.login_async(email, password)
 	if result == OK:
 		_storage_worker = StorageWorker.new(_authenticator.session, _client, _exception_handler)
 	return result
@@ -116,9 +116,7 @@ func login_async(email: String, password: String) -> int:
 func connect_to_server_async() -> int:
 	_socket = Nakama.create_socket_from(_client)
 
-	var result: NakamaAsyncResult = yield(
-		_socket.connect_async(_authenticator.session), "completed"
-	)
+	var result: NakamaAsyncResult = await _socket.connect_async(_authenticator.session)
 	var parsed_result := _exception_handler.parse_exception(result)
 
 	if parsed_result == OK:
@@ -143,10 +141,10 @@ func connect_to_server_async() -> int:
 # Asynchronous coroutine. Leaves chat and disconnects from the live server.
 # Returns OK or a nakama error number and puts the error message in `ServerConnection.error_message`
 func disconnect_from_server_async() -> int:
-	var result: NakamaAsyncResult = await _socket.leave_chat_async(_channel_id).completed
+	var result: NakamaAsyncResult = await _socket.leave_chat_async(_channel_id)
 	var parsed_result := _exception_handler.parse_exception(result)
 	if parsed_result == OK:
-		result = await _socket.leave_match_async(_world_id).completed
+		result = await _socket.leave_match_async(_world_id)
 		parsed_result = _exception_handler.parse_exception(result)
 		if parsed_result == OK:
 			_reset_data()
@@ -187,10 +185,8 @@ func join_world_async() -> int:
 		return ERR_UNAVAILABLE
 
 	# Get match ID from server using a remote procedure
-	if not _world_id:
-		var world: NakamaAPI.ApiRpc = yield(
-			_client.rpc_async(_authenticator.session, "get_world_id", ""), "completed"
-		)
+	if _world_id == null:
+		var world: NakamaAPI.ApiRpc = await _client.rpc_async(_authenticator.session, "get_world_id", "")
 
 		var parsed_result := _exception_handler.parse_exception(world)
 		if parsed_result != OK:
@@ -199,9 +195,7 @@ func join_world_async() -> int:
 		_world_id = world.payload
 
 	# Join world
-	var match_join_result: NakamaRTAPI.Match = yield(
-		_socket.join_match_async(_world_id), "completed"
-	)
+	var match_join_result: NakamaRTAPI.Match = await _socket.join_match_async(_world_id)
 	var parsed_result := _exception_handler.parse_exception(match_join_result)
 
 	if parsed_result == OK:
@@ -209,10 +203,7 @@ func join_world_async() -> int:
 			presences[presence.user_id] = presence
 
 		# Join chat
-		var chat_join_result: NakamaRTAPI.Channel = yield(
-			_socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false),
-			"completed"
-		)
+		var chat_join_result: NakamaRTAPI.Channel = await _socket.join_chat_async("world", NakamaSocket.ChannelType.Room, false, false)
 		parsed_result = _exception_handler.parse_exception(chat_join_result)
 
 		_channel_id = chat_join_result.id
@@ -225,7 +216,7 @@ func join_world_async() -> int:
 # Returns an Array of {name: String, color: Color} dictionaries.
 # Returns an empty array if there is a failure or if no characters are found.
 func get_player_characters_async() -> Array:
-	var characters: Array = await _storage_worker.get_player_characters_async().completed
+	var characters: Array = await _storage_worker.get_player_characters_async()
 	return characters
 
 
@@ -235,14 +226,14 @@ func get_player_characters_async() -> Array:
 # Returns OK when successful, a nakama error code, or ERR_UNAVAILABLE if the name
 # is already taken.
 func create_player_character_async(color: Color, name: String) -> int:
-	var result: int = await _storage_worker.create_player_character_async(color, name).completed
+	var result: int = await _storage_worker.create_player_character_async(color, name)
 	return result
 
 
 # Update the character's color in storage with the repalcement color.
 # Returns OK, or a nakama error code.
 func update_player_character_async(color: Color, name: String) -> int:
-	var result: int = await _storage_worker.update_player_character_async(color, name).completed
+	var result: int = await _storage_worker.update_player_character_async(color, name)
 	return result
 
 
@@ -250,7 +241,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 # player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR 
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
-	var result: int = await _storage_worker.delete_player_character_async(idx).completed
+	var result: int = await _storage_worker.delete_player_character_async(idx)
 	return result
 
 
@@ -258,18 +249,14 @@ func delete_player_character_async(idx: int) -> int:
 # Returns a {name: String, color: Color} dictionary, or an empty dictionary if no
 # character is found, or something goes wrong.
 func get_last_player_character_async() -> Dictionary:
-	var character: Dictionary = yield(
-		_storage_worker.get_last_player_character_async(), "completed"
-	)
+	var character: Dictionary = await _storage_worker.get_last_player_character_async()
 	return character
 
 
 # Asynchronous coroutine. Put the last logged in character into player storage on the server.
 # Returns OK, or a nakama error code.
 func store_last_player_character_async(name: String, color: Color) -> int:
-	var result: int = yield(
-		_storage_worker.store_last_player_character_async(name, color), "completed"
-	)
+	var result: int = await _storage_worker.store_last_player_character_async(name, color)
 	return result
 
 
@@ -316,9 +303,7 @@ func send_text_async(text: String) -> int:
 
 	var data := {"msg": text}
 
-	var message_response: NakamaRTAPI.ChannelMessageAck = yield(
-		_socket.write_chat_message_async(_channel_id, data), "completed"
-	)
+	var message_response: NakamaRTAPI.ChannelMessageAck = await _socket.write_chat_message_async(_channel_id, data)
 
 	var parsed_result := _exception_handler.parse_exception(message_response)
 	if parsed_result != OK:
@@ -384,7 +369,8 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 	match code:
 		OpCodes.UPDATE_STATE:
 			var test_json_conv = JSON.new()
-			test_json_conv.parse(raw).result
+			var error = test_json_conv.parse(raw)
+			assert(error==OK, test_json_conv.get_error_message())
 			var decoded: Dictionary = test_json_conv.get_data()
 
 			var positions: Dictionary = decoded.pos
@@ -394,7 +380,8 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 
 		OpCodes.UPDATE_COLOR:
 			var test_json_conv = JSON.new()
-			test_json_conv.parse(raw).result
+			var error = test_json_conv.parse(raw)
+			assert(error==OK, test_json_conv.get_error_message())
 			var decoded: Dictionary = test_json_conv.get_data()
 
 			var id: String = decoded.id
@@ -404,7 +391,8 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 
 		OpCodes.INITIAL_STATE:
 			var test_json_conv = JSON.new()
-			test_json_conv.parse(raw).result
+			var error = test_json_conv.parse(raw)
+			assert(error==OK, test_json_conv.get_error_message())
 			var decoded: Dictionary = test_json_conv.get_data()
 
 			var positions: Dictionary = decoded.pos
@@ -419,7 +407,8 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 
 		OpCodes.DO_SPAWN:
 			var test_json_conv = JSON.new()
-			test_json_conv.parse(raw).result
+			var error = test_json_conv.parse(raw)
+			assert(error==OK, test_json_conv.get_error_message())
 			var decoded: Dictionary = test_json_conv.get_data()
 
 			var id: String = decoded.id
@@ -435,7 +424,8 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 		return
 
 	var test_json_conv = JSON.new()
-	test_json_conv.parse(message.content).result
+	var error = test_json_conv.parse(message.content)
+	assert(error==OK, test_json_conv.get_error_message())
 	var content: Dictionary = test_json_conv.get_data()
 	emit_signal("chat_message_received", message.sender_id, content.msg)
 

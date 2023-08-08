@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/Main/MainMenu.gd" id="1"]
 [ext_resource type="PackedScene" path="res://src/UI/Menus/Characters/CharacterMenu.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://src/UI/LoginAndRegister.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://ci66d21lv88pr" path="res://src/UI/LoginAndRegister.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://src/UI/ParallaxBackground.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://src/UI/Elements/MouseCamera2D.tscn" id="5"]
 
@@ -17,10 +17,17 @@ script = ExtResource("1")
 layer = 100
 
 [node name="LoginAndRegister" parent="CanvasLayer" instance=ExtResource("3")]
-layout_mode = 3
-anchors_preset = 15
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+size_flags_horizontal = 6
+size_flags_vertical = 6
 
 [node name="CharacterMenu" parent="CanvasLayer" instance=ExtResource("2")]
 visible = false
 layout_mode = 3
 anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
