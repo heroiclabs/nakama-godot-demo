@@ -4,28 +4,28 @@ extends Menu
 signal register_pressed
 signal login_pressed(email, password, do_remember_email)
 
-onready var remember_email := $RememberEmail
+@onready var remember_email := $RememberEmail
 
-onready var email_field := $Email/LineEditValidate
-onready var password_field := $Password/LineEditValidate
-onready var login_button := $HBoxContainer/LoginButton
-onready var register_button := $HBoxContainer/RegisterButton
+@onready var email_field := $Email/LineEditValidate
+@onready var password_field := $Password/LineEditValidate
+@onready var login_button := $HBoxContainer/LoginButton
+@onready var register_button := $HBoxContainer/RegisterButton
 
-onready var status_panel := $StatusPanel
+@onready var status_panel := $StatusPanel
 
 
 func _ready() -> void:
 	email_field.text = ServerConnection.get_last_email()
-	if not email_field.text.empty():
-		remember_email.pressed = true
+	if not email_field.text.is_empty():
+		remember_email.button_pressed = true
 
 	email_field.grab_focus()
 
 
 func set_is_enabled(value: bool) -> void:
-	.set_is_enabled(value)
+	super.set_is_enabled(value)
 	if not email_field:
-		yield(self, "ready")
+		await self.ready
 	email_field.editable = is_enabled
 	password_field.editable = is_enabled
 	remember_email.disabled = not is_enabled
@@ -34,12 +34,12 @@ func set_is_enabled(value: bool) -> void:
 
 
 func set_status(text: String) -> void:
-	.set_status(text)
+	super.set_status(text)
 	status_panel.text = text
 
 
 func reset() -> void:
-	.reset()
+	super.reset()
 	self.status = ""
 	password_field.text = ""
 	if not remember_email.pressed:

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace Nakama {
     /// <remarks>
     /// Note Content-Type header is always set as 'application/json'.
     /// </remarks>
-    public class GodotHttpAdapter : Node, IHttpAdapter {
+    public partial class GodotHttpAdapter : Node, IHttpAdapter {
 
         /// <inheritdoc cref="IHttpAdapter.Logger"/>
         public ILogger Logger { get; set; }
@@ -69,17 +68,17 @@ namespace Nakama {
                 index++;
             }
 
-            string body_string = System.Text.Encoding.UTF8.GetString(body);
+            string body_string = body != null ? System.Text.Encoding.UTF8.GetString(body) : "";
 
             AddChild(req);
             req.Request(uri.ToString(), headers_array, true, godot_method, body_string);
 
             Logger?.InfoFormat("Send: method='{0}', uri='{1}', body='{2}'", method, uri, body_string);
 
-            object[] resultObjects = await ToSignal(req, "request_completed");
+            Variant[] resultObjects = await ToSignal(req, "request_completed");
 
-            HTTPRequest.Result result = (HTTPRequest.Result)resultObjects[0];
-            int response_code = (int)resultObjects[1];
+            HTTPRequest.Result result = (HTTPRequest.Result)(long)resultObjects[0];
+            long response_code = (long)resultObjects[1];
             string response_body = System.Text.Encoding.UTF8.GetString((byte[])resultObjects[3]);
 
             req.QueueFree();

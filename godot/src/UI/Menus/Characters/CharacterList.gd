@@ -23,15 +23,15 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 
 # Creates a new `CharacterListing` that represents a character in the interface.
 func add_character(name: String, color: Color) -> Node:
-	var listing := CharacterListing.instance()
+	var listing := CharacterListing.instantiate()
 	add_child(listing)
 	listing.setup(name, color)
 	#warning-ignore: return_value_discarded
-	listing.connect("requested_deletion", self, "_on_CharacterListing_requested_deletion")
+	listing.connect("requested_deletion", Callable(self, "_on_CharacterListing_requested_deletion"))
 	#warning-ignore: return_value_discarded
-	listing.connect("character_selected", self, "_on_CharacterListing_character_selected")
+	listing.connect("character_selected", Callable(self, "_on_CharacterListing_character_selected"))
 	# warning-ignore:return_value_discarded
-	listing.connect("character_accepted", self, "_on_CharacterListing_character_accepted")
+	listing.connect("character_accepted", Callable(self, "_on_CharacterListing_character_accepted"))
 	return listing
 
 
@@ -45,9 +45,9 @@ func delete_character(index: int) -> void:
 
 
 func set_is_enabled(value: bool) -> void:
-	.set_is_enabled(value)
+	super.set_is_enabled(value)
 	if get_child_count() == 0:
-		yield(self, "ready")
+		await self.ready
 	for character_listing in get_children():
 		character_listing.is_enabled = is_enabled
 

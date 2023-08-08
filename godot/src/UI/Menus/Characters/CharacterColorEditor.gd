@@ -3,9 +3,9 @@ extends Control
 
 signal color_changed(color)
 
-onready var texture_preview := $CenterContainer/VBoxContainer/TextureRect
+@onready var texture_preview := $CenterContainer/VBoxContainer/TextureRect
 
-var color := Color.white setget set_color
+var color := Color.WHITE: set = set_color
 
 
 func set_color(value: Color) -> void:

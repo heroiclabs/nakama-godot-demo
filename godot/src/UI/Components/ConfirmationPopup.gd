@@ -1,14 +1,14 @@
+@tool
 # Confirmation popup with yes and no buttons
-tool
 class_name ConfirmationPopup
 extends Menu
 
 signal option_picked(is_confirmed)
 
-export var text := "Label" setget set_text
+@export var text := "Label": set = set_text
 
-onready var label: Label = $Label
-onready var yes_button: Button = $YesButton
+@onready var label: Label = $Label
+@onready var yes_button: Button = $YesButton
 
 
 func _ready() -> void:
@@ -18,12 +18,12 @@ func _ready() -> void:
 func set_text(value: String) -> void:
 	text = value
 	if not label:
-		yield(self, "ready")
+		await self.ready
 	label.text = text
 
 
 func open() -> void:
-	.open()
+	super.open()
 	yes_button.grab_focus()
 
 

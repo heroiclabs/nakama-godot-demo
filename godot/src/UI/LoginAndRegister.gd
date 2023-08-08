@@ -5,10 +5,10 @@ extends MenuList
 signal login_pressed(email, password, do_remember_email)
 signal register_pressed(email, password, do_remember_email)
 
-onready var login_form := $LoginForm
-onready var register_form := $RegisterForm
+@onready var login_form := $LoginForm
+@onready var register_form := $RegisterForm
 
-var status := "" setget set_status
+var status := "": set = set_status
 
 
 func _ready() -> void:

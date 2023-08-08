@@ -7,6 +7,6 @@ const Notification := preload("res://src/UI/Elements/Notification.tscn")
 func add_notification(username: String, color: Color, disconnected := false) -> void:
 	if not Notification:
 		return
-	var notification := Notification.instance()
+	var notification := Notification.instantiate()
 	add_child(notification)
 	notification.setup(username, color, disconnected)

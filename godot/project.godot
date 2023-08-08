@@ -6,161 +6,7 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Reference",
-"class": "Authenticator",
-"language": "GDScript",
-"path": "res://src/Autoload/Delegates/Authenticator.gd"
-}, {
-"base": "KinematicBody2D",
-"class": "Character",
-"language": "GDScript",
-"path": "res://src/World/Characters/Character.gd"
-}, {
-"base": "Button",
-"class": "CharacterListing",
-"language": "GDScript",
-"path": "res://src/UI/Menus/Characters/CharacterListing.gd"
-}, {
-"base": "Button",
-"class": "ColorSwatch",
-"language": "GDScript",
-"path": "res://src/UI/Elements/ColorSwatch.gd"
-}, {
-"base": "Menu",
-"class": "ConfirmationPopup",
-"language": "GDScript",
-"path": "res://src/UI/Components/ConfirmationPopup.gd"
-}, {
-"base": "Reference",
-"class": "ExceptionHandler",
-"language": "GDScript",
-"path": "res://src/Autoload/Delegates/ExceptionHandler.gd"
-}, {
-"base": "LineEdit",
-"class": "LineEditValidate",
-"language": "GDScript",
-"path": "res://src/UI/Elements/LineEditValidate.gd"
-}, {
-"base": "Control",
-"class": "Menu",
-"language": "GDScript",
-"path": "res://src/UI/Elements/Menu.gd"
-}, {
-"base": "Control",
-"class": "MenuList",
-"language": "GDScript",
-"path": "res://src/UI/Elements/MenuList.gd"
-}, {
-"base": "Reference",
-"class": "NakamaAPI",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaAPI.gd"
-}, {
-"base": "Reference",
-"class": "NakamaAsyncResult",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/utils/NakamaAsyncResult.gd"
-}, {
-"base": "Reference",
-"class": "NakamaClient",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/client/NakamaClient.gd"
-}, {
-"base": "Reference",
-"class": "NakamaException",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/utils/NakamaException.gd"
-}, {
-"base": "Node",
-"class": "NakamaHTTPAdapter",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/client/NakamaHTTPAdapter.gd"
-}, {
-"base": "Reference",
-"class": "NakamaLogger",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/utils/NakamaLogger.gd"
-}, {
-"base": "NakamaAsyncResult",
-"class": "NakamaRTAPI",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaRTAPI.gd"
-}, {
-"base": "Reference",
-"class": "NakamaRTMessage",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaRTMessage.gd"
-}, {
-"base": "Reference",
-"class": "NakamaSerializer",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/utils/NakamaSerializer.gd"
-}, {
-"base": "NakamaAsyncResult",
-"class": "NakamaSession",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaSession.gd"
-}, {
-"base": "Reference",
-"class": "NakamaSocket",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/socket/NakamaSocket.gd"
-}, {
-"base": "Node",
-"class": "NakamaSocketAdapter",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/socket/NakamaSocketAdapter.gd"
-}, {
-"base": "Reference",
-"class": "NakamaStorageObjectId",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaStorageObjectId.gd"
-}, {
-"base": "Reference",
-"class": "NakamaWriteStorageObject",
-"language": "GDScript",
-"path": "res://addons/com.heroiclabs.nakama/api/NakamaWriteStorageObject.gd"
-}, {
-"base": "Character",
-"class": "Player",
-"language": "GDScript",
-"path": "res://src/World/Characters/Player.gd"
-}, {
-"base": "Reference",
-"class": "StorageWorker",
-"language": "GDScript",
-"path": "res://src/Autoload/Delegates/StorageWorker.gd"
-} ]
-_global_script_class_icons={
-"Authenticator": "",
-"Character": "",
-"CharacterListing": "",
-"ColorSwatch": "",
-"ConfirmationPopup": "",
-"ExceptionHandler": "",
-"LineEditValidate": "",
-"Menu": "",
-"MenuList": "",
-"NakamaAPI": "",
-"NakamaAsyncResult": "",
-"NakamaClient": "",
-"NakamaException": "",
-"NakamaHTTPAdapter": "",
-"NakamaLogger": "",
-"NakamaRTAPI": "",
-"NakamaRTMessage": "",
-"NakamaSerializer": "",
-"NakamaSession": "",
-"NakamaSocket": "",
-"NakamaSocketAdapter": "",
-"NakamaStorageObjectId": "",
-"NakamaWriteStorageObject": "",
-"Player": "",
-"StorageWorker": ""
-}
+config_version=5
 
 [application]
 
@@ -177,6 +23,7 @@ It showcases the following Nakama features:
 6. Character color customization.
 7. Platforming mechanics and synchronizing players. Multiple players can interact together."
 run/main_scene="res://src/Main/MainMenu.tscn"
+config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
 [autoload]
@@ -187,10 +34,10 @@ GameControls="*res://src/Autoload/GameControls.gd"
 
 [display]
 
-window/size/width=1920
-window/size/height=1080
-window/size/test_width=1280
-window/size/test_height=720
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
 
@@ -198,23 +45,23 @@ window/stretch/aspect="expand"
 
 move_right={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":68,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 move_left={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":65,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 jump={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":87,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 toggle_fullscreen={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777254,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 
 [layer_names]
@@ -224,4 +71,4 @@ toggle_fullscreen={
 
 [rendering]
 
-environment/default_environment="res://default_env.tres"
+environment/defaults/default_environment="res://default_env.tres"

@@ -11,25 +11,25 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -256.0
-margin_top = -204.0
-margin_right = 256.0
-margin_bottom = 204.0
+offset_left = -256.0
+offset_top = -204.0
+offset_right = 256.0
+offset_bottom = 204.0
 theme = ExtResource( 2 )
 script = ExtResource( 3 )
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 512.0
-margin_bottom = 408.0
+offset_right = 512.0
+offset_bottom = 408.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 24.0
-margin_top = 24.0
-margin_right = 488.0
-margin_bottom = 384.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 488.0
+offset_bottom = 384.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/separation = 20
+theme_override_constants/separation = 20
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -40,31 +40,31 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 0.0
-margin_top = 0.0
-margin_right = 464.0
-margin_bottom = 280.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 464.0
+offset_bottom = 280.0
 alignment = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 300.0
-margin_right = 464.0
-margin_bottom = 360.0
+offset_top = 300.0
+offset_right = 464.0
+offset_bottom = 360.0
 alignment = 1
 
 [node name="LoginButton" parent="MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 1 )]
-margin_left = 24.0
-margin_right = 224.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 200, 60 )
+offset_left = 24.0
+offset_right = 224.0
+offset_bottom = 60.0
+custom_minimum_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Login"
 
 [node name="CreateButton" parent="MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 1 )]
-margin_left = 240.0
-margin_right = 440.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 200, 60 )
+offset_left = 240.0
+offset_right = 440.0
+offset_bottom = 60.0
+custom_minimum_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Create new"
 
@@ -73,10 +73,10 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 63.0
-margin_top = 103.0
-margin_right = 447.0
-margin_bottom = 303.0
+offset_left = 63.0
+offset_top = 103.0
+offset_right = 447.0
+offset_bottom = 303.0
 
 [connection signal="character_selected" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_character_selected"]
 [connection signal="requested_deletion" from="MarginContainer/VBoxContainer/CharacterList" to="." method="_on_CharacterList_requested_deletion"]

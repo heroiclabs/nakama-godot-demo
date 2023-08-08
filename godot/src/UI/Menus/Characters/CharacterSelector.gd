@@ -10,11 +10,11 @@ const MAX_CHARACTERS := 4
 
 var last_index := -1
 
-onready var character_list := $MarginContainer/VBoxContainer/CharacterList
-onready var login_button := $MarginContainer/VBoxContainer/HBoxContainer/LoginButton
-onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/CreateButton
+@onready var character_list := $MarginContainer/VBoxContainer/CharacterList
+@onready var login_button := $MarginContainer/VBoxContainer/HBoxContainer/LoginButton
+@onready var create_button := $MarginContainer/VBoxContainer/HBoxContainer/CreateButton
 
-onready var confirmation_popup := $ConfirmationPopup
+@onready var confirmation_popup := $ConfirmationPopup
 
 
 # Initializes the control, fetches the characters from a successfully logged
@@ -28,7 +28,7 @@ func setup(characters: Array, last_played_character: Dictionary) -> void:
 
 
 func set_is_enabled(value: bool) -> void:
-	.set_is_enabled(value)
+	super.set_is_enabled(value)
 	login_button.disabled = not is_enabled
 	create_button.disabled = not is_enabled
 	character_list.is_enabled = is_enabled
@@ -49,7 +49,7 @@ func _on_CharacterList_requested_deletion(character_index) -> void:
 	self.is_enabled = false
 
 	confirmation_popup.open()
-	var is_confirmed: bool = yield(confirmation_popup, "option_picked")
+	var is_confirmed: bool = await confirmation_popup.option_picked
 	if is_confirmed:
 		emit_signal("character_deletion_requested", character_index)
 

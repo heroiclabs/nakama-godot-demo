@@ -1,5 +1,5 @@
 class_name ExceptionHandler
-extends Reference
+extends RefCounted
 
 var error_message: String
 

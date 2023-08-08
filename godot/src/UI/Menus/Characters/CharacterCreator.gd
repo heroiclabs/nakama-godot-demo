@@ -4,21 +4,21 @@ extends Menu
 
 signal new_character_requested(name, color)
 
-onready var create_button := $VBoxContainer/CreateButton
-onready var name_field := $VBoxContainer/HBoxContainer/LineEdit
-onready var color_selector := $VBoxContainer/Color/ColorSelector
+@onready var create_button := $VBoxContainer/CreateButton
+@onready var name_field := $VBoxContainer/HBoxContainer/LineEdit
+@onready var color_selector := $VBoxContainer/Color/ColorSelector
 
 
 func set_is_enabled(value: bool) -> void:
-	.set_is_enabled(value)
+	super.set_is_enabled(value)
 	if not create_button:
-		yield(self, "ready")
+		await self.ready
 	create_button.disabled = not value
 	name_field.editable = value
 
 
 func open() -> void:
-	.open()
+	super.open()
 	color_selector.focus_first_swatch()
 
 

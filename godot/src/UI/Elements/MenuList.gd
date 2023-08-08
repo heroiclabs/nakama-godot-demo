@@ -5,9 +5,9 @@
 class_name MenuList
 extends Control
 
-var is_enabled := true setget set_is_enabled
+var is_enabled := true: set = set_is_enabled
 # Active menu, visible on screen when set
-var menu_current: Menu setget set_menu_current
+var menu_current: Menu: set = set_menu_current
 
 var _menus := []
 

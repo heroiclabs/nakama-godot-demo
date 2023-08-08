@@ -1,52 +1,46 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://blflsfmcfdmy4"]
 
-[ext_resource path="res://assets/theme/fonts/montserrat/Montserrat-Medium.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://assets/world/character.svg" type="Texture" id=2]
-[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=3]
-[ext_resource path="res://src/World/Characters/Character.gd" type="Script" id=4]
+[ext_resource type="FontFile" uid="uid://bvicuap86b2sk" path="res://assets/theme/fonts/montserrat/Montserrat-Medium.ttf" id="1"]
+[ext_resource type="Texture2D" uid="uid://nwui7rg4ymv7" path="res://assets/world/character.svg" id="2"]
+[ext_resource type="Theme" path="res://assets/theme/gdquest.theme" id="3"]
+[ext_resource type="Script" path="res://src/World/Characters/Character.gd" id="4"]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 41, 45 )
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(41, 45)
 
-[sub_resource type="DynamicFont" id=2]
-size = 40
-use_filter = true
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("1")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[node name="Character" type="KinematicBody2D"]
+[node name="Character" type="CharacterBody2D"]
 collision_mask = 3
-script = ExtResource( 4 )
+script = ExtResource("4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -45 )
-shape = SubResource( 1 )
+position = Vector2(0, -45)
+shape = SubResource("1")
 
-[node name="Sprite" type="Sprite" parent="."]
-scale = Vector2( 1e-05, 1e-05 )
-texture = ExtResource( 2 )
-offset = Vector2( 0, -45 )
-
-[node name="Tween" type="Tween" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1e-05, 1e-05)
+texture = ExtResource("2")
+offset = Vector2(0, -45)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
-margin_top = -140.0
-margin_bottom = -140.0
+offset_top = -140.0
+offset_bottom = -140.0
 use_top_left = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="CenterContainer"]
-margin_left = -74.0
-margin_top = -25.0
-margin_right = 74.0
-margin_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 size_flags_vertical = 1
-theme = ExtResource( 3 )
-custom_fonts/font = SubResource( 2 )
+theme = ExtResource("3")
+theme_override_fonts/font = SubResource("2")
 text = "User ID"
-__meta__ = {
-"_edit_use_anchors_": false
-}

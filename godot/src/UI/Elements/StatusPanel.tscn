@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://assets/theme/fonts/font_info.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/theme/fonts/font_info.tres" type="FontFile" id=1]
 [ext_resource path="res://src/UI/Menus/Login/StatusPanel.gd" type="Script" id=2]
 
 
@@ -9,9 +9,9 @@
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 19.0
-margin_bottom = 48.0
-rect_min_size = Vector2( 0, 32 )
+offset_top = 19.0
+offset_bottom = 48.0
+custom_minimum_size = Vector2( 0, 32 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -20,13 +20,13 @@ __meta__ = {
 [node name="Label" type="Label" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 15.0
-margin_top = 3.04999
-margin_right = -15.0
-margin_bottom = -2.95001
+offset_left = 15.0
+offset_top = 3.04999
+offset_right = -15.0
+offset_bottom = -2.95001
 size_flags_vertical = 6
-custom_fonts/font = ExtResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 0.6 )
+theme_override_fonts/font = ExtResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 0.6 )
 text = "Optional error message"
 valign = 1
 clip_text = true

@@ -3,16 +3,16 @@
 # player accordingly, and facilitating sending messages back to the server.
 extends Node2D
 
-export var PlayerScene: PackedScene
-export var CharacterScene: PackedScene
+@export var PlayerScene: PackedScene
+@export var CharacterScene: PackedScene
 
 var characters := {}
 var last_name: String
 var last_color: Color
 
-onready var world := $World
-onready var player: Node = $Player
-onready var game_ui := $CanvasLayer/GameUI
+@onready var world := $World
+@onready var player: Node = $Player
+@onready var game_ui := $CanvasLayer/GameUI
 
 
 func _ready() -> void:
@@ -20,7 +20,7 @@ func _ready() -> void:
 	ServerConnection.connect(
 		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
 	)
-	game_ui.setup(Color.green)
+	game_ui.setup(Color.GREEN)
 
 
 func setup(username: String, color: Color) -> void:
@@ -39,7 +39,7 @@ func join_world(
 	state_names: Dictionary
 ) -> void:
 	var user_id := ServerConnection.get_user_id()
-	assert(state_positions.has(user_id), "Server did not return valid state")
+	assert(state_positions.has(user_id)) #,"Server did not return valid state")
 	var username: String = state_names.get(user_id)
 	var player_color: Color = state_colors.get(user_id)
 
@@ -55,17 +55,17 @@ func join_world(
 		)
 
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("presences_changed", self, "_on_ServerConnection_presences_changed")
+	ServerConnection.connect("presences_changed", Callable(self, "_on_ServerConnection_presences_changed"))
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("state_updated", self, "_on_ServerConnection_state_updated")
+	ServerConnection.connect("state_updated", Callable(self, "_on_ServerConnection_state_updated"))
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("color_updated", self, "_on_ServerConnection_color_updated")
+	ServerConnection.connect("color_updated", Callable(self, "_on_ServerConnection_color_updated"))
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect(
 		"chat_message_received", self, "_on_ServerConnection_chat_message_received"
 	)
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect("character_spawned", self, "_on_ServerConnection_character_spawned")
+	ServerConnection.connect("character_spawned", Callable(self, "_on_ServerConnection_character_spawned"))
 
 
 func create_character(
@@ -76,7 +76,7 @@ func create_character(
 	color: Color,
 	do_spawn: bool
 ) -> void:
-	var character := CharacterScene.instance()
+	var character := CharacterScene.instantiate()
 	character.position = position
 	character.direction.x = direction_x
 	character.color = color
@@ -96,7 +96,7 @@ func _on_ServerConnection_presences_changed() -> void:
 
 	for key in presences:
 		if not key in characters:
-			create_character(key, "User", Vector2.ZERO, 0, Color.white, false)
+			create_character(key, "User", Vector2.ZERO, 0, Color.WHITE, false)
 
 	var to_delete := []
 	for key in characters.keys():
@@ -132,7 +132,7 @@ func _on_ServerConnection_color_updated(id: String, color: Color) -> void:
 
 
 func _on_ServerConnection_chat_message_received(sender_id: String, message: String) -> void:
-	var color := Color.gray
+	var color := Color.GRAY
 	var sender_name := "User"
 
 	if sender_id in characters:
@@ -175,6 +175,6 @@ func _on_GameUI_text_sent(text) -> void:
 
 
 func _on_GameUI_logged_out() -> void:
-	var result: int = yield(ServerConnection.disconnect_from_server_async(), "completed")
+	var result: int = await ServerConnection.disconnect_from_server_async().completed
 	if result == OK:
-		get_tree().change_scene_to(load("res://src/Main/MainMenu.tscn"))
+		get_tree().change_scene_to_packed(load("res://src/Main/MainMenu.tscn"))

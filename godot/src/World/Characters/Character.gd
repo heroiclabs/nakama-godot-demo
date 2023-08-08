@@ -1,7 +1,7 @@
 # Character class to represent any of the other clients in the world. Reacts
 # primarily through events from the server, kept moving using godot's own game loop.
 class_name Character
-extends KinematicBody2D
+extends CharacterBody2D
 
 signal spawned
 
@@ -19,12 +19,12 @@ const GRAVITY := 4500.0
 const ACCELERATION := 4500.0
 const DRAG_AMOUNT := 0.2
 
-var color := Color.white setget _set_color
+var color := Color.WHITE: set = _set_color
 var state: int = States.ON_GROUND
 
-var velocity := Vector2.ZERO
+#var velocity := Vector2.ZERO
 var direction := Vector2.ZERO
-var username := "" setget _set_username
+var username := "": set = _set_username
 
 var last_position := Vector2.ZERO
 var last_input := 0.0
@@ -32,11 +32,11 @@ var next_position := Vector2.ZERO
 var next_input := 0.0
 var next_jump := false
 
-onready var tween := $Tween
-onready var sprite := $Sprite
-onready var id_label := $CenterContainer/Label
-onready var last_collision_layer := collision_layer
-onready var last_collision_mask := collision_mask
+@onready var tween := Tween.new()
+@onready var sprite := $Sprite2D
+@onready var id_label := $CenterContainer/Label
+@onready var last_collision_layer := collision_layer
+@onready var last_collision_mask := collision_mask
 
 
 func _physics_process(delta: float) -> void:
@@ -60,7 +60,10 @@ func move(delta: float) -> void:
 	if direction.x == 0:
 		velocity.x = lerp(velocity.x, 0, DRAG_AMOUNT)
 	velocity.y += GRAVITY * delta
-	velocity = move_and_slide(velocity, Vector2.UP)
+	set_velocity(velocity)
+	set_up_direction(Vector2.UP)
+	move_and_slide()
+	velocity = velocity
 
 
 func jump() -> void:
@@ -114,7 +117,7 @@ func spawn() -> void:
 		sprite, "scale", Vector2.ZERO, SCALE_BASE, 0.75, Tween.TRANS_ELASTIC, Tween.EASE_OUT
 	)
 	tween.start()
-	yield(tween, "tween_all_completed")
+	await tween.tween_all_completed
 	emit_signal("spawned")
 
 
@@ -123,7 +126,7 @@ func despawn() -> void:
 		self, "scale", scale, Vector2.ZERO, 1.0, Tween.TRANS_ELASTIC, Tween.EASE_IN
 	)
 	tween.start()
-	yield(tween, "tween_all_completed")
+	await tween.tween_all_completed
 	queue_free()
 
 
@@ -166,11 +169,13 @@ func _set_username(value: String) -> void:
 func _set_color(value: Color) -> void:
 	color = value
 	if not is_inside_tree():
-		yield(self, "ready")
+		await self.ready
 	sprite.modulate = color
 
 
 func do_state_update_move(new_position: Vector2) -> void:
 	var distance := new_position - global_position
 	# warning-ignore:return_value_discarded
-	move_and_slide(distance, Vector2.UP)
+	set_velocity(distance)
+	set_up_direction(Vector2.UP)
+	move_and_slide()

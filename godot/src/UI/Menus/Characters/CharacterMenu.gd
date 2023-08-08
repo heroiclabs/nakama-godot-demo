@@ -6,8 +6,8 @@ signal character_deletion_requested(index)
 signal character_selected(name, color)
 signal go_back_requested
 
-onready var character_selector := $CharacterSelector
-onready var character_creator := $CharacterCreator
+@onready var character_selector := $CharacterSelector
+@onready var character_creator := $CharacterCreator
 
 
 func _ready() -> void:

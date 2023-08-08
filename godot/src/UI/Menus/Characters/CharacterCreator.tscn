@@ -4,7 +4,7 @@
 [ext_resource path="res://src/UI/Elements/Button.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/UI/Elements/Title.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/UI/Components/ColorSelector.tscn" type="PackedScene" id=4]
-[ext_resource path="res://assets/world/character.svg" type="Texture" id=5]
+[ext_resource path="res://assets/world/character.svg" type="Texture2D" id=5]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterColorPreview.gd" type="Script" id=6]
 [ext_resource path="res://src/UI/Menus/Characters/CharacterCreator.gd" type="Script" id=7]
 
@@ -13,11 +13,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -372.0
-margin_top = -347.0
-margin_right = 372.0
-margin_bottom = 347.0
-rect_min_size = Vector2( 744, 694 )
+offset_left = -372.0
+offset_top = -347.0
+offset_right = 372.0
+offset_bottom = 347.0
+custom_minimum_size = Vector2( 744, 694 )
 theme = ExtResource( 1 )
 script = ExtResource( 7 )
 __meta__ = {
@@ -25,35 +25,35 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 724.0
-margin_bottom = 674.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 724.0
+offset_bottom = 674.0
 size_flags_horizontal = 3
-custom_constants/separation = 20
+theme_override_constants/separation = 20
 
 [node name="Title" parent="VBoxContainer" instance=ExtResource( 3 )]
-margin_right = 704.0
+offset_right = 704.0
 text = "Character Creation"
 
 [node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
-margin_top = 60.0
-margin_right = 704.0
-margin_bottom = 64.0
+offset_top = 60.0
+offset_right = 704.0
+offset_bottom = 64.0
 
 [node name="Label2" type="Label" parent="VBoxContainer"]
-margin_top = 84.0
-margin_right = 704.0
-margin_bottom = 115.0
+offset_top = 84.0
+offset_right = 704.0
+offset_bottom = 115.0
 text = "Color"
 align = 1
 
 [node name="Color" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 135.0
-margin_right = 704.0
-margin_bottom = 439.0
+offset_top = 135.0
+offset_right = 704.0
+offset_bottom = 439.0
 size_flags_horizontal = 3
-custom_constants/separation = 25
+theme_override_constants/separation = 25
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -64,44 +64,44 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 80.0
-margin_top = 0.0
-margin_right = 624.0
-margin_bottom = 304.0
+offset_left = 80.0
+offset_top = 0.0
+offset_right = 624.0
+offset_bottom = 304.0
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
-margin_top = 459.0
-margin_right = 704.0
-margin_bottom = 463.0
+offset_top = 459.0
+offset_right = 704.0
+offset_bottom = 463.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 483.0
-margin_right = 704.0
-margin_bottom = 550.0
+offset_top = 483.0
+offset_right = 704.0
+offset_bottom = 550.0
 alignment = 1
 
 [node name="CharacterTexture" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
-margin_left = 136.0
-margin_right = 203.0
-margin_bottom = 67.0
-rect_min_size = Vector2( 67, 67 )
+offset_left = 136.0
+offset_right = 203.0
+offset_bottom = 67.0
+custom_minimum_size = Vector2( 67, 67 )
 texture = ExtResource( 5 )
 expand = true
 stretch_mode = 6
 script = ExtResource( 6 )
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
-margin_left = 219.0
-margin_top = 18.0
-margin_right = 292.0
-margin_bottom = 49.0
+offset_left = 219.0
+offset_top = 18.0
+offset_right = 292.0
+offset_bottom = 49.0
 text = "Name"
 
 [node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
-margin_left = 308.0
-margin_right = 568.0
-margin_bottom = 67.0
-rect_min_size = Vector2( 260, 0 )
+offset_left = 308.0
+offset_right = 568.0
+offset_bottom = 67.0
+custom_minimum_size = Vector2( 260, 0 )
 max_length = 32
 caret_blink = true
 __meta__ = {
@@ -109,18 +109,18 @@ __meta__ = {
 }
 
 [node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
-margin_top = 570.0
-margin_right = 704.0
-margin_bottom = 574.0
+offset_top = 570.0
+offset_right = 704.0
+offset_bottom = 574.0
 
 [node name="CreateButton" parent="VBoxContainer" instance=ExtResource( 2 )]
-margin_left = 252.0
-margin_top = 594.0
-margin_right = 452.0
-margin_bottom = 654.0
-rect_min_size = Vector2( 200, 60 )
+offset_left = 252.0
+offset_top = 594.0
+offset_right = 452.0
+offset_bottom = 654.0
+custom_minimum_size = Vector2( 200, 60 )
 size_flags_horizontal = 4
 text = "Create"
 [connection signal="color_changed" from="VBoxContainer/Color/ColorSelector" to="VBoxContainer/HBoxContainer/CharacterTexture" method="_on_ColorSelector_color_changed"]
-[connection signal="text_entered" from="VBoxContainer/HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="text_submitted" from="VBoxContainer/HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]
 [connection signal="pressed" from="VBoxContainer/CreateButton" to="." method="_on_CreateButton_pressed"]

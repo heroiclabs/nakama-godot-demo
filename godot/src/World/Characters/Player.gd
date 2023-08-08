@@ -8,15 +8,15 @@ var input_locked := false
 var accel := Vector2.ZERO
 var last_direction := Vector2.ZERO
 
-var is_active := true setget set_is_active
+var is_active := true: set = set_is_active
 
-onready var timer: Timer = $Timer
-onready var camera_2d: Camera2D = $Camera2D
+@onready var timer: Timer = $Timer
+@onready var camera_2d: Camera2D = $Camera2D
 
 
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	timer.connect("timeout", self, "_on_Timer_timeout")
+	timer.connect("timeout", Callable(self, "_on_Timer_timeout"))
 	hide()
 
 
@@ -41,13 +41,13 @@ func setup(username: String, color: Color, position: Vector2, level_limits: Rect
 
 func spawn() -> void:
 	set_process_unhandled_input(false)
-	.spawn()
-	yield(self, "spawned")
+	super.spawn()
+	await self.spawned
 	set_process_unhandled_input(true)
 
 
 func jump() -> void:
-	.jump()
+	super.jump()
 	ServerConnection.send_jump()
 
 

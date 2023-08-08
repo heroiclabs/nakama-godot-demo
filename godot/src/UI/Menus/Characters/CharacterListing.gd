@@ -6,11 +6,11 @@ signal requested_deletion(character_index)
 signal character_selected(index)
 signal character_accepted(index)
 
-var is_enabled := true setget set_is_enabled
+var is_enabled := true: set = set_is_enabled
 
-onready var texture := $HBoxContainer/TextureRect
-onready var label := $HBoxContainer/Label
-onready var delete_button := $HBoxContainer/DeleteButton
+@onready var texture := $HBoxContainer/TextureRect
+@onready var label := $HBoxContainer/Label
+@onready var delete_button := $HBoxContainer/DeleteButton
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -30,7 +30,7 @@ func setup(character_name: String, character_color: Color) -> void:
 func set_is_enabled(value: bool) -> void:
 	is_enabled = value
 	if not delete_button:
-		yield(self, "ready")
+		await self.ready
 	disabled = not is_enabled
 	delete_button.disabled = not is_enabled
 

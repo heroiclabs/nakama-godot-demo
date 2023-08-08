@@ -1,10 +1,10 @@
-tool
+@tool
 extends Button
 class_name ColorSwatch
 
-onready var color_rect: ColorRect = $ColorRect
+@onready var color_rect: ColorRect = $ColorRect
 
-export var color := Color('ffffff') setget set_color
+@export var color := Color('ffffff'): set = set_color
 
 
 func _ready() -> void:
@@ -14,5 +14,5 @@ func _ready() -> void:
 func set_color(value: Color) -> void:
 	color = value
 	if not color_rect:
-		yield(self, "ready")
+		await self.ready
 	color_rect.color = value

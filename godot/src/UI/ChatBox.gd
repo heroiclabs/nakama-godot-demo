@@ -11,8 +11,8 @@ const HISTORY_LENGTH := 20
 # Count of replies currently stored in the chat history
 var reply_count := 0
 
-onready var chat_log: RichTextLabel = $ScrollContainer/ChatLog
-onready var line_edit: LineEdit = $HBoxContainer/LineEdit
+@onready var chat_log: RichTextLabel = $ScrollContainer/ChatLog
+@onready var line_edit: LineEdit = $HBoxContainer/LineEdit
 
 
 func _init() -> void:
@@ -20,16 +20,16 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	chat_log.bbcode_text = ""
+	chat_log.text = ""
 
 
 # Add a new reply to the chat box, taking `HISTORY_LENGTH` into account.
 func add_reply(text: String, sender_name: String, color: Color) -> void:
 	if reply_count == HISTORY_LENGTH:
-		chat_log.bbcode_text = chat_log.bbcode_text.substr(chat_log.bbcode_text.find("\n"))
+		chat_log.text = chat_log.text.substr(chat_log.text.find("\n"))
 	else:
 		reply_count += 1
-	chat_log.bbcode_text += (
+	chat_log.text += (
 		"\n[color=#%s]%s[/color]: %s"
 		% [color.to_html(false), sender_name, text]
 	)

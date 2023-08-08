@@ -2,14 +2,14 @@ extends GridContainer
 
 signal color_changed(new_value)
 
-var color := Color.white
+var color := Color.WHITE
 
-var disabled := false setget set_disabled
+var disabled := false: set = set_disabled
 
 
 func _ready() -> void:
 	for swatch in get_children():
-		swatch.connect("pressed", self, "_on_ColorSwatch_pressed", [swatch.color])
+		swatch.connect("pressed", Callable(self, "_on_ColorSwatch_pressed").bind(swatch.color))
 
 
 func set_disabled(value: bool) -> void:

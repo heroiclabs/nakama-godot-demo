@@ -8,10 +8,10 @@ signal chat_edit_started
 signal chat_edit_ended
 signal logged_out
 
-onready var color_editor := $CharacterColorEditor
-onready var chat_box := $HBoxContainer/ChatBox
-onready var toggle_chat_button := $HBoxContainer/ToggleChatButton
-onready var notifications_ui := $NotificationsUI
+@onready var color_editor := $CharacterColorEditor
+@onready var chat_box := $HBoxContainer/ChatBox
+@onready var toggle_chat_button := $HBoxContainer/ToggleChatButton
+@onready var notifications_ui := $NotificationsUI
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -22,11 +22,11 @@ func _gui_input(event: InputEvent) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		if not chat_box.visible:
-			toggle_chat_button.pressed = true
+			toggle_chat_button.button_pressed = true
 		if not chat_box.line_edit.has_focus():
 			chat_box.line_edit.grab_focus()
 	if event.is_action_pressed("ui_cancel") and not chat_box.line_edit.has_focus():
-		toggle_chat_button.pressed = false
+		toggle_chat_button.button_pressed = false
 
 
 func setup(_color: Color) -> void:

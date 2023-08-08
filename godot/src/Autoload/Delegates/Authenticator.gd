@@ -1,11 +1,11 @@
 # Delegate class that handles logging in and registering accounts. Holds the 
 # authenticated session that ServerConnection uses to send messages or create a socket.
 class_name Authenticator
-extends Reference
+extends RefCounted
 
-var session: NakamaSession setget _no_set
-var _client: NakamaClient setget _no_set
-var _exception_handler: ExceptionHandler setget _no_set
+var session: NakamaSession: set = _no_set
+var _client: NakamaClient: set = _no_set
+var _exception_handler: ExceptionHandler: set = _no_set
 
 
 func _init(client: NakamaClient, exception_handler: ExceptionHandler) -> void:
@@ -44,7 +44,7 @@ func login_async(email: String, password: String) -> int:
 		var new_session: NakamaSession = _client.restore_session(token)
 		if new_session.valid and not new_session.expired:
 			session = new_session
-			yield(Engine.get_main_loop(), "idle_frame")
+			await Engine.get_main_loop().idle_frame
 			return OK
 
 	# If previous session is unavailable, invalid or expired

@@ -4,21 +4,21 @@ extends Menu
 signal register_pressed(email, password, do_remember_email)
 signal cancel_pressed
 
-onready var register_button: Button = $HBoxContainer/RegisterButton
-onready var cancel_button: Button = $HBoxContainer/CancelButton
+@onready var register_button: Button = $HBoxContainer/RegisterButton
+@onready var cancel_button: Button = $HBoxContainer/CancelButton
 
-onready var email_field: LineEdit = $Email/LineEditValidate
-onready var password_field: LineEdit = $Password/LineEditValidate
-onready var password_field_repeat: LineEdit = $PasswordRepeat/LineEditValidate
+@onready var email_field: LineEdit = $Email/LineEditValidate
+@onready var password_field: LineEdit = $Password/LineEditValidate
+@onready var password_field_repeat: LineEdit = $PasswordRepeat/LineEditValidate
 
-onready var remember_email: CheckBox = $RememberEmail
-onready var status_panel := $StatusPanel
+@onready var remember_email: CheckBox = $RememberEmail
+@onready var status_panel := $StatusPanel
 
 
 func set_is_enabled(value: bool) -> void:
-	.set_is_enabled(value)
+	super.set_is_enabled(value)
 	if not cancel_button:
-		yield(self, "ready")
+		await self.ready
 	cancel_button.disabled = not value
 	register_button.disabled = not value
 	email_field.editable = value
@@ -27,12 +27,12 @@ func set_is_enabled(value: bool) -> void:
 
 
 func set_status(text: String) -> void:
-	.set_status(text)
+	super.set_status(text)
 	status_panel.text = text
 
 
 func reset() -> void:
-	.reset()
+	super.reset()
 	self.status = ""
 	password_field.text = ""
 	password_field_repeat.text = ""
@@ -40,10 +40,10 @@ func reset() -> void:
 
 
 func attempt_register() -> void:
-	if email_field.text.empty():
+	if email_field.text.is_empty():
 		self.status = "Email cannot be empty"
 		return
-	elif password_field.text.empty() or password_field_repeat.text.empty():
+	elif password_field.text.is_empty() or password_field_repeat.text.is_empty():
 		self.status = "Password cannot be empty"
 		return
 	elif password_field.text.similarity(password_field_repeat.text) != 1:

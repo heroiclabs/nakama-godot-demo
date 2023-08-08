@@ -1,8 +1,8 @@
 extends Panel
 
-var text := "" setget set_text
+var text := "": set = set_text
 
-onready var label := $Label
+@onready var label := $Label
 
 
 func _ready() -> void:

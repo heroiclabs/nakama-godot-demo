@@ -23,10 +23,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -248.0
-margin_top = -112.0
-margin_right = -32.0
-margin_bottom = -32.0
+offset_left = -248.0
+offset_top = -112.0
+offset_right = -32.0
+offset_bottom = -32.0
 text = "Log out"
 flat = true
 

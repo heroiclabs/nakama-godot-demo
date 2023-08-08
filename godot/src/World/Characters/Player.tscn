@@ -15,7 +15,7 @@ limit_top = -1000000
 limit_right = 1000000
 limit_bottom = 1000000
 limit_smoothed = true
-smoothing_enabled = true
+position_smoothing_enabled = true
 editor_draw_screen = false
 script = ExtResource( 3 )
 

@@ -60,24 +60,24 @@ signal initial_state_received(positions, inputs, colors, names)
 signal character_spawned(id, color, name)
 
 # String that contains the error message whenever any of the functions that yield return != OK
-var error_message := "" setget _no_set, _get_error_message
+var error_message := "": get = _get_error_message, set = _no_set
 
 # Dictionary with user_id for keys and NakamaPresence for values.
-var presences := {} setget _no_set
+var presences := {}: set = _no_set
 
 # Nakama client through which sessions are created, sockets connected, and storage accessed.
 # For development purposes, it's set to the default localhost, as listed in the
 # /nakama/docker-compose.yml
-var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http") setget _no_set
+var _client := Nakama.create_client(KEY, "127.0.0.1", 7350, "http"): set = _no_set
 
 # Nakama socket through which the live game world is interacted with.
-var _socket: NakamaSocket setget _no_set
+var _socket: NakamaSocket: set = _no_set
 
 # The ID of the match the game world is associated with
-var _world_id: String setget _no_set
+var _world_id: String: set = _no_set
 
 # The ID of the world chat channel
-var _channel_id: String setget _no_set
+var _channel_id: String: set = _no_set
 
 var _exception_handler := ExceptionHandler.new()
 var _authenticator := Authenticator.new(_client, _exception_handler)
@@ -85,15 +85,15 @@ var _storage_worker: StorageWorker
 
 
 func _enter_tree() -> void:
-	pause_mode = Node.PAUSE_MODE_PROCESS
-	get_tree().root.get_node("/root/Nakama").pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().root.get_node("/root/Nakama").process_mode = Node.PROCESS_MODE_ALWAYS
 
 
 # Asynchronous coroutine. Authenticates a new session via email and password, and
 # creates a new account when it did not previously exist, then initializes _session.
 # Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func register_async(email: String, password: String) -> int:
-	var result: int = yield(_authenticator.register_async(email, password), "completed")
+	var result: int = await _authenticator.register_async(email, password).completed
 	if result == OK:
 		_storage_worker = StorageWorker.new(_authenticator.session, _client, _exception_handler)
 	return result
@@ -105,7 +105,7 @@ func register_async(email: String, password: String) -> int:
 # recover it without needing the authentication server. 
 # Returns OK or a nakama error code. Stores error messages in `ServerConnection.error_message`
 func login_async(email: String, password: String) -> int:
-	var result: int = yield(_authenticator.login_async(email, password), "completed")
+	var result: int = await _authenticator.login_async(email, password).completed
 	if result == OK:
 		_storage_worker = StorageWorker.new(_authenticator.session, _client, _exception_handler)
 	return result
@@ -123,19 +123,19 @@ func connect_to_server_async() -> int:
 
 	if parsed_result == OK:
 		#warning-ignore: return_value_discarded
-		_socket.connect("connected", self, "_on_NakamaSocket_connected")
+		_socket.connect("connected", Callable(self, "_on_NakamaSocket_connected"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("closed", self, "_on_NakamaSocket_closed")
+		_socket.connect("closed", Callable(self, "_on_NakamaSocket_closed"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("connection_error", self, "_on_NakamaSocket_connection_error")
+		_socket.connect("connection_error", Callable(self, "_on_NakamaSocket_connection_error"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_error", self, "_on_NakamaSocket_received_error")
+		_socket.connect("received_error", Callable(self, "_on_NakamaSocket_received_error"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_match_presence", self, "_on_NakamaSocket_received_match_presence")
+		_socket.connect("received_match_presence", Callable(self, "_on_NakamaSocket_received_match_presence"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_match_state", self, "_on_NakamaSocket_received_match_state")
+		_socket.connect("received_match_state", Callable(self, "_on_NakamaSocket_received_match_state"))
 		#warning-ignore: return_value_discarded
-		_socket.connect("received_channel_message", self, "_on_NamakaSocket_received_channel_message")
+		_socket.connect("received_channel_message", Callable(self, "_on_NamakaSocket_received_channel_message"))
 
 	return parsed_result
 
@@ -143,10 +143,10 @@ func connect_to_server_async() -> int:
 # Asynchronous coroutine. Leaves chat and disconnects from the live server.
 # Returns OK or a nakama error number and puts the error message in `ServerConnection.error_message`
 func disconnect_from_server_async() -> int:
-	var result: NakamaAsyncResult = yield(_socket.leave_chat_async(_channel_id), "completed")
+	var result: NakamaAsyncResult = await _socket.leave_chat_async(_channel_id).completed
 	var parsed_result := _exception_handler.parse_exception(result)
 	if parsed_result == OK:
-		result = yield(_socket.leave_match_async(_world_id), "completed")
+		result = await _socket.leave_match_async(_world_id).completed
 		parsed_result = _exception_handler.parse_exception(result)
 		if parsed_result == OK:
 			_reset_data()
@@ -225,7 +225,7 @@ func join_world_async() -> int:
 # Returns an Array of {name: String, color: Color} dictionaries.
 # Returns an empty array if there is a failure or if no characters are found.
 func get_player_characters_async() -> Array:
-	var characters: Array = yield(_storage_worker.get_player_characters_async(), "completed")
+	var characters: Array = await _storage_worker.get_player_characters_async().completed
 	return characters
 
 
@@ -235,14 +235,14 @@ func get_player_characters_async() -> Array:
 # Returns OK when successful, a nakama error code, or ERR_UNAVAILABLE if the name
 # is already taken.
 func create_player_character_async(color: Color, name: String) -> int:
-	var result: int = yield(_storage_worker.create_player_character_async(color, name), "completed")
+	var result: int = await _storage_worker.create_player_character_async(color, name).completed
 	return result
 
 
 # Update the character's color in storage with the repalcement color.
 # Returns OK, or a nakama error code.
 func update_player_character_async(color: Color, name: String) -> int:
-	var result: int = yield(_storage_worker.update_player_character_async(color, name), "completed")
+	var result: int = await _storage_worker.update_player_character_async(color, name).completed
 	return result
 
 
@@ -250,7 +250,7 @@ func update_player_character_async(color: Color, name: String) -> int:
 # player storage. Returns OK, a nakama error code, or ERR_PARAMETER_RANGE_ERROR 
 # if the index is too large or is invalid.
 func delete_player_character_async(idx: int) -> int:
-	var result: int = yield(_storage_worker.delete_player_character_async(idx), "completed")
+	var result: int = await _storage_worker.delete_player_character_async(idx).completed
 	return result
 
 
@@ -277,35 +277,35 @@ func store_last_player_character_async(name: String, color: Color) -> int:
 func send_player_color_update(color: Color) -> void:
 	if _socket:
 		var payload := {id = get_user_id(), color = color}
-		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_COLOR, JSON.print(payload))
+		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_COLOR, JSON.stringify(payload))
 
 
 # Sends a message to the server stating a change in position for the client.
 func send_position_update(position: Vector2) -> void:
 	if _socket:
 		var payload := {id = get_user_id(), pos = {x = position.x, y = position.y}}
-		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_POSITION, JSON.print(payload))
+		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_POSITION, JSON.stringify(payload))
 
 
 # Sends a message to the server stating a change in horizontal input for the client.
 func send_direction_update(input: float) -> void:
 	if _socket:
 		var payload := {id = get_user_id(), inp = input}
-		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_INPUT, JSON.print(payload))
+		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_INPUT, JSON.stringify(payload))
 
 
 # Sends a message to the server stating a jump from the client.
 func send_jump() -> void:
 	if _socket:
 		var payload := {id = get_user_id()}
-		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_JUMP, JSON.print(payload))
+		_socket.send_match_state_async(_world_id, OpCodes.UPDATE_JUMP, JSON.stringify(payload))
 
 
 # Sends a message to the server stating the client is spawning in after character selection.
 func send_spawn(color: Color, name: String) -> void:
 	if _socket:
-		var payload := {id = get_user_id(), col = JSON.print(color), nm = name}
-		_socket.send_match_state_async(_world_id, OpCodes.DO_SPAWN, JSON.print(payload))
+		var payload := {id = get_user_id(), col = JSON.stringify(color), nm = name}
+		_socket.send_match_state_async(_world_id, OpCodes.DO_SPAWN, JSON.stringify(payload))
 
 
 # Sends a chat message to the server to be broadcast to others in the channel.
@@ -383,7 +383,9 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 
 	match code:
 		OpCodes.UPDATE_STATE:
-			var decoded: Dictionary = JSON.parse(raw).result
+			var test_json_conv = JSON.new()
+			test_json_conv.parse(raw).result
+			var decoded: Dictionary = test_json_conv.get_data()
 
 			var positions: Dictionary = decoded.pos
 			var inputs: Dictionary = decoded.inp
@@ -391,7 +393,9 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 			emit_signal("state_updated", positions, inputs)
 
 		OpCodes.UPDATE_COLOR:
-			var decoded: Dictionary = JSON.parse(raw).result
+			var test_json_conv = JSON.new()
+			test_json_conv.parse(raw).result
+			var decoded: Dictionary = test_json_conv.get_data()
 
 			var id: String = decoded.id
 			var color := Converter.color_string_to_color(decoded.color)
@@ -399,7 +403,9 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 			emit_signal("color_updated", id, color)
 
 		OpCodes.INITIAL_STATE:
-			var decoded: Dictionary = JSON.parse(raw).result
+			var test_json_conv = JSON.new()
+			test_json_conv.parse(raw).result
+			var decoded: Dictionary = test_json_conv.get_data()
 
 			var positions: Dictionary = decoded.pos
 			var inputs: Dictionary = decoded.inp
@@ -412,7 +418,9 @@ func _on_NakamaSocket_received_match_state(match_state: NakamaRTAPI.MatchData) -
 			emit_signal("initial_state_received", positions, inputs, colors, names)
 
 		OpCodes.DO_SPAWN:
-			var decoded: Dictionary = JSON.parse(raw).result
+			var test_json_conv = JSON.new()
+			test_json_conv.parse(raw).result
+			var decoded: Dictionary = test_json_conv.get_data()
 
 			var id: String = decoded.id
 			var color := Converter.color_string_to_color(decoded.col)
@@ -426,7 +434,9 @@ func _on_NamakaSocket_received_channel_message(message: NakamaAPI.ApiChannelMess
 	if message.code != 0:
 		return
 
-	var content: Dictionary = JSON.parse(message.content).result
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(message.content).result
+	var content: Dictionary = test_json_conv.get_data()
 	emit_signal("chat_message_received", message.sender_id, content.msg)
 
 

@@ -9,7 +9,7 @@ func _on_mouse_entered() -> void:
 
 
 func _on_mouse_exited() -> void:
-	modulate = Color.white
+	modulate = Color.WHITE
 
 
 func _on_button_down() -> void:
@@ -17,4 +17,4 @@ func _on_button_down() -> void:
 
 
 func _on_button_up() -> void:
-	modulate = COLOR_HOVER if is_hovered() else Color.white
+	modulate = COLOR_HOVER if is_hovered() else Color.WHITE

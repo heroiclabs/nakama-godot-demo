@@ -4,9 +4,9 @@
 [ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=2]
 
 [node name="ColorSwatch" type="Button"]
-margin_right = 64.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
+offset_right = 64.0
+offset_bottom = 64.0
+custom_minimum_size = Vector2( 64, 64 )
 theme = ExtResource( 2 )
 flat = true
 script = ExtResource( 1 )
@@ -18,10 +18,10 @@ color = null
 [node name="ColorRect" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -8.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
