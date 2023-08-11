@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/UI/LoginAndRegister.gd" id="1"]
 [ext_resource type="PackedScene" path="res://src/UI/Menus/Register/RegisterForm.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://src/UI/Menus/Login/LoginForm.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://6tjdnop3xewe" path="res://src/UI/Menus/Login/LoginForm.tscn" id="4"]
 
 [node name="LoginAndRegister" type="Control"]
 layout_mode = 3

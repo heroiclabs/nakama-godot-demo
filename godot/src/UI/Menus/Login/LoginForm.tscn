@@ -1,14 +1,16 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://6tjdnop3xewe"]
 
-[ext_resource path="res://assets/theme/gdquest.theme" type="Theme" id=1]
-[ext_resource path="res://src/UI/Menus/Login/LoginForm.gd" type="Script" id=2]
-[ext_resource path="res://src/UI/Elements/StatusPanel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/theme/stylebox/button_focused_margin.tres" type="StyleBox" id=4]
-[ext_resource path="res://src/UI/Elements/LineEditValidate.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/UI/Menus/Login/EmailField.gd" type="Script" id=6]
-[ext_resource path="res://src/UI/Menus/Login/PasswordField.gd" type="Script" id=7]
+[ext_resource type="Theme" path="res://assets/theme/gdquest.theme" id="1"]
+[ext_resource type="Script" path="res://src/UI/Menus/Login/LoginForm.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/UI/Elements/StatusPanel.tscn" id="3"]
+[ext_resource type="StyleBox" path="res://assets/theme/stylebox/button_focused_margin.tres" id="4"]
+[ext_resource type="PackedScene" path="res://src/UI/Elements/LineEditValidate.tscn" id="5"]
+[ext_resource type="Script" path="res://src/UI/Menus/Login/EmailField.gd" id="6"]
+[ext_resource type="Script" path="res://src/UI/Menus/Login/PasswordField.gd" id="7"]
 
 [node name="LoginForm" type="Panel"]
+custom_minimum_size = Vector2(0, 272)
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -17,77 +19,61 @@ offset_left = -292.0
 offset_top = -136.0
 offset_right = 292.0
 offset_bottom = 136.0
-custom_minimum_size = Vector2( 0, 272 )
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme = ExtResource("1")
+script = ExtResource("2")
 
 [node name="Email" type="HBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 offset_left = 16.0
 offset_top = 16.0
 offset_right = -17.0
 offset_bottom = 72.0
 size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="Email"]
-offset_top = 12.0
-offset_right = 120.0
-offset_bottom = 43.0
-custom_minimum_size = Vector2( 120, 0 )
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
 text = "Email"
 
-[node name="LineEditValidate" parent="Email" instance=ExtResource( 5 )]
-offset_left = 136.0
-offset_right = 551.0
+[node name="LineEditValidate" parent="Email" instance=ExtResource("5")]
+layout_mode = 2
 placeholder_text = "me@example.com"
-script = ExtResource( 6 )
+script = ExtResource("6")
 
 [node name="Password" type="HBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 offset_left = 16.0
 offset_top = 88.0
 offset_right = -17.0
 offset_bottom = 136.0
 size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="Password"]
-offset_top = 8.0
-offset_right = 120.0
-offset_bottom = 39.0
-custom_minimum_size = Vector2( 120, 0 )
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
 text = "Password"
 
-[node name="LineEditValidate" parent="Password" instance=ExtResource( 5 )]
-offset_left = 136.0
-offset_right = 551.0
-offset_bottom = 48.0
+[node name="LineEditValidate" parent="Password" instance=ExtResource("5")]
+layout_mode = 2
 secret = true
-script = ExtResource( 7 )
+script = ExtResource("7")
 
 [node name="RememberEmail" type="CheckBox" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 offset_left = 154.0
 offset_top = 147.0
 offset_right = -227.0
 offset_bottom = 179.0
-theme_override_styles/focus = ExtResource( 4 )
+theme_override_styles/focus = ExtResource("4")
 shortcut_in_tooltip = false
 text = "Remember me"
 flat = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -98,26 +84,22 @@ offset_bottom = -16.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="LoginButton" type="Button" parent="HBoxContainer"]
-offset_right = 267.0
-offset_bottom = 64.0
-custom_minimum_size = Vector2( 120, 60 )
+custom_minimum_size = Vector2(120, 60)
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Log in"
 
 [node name="RegisterButton" type="Button" parent="HBoxContainer"]
-offset_left = 283.0
-offset_right = 551.0
-offset_bottom = 64.0
-custom_minimum_size = Vector2( 120, 60 )
+custom_minimum_size = Vector2(120, 60)
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Register"
 
-[node name="StatusPanel" parent="." instance=ExtResource( 3 )]
+[node name="StatusPanel" parent="." instance=ExtResource("3")]
+layout_mode = 0
+
 [connection signal="text_submitted" from="Email/LineEditValidate" to="." method="_on_LineEditValidate_text_entered"]
 [connection signal="text_submitted" from="Password/LineEditValidate" to="." method="_on_LineEditValidate_text_entered"]
 [connection signal="pressed" from="HBoxContainer/LoginButton" to="." method="_on_LoginButton_pressed"]

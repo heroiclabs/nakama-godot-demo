@@ -12,6 +12,7 @@ var status := "": set = set_status
 
 
 func _ready() -> void:
+	super()
 	self.menu_current = login_form
 
 
