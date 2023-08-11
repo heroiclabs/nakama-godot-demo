@@ -136,3 +136,4 @@ func _on_CharacterMenu_go_back_requested() -> void:
 	character_menu.reset()
 	character_menu.hide()
 	login_and_register.show()
+

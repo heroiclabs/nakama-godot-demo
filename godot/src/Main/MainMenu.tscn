@@ -31,3 +31,10 @@ layout_mode = 3
 anchors_preset = 15
 grow_horizontal = 2
 grow_vertical = 2
+
+[connection signal="login_pressed" from="CanvasLayer/LoginAndRegister" to="." method="_on_LoginAndRegister_login_pressed"]
+[connection signal="register_pressed" from="CanvasLayer/LoginAndRegister" to="." method="_on_LoginAndRegister_register_pressed"]
+[connection signal="character_deletion_requested" from="CanvasLayer/CharacterMenu" to="." method="_on_CharacterMenu_character_deletion_requested"]
+[connection signal="character_selected" from="CanvasLayer/CharacterMenu" to="." method="_on_CharacterMenu_character_selected"]
+[connection signal="go_back_requested" from="CanvasLayer/CharacterMenu" to="." method="_on_CharacterMenu_go_back_requested"]
+[connection signal="new_character_requested" from="CanvasLayer/CharacterMenu" to="." method="_on_CharacterMenu_new_character_requested"]
