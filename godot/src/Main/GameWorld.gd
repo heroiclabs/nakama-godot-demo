@@ -17,9 +17,7 @@ var last_color: Color
 
 func _ready() -> void:
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect(
-		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
-	)
+	ServerConnection.initial_state_received.connect(_on_ServerConnection_initial_state_received)
 	game_ui.setup(Color.GREEN)
 
 
@@ -61,9 +59,7 @@ func join_world(
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect("color_updated", Callable(self, "_on_ServerConnection_color_updated"))
 	#warning-ignore: return_value_discarded
-	ServerConnection.connect(
-		"chat_message_received", self, "_on_ServerConnection_chat_message_received"
-	)
+	ServerConnection.chat_message_received.connect(_on_ServerConnection_chat_message_received)
 	#warning-ignore: return_value_discarded
 	ServerConnection.connect("character_spawned", Callable(self, "_on_ServerConnection_character_spawned"))
 
@@ -158,9 +154,7 @@ func _on_ServerConnection_initial_state_received(
 	positions: Dictionary, inputs: Dictionary, colors: Dictionary, names: Dictionary
 ) -> void:
 	#warning-ignore: return_value_discarded
-	ServerConnection.disconnect(
-		"initial_state_received", self, "_on_ServerConnection_initial_state_received"
-	)
+	ServerConnection.initial_state_received.disconnect(_on_ServerConnection_initial_state_received)
 	join_world(positions, inputs, colors, names)
 
 
@@ -175,6 +169,6 @@ func _on_GameUI_text_sent(text) -> void:
 
 
 func _on_GameUI_logged_out() -> void:
-	var result: int = await ServerConnection.disconnect_from_server_async().completed
+	var result: int = await ServerConnection.disconnect_from_server_async()
 	if result == OK:
 		get_tree().change_scene_to_packed(load("res://src/Main/MainMenu.tscn"))

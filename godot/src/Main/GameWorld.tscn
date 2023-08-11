@@ -23,6 +23,8 @@ position = Vector2(1178.21, 551.34)
 [node name="GameUI" parent="CanvasLayer" instance=ExtResource("5")]
 layout_mode = 3
 anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 1
 
 [connection signal="chat_edit_ended" from="CanvasLayer/GameUI" to="Player" method="_on_GameUI_chat_edit_ended"]
